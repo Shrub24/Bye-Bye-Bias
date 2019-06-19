@@ -3,6 +3,14 @@
 	"version": "1.0",
 	"description": "Combatting confirmation bias one article at a time",
 	"permissions": ["storage", "activeTab"],
+    "browser_action": {
+      // "default_icon": {                    // optional
+      //   "16": "images/icon16.png",           // optional
+      //   "24": "images/icon24.png",           // optional
+      //   "32": "images/icon32.png"            // optional
+      // },
+      "default_popup": "popup.html"
+    },
 	"background": {
 		"scripts": ["background.js"],
 		"persistent": false
