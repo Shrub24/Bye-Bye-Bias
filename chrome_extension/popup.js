@@ -5,15 +5,25 @@ function update_info(url){
 	var xmlHttp = new XMLHttpRequest();
 	chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
     	current_url = tabs[0].url
-    	xmlHttp.open("GET", url + "?" + current_url, false);
-		xmlHttp.send();
-		// alert(xmlHttp.responseText)
-		info = JSON.parse(xmlHttp.responseText)
-		// alert(info["topic"])
-    // replace these with where u want the actual stuff
-		document.getElementById("topic").innerHTML = info["topic"]
-		document.getElementById("strength").innerHTML = info["strength"]
-		document.getElementById("articles").innerHTML = create_dual_html_list(info["articles"])
+        try {
+        	xmlHttp.open("GET", url + "?" + current_url, false);
+    		xmlHttp.send();
+    		info = JSON.parse(xmlHttp.responseText)
+            // replace these with where u want the actual stuff
+            var topic = info["topic"]
+            var strength = info["strength"]
+            var articles = info["articles"]
+        }
+        catch(e) {
+            // todo log error
+            // alert(e)
+            var topic = "undefined"
+            var strength = 0
+            var articles = {}
+        }
+		document.getElementById("topic").innerHTML = topic
+		document.getElementById("strength").innerHTML = strength
+		document.getElementById("articles").innerHTML = create_dual_html_list(articles)
 	});
 }
 
