@@ -1,8 +1,39 @@
 <!DOCTYPE html>
 <html>
+   <head>
+      <link rel="stylesheet" href="https://unpkg.com/simplebar@latest/dist/simplebar.css" />
+      <script src="https://unpkg.com/simplebar@latest/dist/simplebar.min.js"></script>
+      <link rel="stylesheet" href="./styles.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.2/handlebars.runtime.min.js"></script>
+      <script src="template.js"></script>
+      <script src="popup.js"></script>
+
+      <script id="card_template" type="text/x-handlebars-template">
+         {{#each Cards}}
+         <div class="card" style="background-color: {{Color}}">
+         <div class="title">{{this.Title}}</div>
+         <div class="date">{{this.Date}}</div>
+         <div class="info">
+            <object type="image/svg+xml" data="./info_icon.svg" class="info-icon"></object>
+            <div class="publisher">{{this.Publisher}}</div>
+            <object type="image/svg+xml" data="./head_icon.svg" class="info-icon"></object>
+            <div class="author">{{this.Author}}</div>
+         </div>
+         </div>
+         {{/each}}
+      </script>
+   </head>
    <body>
-      <h1>This is a heading</h1>
-      <p>Document content goes here.....</p>
+      <div class="content">
+         <div id="scale">Positive</div>
+         <div id="help">?</div>
+         <div id="settings">
+            <div id="dots">&#8942</div>
+         </div>
+         
+         <div id="items" data-simplebar data-simplebar-auto-hide="false">
+         </div>
+         <div id="histogram"></div>
+      </div>
    </body>
-	
 </html>
