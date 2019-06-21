@@ -20,6 +20,7 @@ var colorsEnum = {
 
 window.onload = function() {
     var data = {
+        "thisPage":22,
         "Cards": [
             {"Title": "4", 
             "Date": "4444 44",
