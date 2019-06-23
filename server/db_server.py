@@ -26,13 +26,16 @@ class Handler(BaseHTTPRequestHandler):
 def get_strength_and_similar(url):
     cur = db.cursor()
     cur.execute("SELECT strength, topic FROM articles WHERE url='" + url + "'")
-    # todo create if no result condition
-    result = cur.fetchall()[0]
-    strength = result[0]
-    topic = result[1]
-    cur.execute("SELECT url, strength FROM articles WHERE topic='" + topic + "'")
-    articles = cur.fetchall()
-    return {"topic": topic, "strength": strength, "articles": {str(i[0]): i[1] for i in articles}}
+    query_result = cur.fetchall()
+    if not query_result:
+        return{"topic": "unknown", "strength": 0, "articles": {}}
+    else:
+        result = query_result[0]
+        strength = result[0]
+        topic = result[1]
+        cur.execute("SELECT url, strength FROM articles WHERE topic='" + topic + "'")
+        articles = cur.fetchall()
+        return {"topic": topic, "strength": strength, "articles": {str(i[0]): i[1] for i in articles}}
 
 
 if __name__ == "__main__":
