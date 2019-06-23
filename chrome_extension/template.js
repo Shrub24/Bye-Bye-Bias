@@ -1,7 +1,7 @@
 var precompiledTemplateCard = {"1":function(container,depth0,helpers,partials,data) {
   var helper;
 
-return "         <a rel=\"external\" href=\""
+return "         <a href=\""
   + container.escapeExpression(container.lambda((depth0 != null ? depth0.URL : depth0), depth0))
   + "\">\n            <div class=\"card\" style=\"background-color: "
   + container.escapeExpression(((helper = (helper = helpers.Color || (depth0 != null ? depth0.Color : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"Color","hash":{},"data":data}) : helper)))

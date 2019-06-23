@@ -1,47 +1,27 @@
-// server GET stuff
-var source_url = "http://localhost:8000"
+function test() {
+    var templateCard = Handlebars.template(precompiledTemplateCard);
+    var content = document.querySelector("#items > div.simplebar-wrapper > div.simplebar-mask > div > div > div > #card-container");
 
-function update_info(url){
-	var xmlHttp = new XMLHttpRequest();
-	chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-    	current_url = tabs[0].url
-        try {
-        	xmlHttp.open("GET", url + "?" + current_url, false);
-    		xmlHttp.send();
-    		info = JSON.parse(xmlHttp.responseText)
-            // replace these with where u want the actual stuff
-            var topic = info["topic"]
-            var strength = info["strength"]
-            var articles = info["articles"]
-        }
-        catch(e) {
-            // todo log error
-            // alert(e)
-            var topic = "undefined"
-            var strength = 0
-            var articles = {}
-        }
-		document.getElementById("topic").innerHTML = topic
-		document.getElementById("strength").innerHTML = strength
-		document.getElementById("articles").innerHTML = create_dual_html_list(articles)
-	});
+    content.innerHTML = templateCard(data);
 }
 
-// remove this when no longer needed, currently for debugging and show
-function create_dual_html_list(dict){
-	var str = "<ul>"
-	keys = Object.keys(dict)
-	keys.forEach(function(key){
-		str += "<li>" + key + " " + dict[key]
-	})
+function addClickHandlers() {
+    let elementsArray = document.querySelectorAll("a");
 
-	str += "</ul>";
-	return str
+    elementsArray.forEach(function(elem) {
+        elem.addEventListener("click", function(event) {
+            var targetPage = event.currentTarget.href;
+
+            chrome.tabs.create({
+                url: targetPage,
+              });
+        });
+    });
 }
 
-// merge window.onload and "DOMContentLoaded" at some point
 document.addEventListener('DOMContentLoaded', function() {
-  //update_info(source_url)
+  test();
+  addClickHandlers();
 });
 
 
@@ -57,46 +37,39 @@ function getRandomColor() {
     return color;
 }
 
-window.onload = function() {
-    var data = {
-        "thisPage":22,
-        "Cards": [
-            {"Title": "4", 
-            "Date": "4444 44",
-            "Publisher": "Jhin",
-            "Author": "Idk who made numbers",
-            "Color": getRandomColor(),
-            "URL": "http://www.google.com",
-        },
-        {"Title": "4", 
-            "Date": "4444 44",
-            "Publisher": "Jhin",
-            "Author": "Idk who made numbers",
-            "Color": getRandomColor(),
-        },
-        {"Title": "4", 
-            "Date": "4444 44",
-            "Publisher": "Jhin",
-            "Author": "Idk who made numbers",
-            "Color": getRandomColor(),
-        },
-        {"Title": "4", 
-            "Date": "4444 44",
-            "Publisher": "Jhin",
-            "Author": "Idk who made numbers",
-            "Color": getRandomColor(),
-        },
-        {"Title": "Narrow sea strip pulling the world apart and then putting it together again.", 
-            "Date": "4444 44",
-            "Publisher": "Jhin",
-            "Author": "Idk who made numbers",
-            "Color": getRandomColor(),
-        },
-        ]
-    }
-    
-    var templateCard = Handlebars.template(precompiledTemplateCard);
-    var content = document.querySelector("#items > div.simplebar-wrapper > div.simplebar-mask > div > div > div > #card-container");
-
-    content.innerHTML = templateCard(data);
+var data = {
+    "thisPage":22,
+    "Cards": [
+        {"Title": "5", 
+        "Date": "4444 44",
+        "Publisher": "Jhin",
+        "Author": "Idk who made numbers",
+        "Color": getRandomColor(),
+        "URL": "http://www.google.com",
+    },
+    {"Title": "4", 
+        "Date": "4444 44",
+        "Publisher": "Jhin",
+        "Author": "Idk who made numbers",
+        "Color": getRandomColor(),
+    },
+    {"Title": "4", 
+        "Date": "4444 44",
+        "Publisher": "Jhin",
+        "Author": "Idk who made numbers",
+        "Color": getRandomColor(),
+    },
+    {"Title": "4", 
+        "Date": "4444 44",
+        "Publisher": "Jhin",
+        "Author": "Idk who made numbers",
+        "Color": getRandomColor(),
+    },
+    {"Title": "Narrow sea strip pulling the world apart and then putting it together again.", 
+        "Date": "4444 44",
+        "Publisher": "Jhin",
+        "Author": "Idk who made numbers",
+        "Color": getRandomColor(),
+    },
+    ]
 }

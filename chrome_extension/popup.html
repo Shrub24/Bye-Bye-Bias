@@ -10,7 +10,7 @@
 
       <script id="card_template" type="text/x-handlebars-template">
          {{#each Cards}}
-         <a rel="external" href="{{this.URL}}">
+         <a href="{{this.URL}}">
             <div class="card" style="background-color: {{Color}}" title="{{this.Title}}">
             <div class="title">{{this.Title}}</div>
             <div class="date">{{this.Date}}</div>
@@ -27,9 +27,22 @@
    </head>
    <body>
       <div class="content">
-         <div id="scale">Positive
-            <div class="scale-rectangle"></div>
-            <div class="circle"></div>
+         <div id="scale">
+            <div id="positive">Positive</div>
+               <div class="scale-container">
+                  <div class="scale-rectangle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+               </div>
+            <div id="negative">Negative</div>
          </div>
          <div id="helpBlock">
             <div id="help-tip" class="tool-tip">?
