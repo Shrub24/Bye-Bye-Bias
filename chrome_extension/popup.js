@@ -38,10 +38,6 @@ document.addEventListener('DOMContentLoaded', function() {
 //truncate template text
 //Inject test stuff
 
-Handlebars.registerHelper('cards', function(items, options) {
-    console.log(items);
-});
-
 function getRandomColor() {
     var letters = '0123456789ABCDEF';
     var color = '#';
@@ -49,10 +45,6 @@ function getRandomColor() {
         color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
-}
-
-var colorsEnum = {
-    
 }
 
 window.onload = function() {
@@ -64,6 +56,7 @@ window.onload = function() {
             "Publisher": "Jhin",
             "Author": "Idk who made numbers",
             "Color": getRandomColor(),
+            "URL": "http://www.google.com",
         },
         {"Title": "4", 
             "Date": "4444 44",
@@ -83,7 +76,7 @@ window.onload = function() {
             "Author": "Idk who made numbers",
             "Color": getRandomColor(),
         },
-        {"Title": "4", 
+        {"Title": "Narrow sea strip pulling the world apart and then putting it together again.", 
             "Date": "4444 44",
             "Publisher": "Jhin",
             "Author": "Idk who made numbers",
@@ -93,7 +86,7 @@ window.onload = function() {
     }
     
     var templateCard = Handlebars.template(precompiledTemplateCard);
-    var content = document.querySelector("#items > div.simplebar-wrapper > div.simplebar-mask > div > div > div");
+    var content = document.querySelector("#items > div.simplebar-wrapper > div.simplebar-mask > div > div > div > #card-container");
 
-    content.innerHTML = templateCard(data);
+    //content.innerHTML = templateCard(data);
 }

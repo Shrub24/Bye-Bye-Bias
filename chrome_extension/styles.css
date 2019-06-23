@@ -1,135 +1,240 @@
 body {
-    min-width: 600px;
-    max-width: 600px;
-    min-height: 400px;
-    max-height: 400px;
+	min-width: 600px;
+	max-width: 600px;
+	min-height: 400px;
+	max-height: 400px;
+	background-color: #36393F;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #FAFAFA;
+	outline-style: dotted;
+	outline-color: black;
+	margin: 0px;
+	padding: 4px;
+}
 
-    background-color:#36393F;
-    font-family: Arial, Helvetica, sans-serif;
-    color: #FAFAFA;
-
-    outline-style: dotted;
-    outline-color: black;
-
-    margin: 0px;
-    padding: 4px;
+a {
+	text-decoration: none;
 }
 
 .content {
-    display: grid;
-
-    row-gap: 5px;
-
-    grid-template-columns: 350px 60px 190px;
-    grid-template-rows: auto auto;
+	display: grid;
+	grid-template-columns: 350px 60px 190px;
+	grid-template-rows: 28px 372px;
 }
 
-#help {
-    grid-column: 1/2;
-    grid-row: 1/2;
+#helpBlock {
+	grid-column: 1/2;
+	grid-row: 1/2;
+}
 
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-
-    font-size: 16px;
-    line-height: 22px;
-    text-align: center;
-    font-weight: bold;
-
-    background: #FAFAFA;
-    color: #36393F;
-
-    cursor: pointer;
+#help-tip {
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	font-size: 16px;
+	line-height: 22px;
+	text-align: center;
+	font-weight: bold;
+	background: #FAFAFA;
+	color: #36393F;
+	margin-bottom: 5px;
 }
 
 #scale {
-    grid-column: 2/3;
-    grid-row: 1/3;
-
-    font-size: 15px;
-    font-weight: 750;
+	grid-column: 2/3;
+	grid-row: 1/3;
+	font-size: 15px;
+	font-weight: 750;
 }
 
 #settings {
-    grid-column: 3/4;
-    grid-row: 1/2;
-
-    font-size: 32px;
-
-    padding-bottom: 4px;
-
-    color: #FAFAFA;
-    border: none;
-    background-color: #36393F;
+	grid-column: 3/4;
+	grid-row: 1/2;
+	font-size: 32px;
+	color: #FAFAFA;
+	border: none;
+	background-color: #36393F;
 }
 
 #dots {
-    line-height: 18.5px;
-    cursor: pointer;
-    text-align: right;
+	float: right;
+	width: 20px;
+	line-height: 26px;
+	cursor: pointer;
+	text-align: center;
 }
 
 #items {
-    grid-row: 2/3;
-    grid-column: 1/2;
-    max-height: 200px;
-
-    padding-right: 13px;
+	grid-row: 2/3;
+	grid-column: 1/2;
+	height: auto;
+	padding-right: 13px;
 }
 
 #test {
-    max-height: 50px;
+	max-height: 50px;
 }
 
 #histogram {
-    grid-column: 3/4;
-    grid-row: 2/3;
+	grid-column: 3/4;
+	grid-row: 2/3;
 }
 
 .card {
-    color: black;
-    padding: 3.5px;
-    outline-style: solid;
-    margin: 4px;
-    margin-bottom: 12px;
+	color: black;
+	padding: 3.75px;
+	outline-style: solid;
+	margin-left: 4px;
+	margin-right: 4.25px;
+	margin-bottom: 12px;
+	box-shadow: 2.5px 2.5px 4px rgba(0, 0, 0, 0.712);
+	cursor: pointer;
+}
 
-    background-color: #FF817D;
+#items a:first-child .card {
+	margin-top: 4px;
+}
 
-    box-shadow: 2.5px 2.5px 4px rgba(0, 0, 0, 0.712);
-    cursor: pointer;
+#items a:last-child .card {
+	margin-bottom: 4px;
 }
 
 .info {
-    margin-top: 7px;
+	margin-top: 7px;
 }
 
 .info * {
-    display: inline;
-    vertical-align: middle;
-    font-size: 12px;
+	display: inline;
+	vertical-align: middle;
+	font-size: 12px;
+	shape-rendering: optimizeSpeed;
 }
 
 .publisher {
-    margin-right: 6px;
+	margin-right: 6px;
 }
 
 .info-icon {
-    width: 14.5px;
-    height: 14.5px;
+	width: 14.5px;
+	height: 14.5px;
 }
 
 .title {
-    font-weight: 750;
-    margin-bottom: 1.5px;
+	font-weight: 750;
+	margin-bottom: 1.5px;
 }
 
 .date {
-    font-size: 11.25px;
+	font-size: 11.25px;
 }
 
-#items > div.simplebar-track.simplebar-vertical {
-    background-color: #5F5F5F;
-    border-radius: 5px;
-    transform: scaleX(0.85);
+#items>div.simplebar-track.simplebar-vertical {
+	background-color: #5F5F5F;
+	border-radius: 10px;
+	transform: scaleX(0.90);
+}
+
+.tool-tip:hover>div {
+	display: block;
+	opacity: 1.0;
+	pointer-events: auto;
+}
+
+.tool-tip>div {
+	/* The tooltip */
+	transition: opacity 0.2s linear;
+	opacity: 0.0;
+	pointer-events: none;
+	z-index: 5;
+	text-align: left;
+	background-color: #4779ED;
+	padding: 15px;
+	width: 300px;
+	position: relative;
+	border-radius: 3px;
+	box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+	color: #FFF;
+	font-size: 13px;
+	line-height: 1.4;
+	top: 5.25px;
+}
+
+.tool-tip>div:before {
+	/* The pointer of the tooltip */
+	position: absolute;
+	content: '';
+	width: 0;
+	height: 0;
+	border: 6px solid transparent;
+	border-bottom-color: #4779ED;
+	left: 5px;
+	top: -12px;
+}
+
+.tool-tip>div:after{ /* Prevents the tooltip from being hidden */
+    width:100%;
+    height:40px;
+    content:'';
+    position: absolute;
+    top:-40px;
+    left:0;
+}
+
+#scaleRectangle {
+	height: 12.5px;
+	background: linear-gradient(0.25turn, #F9414B, #553DAF);
+	width: auto;
+}
+
+.nobold {
+	font-weight: normal;
+}
+
+.left-align,
+.right-align {
+	display: inline-block;
+	width: 50%;
+	padding-bottom: 6px;
+}
+
+.left-align {
+	float: left;
+}
+
+.right-align {
+	float: right;
+	text-align: right;
+}
+
+#placeholder {
+    display: table;
+    height: 365px;
+}
+
+#instruction, #loading, #empty {
+    display: table-cell;
+    vertical-align: middle;
+    font-size: 25px;
+    text-align: center;
+    font-weight: bold;
+    color: rgb(80, 80, 80);
+    padding: 10px;
+}
+
+.circle {
+    width: 100px;
+    height: 100px;
+    background: white;
+    border-radius: 50%
+}
+
+.rectangle {
+    width: 20px;
+    height: 100%;
+    background: white;
+}
+
+.line {
+    height: 5px;
+    background: white;
 }
