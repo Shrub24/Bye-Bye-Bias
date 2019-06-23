@@ -41,7 +41,7 @@ function create_dual_html_list(dict){
 
 // merge window.onload and "DOMContentLoaded" at some point
 document.addEventListener('DOMContentLoaded', function() {
-  update_info(source_url)
+  //update_info(source_url)
 });
 
 
@@ -98,5 +98,5 @@ window.onload = function() {
     var templateCard = Handlebars.template(precompiledTemplateCard);
     var content = document.querySelector("#items > div.simplebar-wrapper > div.simplebar-mask > div > div > div > #card-container");
 
-    //content.innerHTML = templateCard(data);
+    content.innerHTML = templateCard(data);
 }

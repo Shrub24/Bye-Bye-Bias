@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
    <head>
-      <link rel="stylesheet" href="https://unpkg.com/simplebar@latest/dist/simplebar.css" />
-      <script src="https://unpkg.com/simplebar@latest/dist/simplebar.min.js"></script>
+      <link rel="stylesheet" href="simplebar.css" />
+      <script src="simplebar.min.js"></script>
       <link rel="stylesheet" href="./styles.css">
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.2/handlebars.runtime.min.js"></script>
+      <script src="handlebars.runtime.min.js"></script>
       <script src="template.js"></script>
       <script src="popup.js"></script>
 
@@ -27,7 +27,10 @@
    </head>
    <body>
       <div class="content">
-         <div id="scale">Positive</div>
+         <div id="scale">Positive
+            <div class="scale-rectangle"></div>
+            <div class="circle"></div>
+         </div>
          <div id="helpBlock">
             <div id="help-tip" class="tool-tip">?
                <div>
