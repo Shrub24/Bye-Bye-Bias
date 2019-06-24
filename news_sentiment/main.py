@@ -1,10 +1,8 @@
-import time
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.nn import GRU, Linear
+from torch.nn import GRU, Linear, Dropout
 import os
 from io import open
 import numpy as np
@@ -41,25 +39,28 @@ except FileNotFoundError:
 
 
 max_sentence_length = 30
-dropout = 0.3
+dp = 0.5
 
 
 class Net(nn.Module):
 
     def __init__(self):
         super(Net, self).__init__()
-        self.gru = GRU(100, 128, num_layers=2, bidirectional=True)
+        self.gru = GRU(100, 128, num_layers=1, bidirectional=True)
         self.fc1 = Linear(356, 128)
-        self.fc3 = Linear(128, 3)
+        self.fc2 = Linear(128, 3)
+        self.dropout = Dropout(p=0.5)
 
     def forward(self, x, t):
+        x = self.dropout(x)
         x = self.gru(x)
         x = x[0].view(max_sentence_length, -1, 2, 128)
         x_forward = x[max_sentence_length-1, :, 0, :][None, :, :]
         x_backward = x[max_sentence_length-1, :, 1, :][None, :, :]
         x = torch.cat((x_forward, t, x_backward), dim=2)
+        x = self.dropout(x)
         x = F.relu(self.fc1(x))
-        x = F.softmax(self.fc3(x), dim=2)
+        x = F.softmax(self.fc2(x), dim=2)
         return x[0]
 
 
