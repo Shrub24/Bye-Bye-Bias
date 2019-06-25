@@ -66,7 +66,7 @@
 17	268,408	string	GATE_target-speech	 id="ta4"
 271	131,137	string	GATE_expressive-subjectivity	 intensity="low" nested-source="w" polarity="neutral"
 142	2310,2324	string	GATE_expressive-subjectivity	 intensity="medium" nested-source="w,chavez" polarity="positive"
-13	2929,3008	string	GATE_attitude	 target-link=" t59" attitude-type="arguing-pos" intensity="low" id="a59"
+13	2929,3008	string	GATE_attitude	 target-link="t59" attitude-type="arguing-pos" intensity="low" id="a59"
 267	57,76	string	GATE_target	 id="t10"
 138	2593,2594	string	GATE_split	
 9	2372,2446	string	GATE_target-speech	 id="ta27"

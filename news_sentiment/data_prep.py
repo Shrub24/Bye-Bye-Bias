@@ -96,3 +96,96 @@ def get_embedding(word, embed_model):
         return embed_model[word]
     except KeyError:
         return np.zeros(100)
+
+# path = "/data/database.mpqa.2.0/"
+def generate_mpqa_data(path, out_path):
+    script_dir = os.path.dirname(__file__)
+    OUT_PATH = script_dir + out_path
+    if os.path.exists(OUT_PATH):
+        os.remove(OUT_PATH)
+    file = open(OUT_PATH, "x")
+    file.close()
+    MPQA_REL_PATH = path
+    DOCS_REL_PATH = MPQA_REL_PATH + "docs/"
+    MAN_ANNS_REL_PATH = MPQA_REL_PATH + "man_anns/"
+    ANNOTATION_FILE_NAME = "gateman.mpqa.lre.2.0"
+    SENTENCES_FILE_NAME = "gatesentences.mpqa.2.0"
+
+    with open(script_dir + MPQA_REL_PATH + "doclist.mpqaOriginalByTopic", "r") as topic_file:
+        for i in topic_file:
+            split = i.split()
+            topic = split[0][6:]
+            file = split[1][5:]
+            if not topic == "misc":
+                with open(script_dir + MAN_ANNS_REL_PATH + file + "/" + ANNOTATION_FILE_NAME) as anns_file:
+                    attitude_anns = list()
+                    target_bytes = dict()
+                    for j in anns_file:
+                        # if (not j.find("GATE_attitude") == -1) and (j.find("speculation") == -1) and (j.find("other-attitude") == -1):
+                        if (not j.find("GATE_attitude") == -1) and (not j.find("sentiment-pos") == -1 or not j.find("sentiment-neg") == -1):
+                            attitude_properties = dict()
+                            attitude_properties["byte"] = j.split("\t")[1].split(",")
+                            properties = j.split("\t")[-1].strip().split('" ')
+                            for k in properties:
+                                split_prop = k.split('="')
+                                if split_prop[1].find(",") == -1:
+                                    attitude_properties[split_prop[0]] = split_prop[1]
+                                else:
+                                    attitude_properties[split_prop[0]] = [l.strip() for l in split_prop[1].split(",")]
+                            attitude_anns.append(attitude_properties)
+
+                        elif not j.find("GATE_target") == -1:
+                            space_split = j.split()
+                            target_bytes[space_split[4][4:-1]] = space_split[1].split(",")
+
+                # print(target_bytes)
+                # print(attitude_anns)
+                SENTENCES_PATH = script_dir + MAN_ANNS_REL_PATH + file + "/" + SENTENCES_FILE_NAME
+                with open(script_dir + DOCS_REL_PATH + file) as doc_file:
+                    file_string = doc_file.read().replace("\n", " ").replace("\t", " ")
+                    for attitude in attitude_anns:
+                        targets = attitude["target-link"]
+                        if not targets == "none":
+                            if not isinstance(targets, list):
+                                targets = [targets]
+                            for target in targets:
+                                target_loc = [int(j) for j in target_bytes[target]]
+                                sentence_bytes = find_sentence_bytes(target_loc[0], SENTENCES_PATH)
+                                sentence = file_string[sentence_bytes[0]:sentence_bytes[1]].replace("  ", " ")
+                                target = file_string[target_loc[0]:target_loc[1]].replace("  ", " ")
+                                sentiment = get_sentiment_pos_neg(attitude["attitude-type"])
+                                new_sentence = sentence.replace(target, "$T$")
+                                print("sentence: " + sentence)
+                                print("target: " + target)
+                                print("sentiment: " + str(sentiment))
+                                print("")
+                                if len(target.split()) <= 5:
+                                    with open(OUT_PATH, "a") as write_file:
+                                        write_file.write(new_sentence + "\n")
+                                        write_file.write(target + "\n")
+                                        write_file.write(str(sentiment) + "\n")
+
+
+
+def find_sentence_bytes(byte_within, path):
+    with open(path) as sentences_file:
+        lowest = None
+        lowest_compare = None
+        for i in sentences_file:
+            bytes = [int(j) for j in i.split("\t")[1].split(",")]
+            compare = byte_within - bytes[0]
+            if compare >= 0:
+                if (lowest is None) or (compare < lowest_compare):
+                    lowest = bytes
+                    lowest_compare = compare
+    return lowest
+
+def get_sentiment_pos_neg(sentiment_string):
+    if sentiment_string == "sentiment-pos":
+        return 1
+    elif sentiment_string == "sentiment-neg":
+        return -1
+
+
+
+generate_mpqa_data("/data/database.mpqa.2.0/", "/data/mpqa.raw")
