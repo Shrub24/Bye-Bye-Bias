@@ -4,6 +4,7 @@ import os
 from io import open
 import numpy as np
 import pickle as pkl
+import re
 
 embedding_name = "glove.twitter.27B.100d"
 embedding = os.path.join("embeddings", embedding_name + ".txt")
@@ -116,54 +117,56 @@ def generate_mpqa_data(path, out_path):
             split = i.split()
             topic = split[0][6:]
             file = split[1][5:]
-            if not topic == "misc":
-                with open(script_dir + MAN_ANNS_REL_PATH + file + "/" + ANNOTATION_FILE_NAME) as anns_file:
-                    attitude_anns = list()
-                    target_bytes = dict()
-                    for j in anns_file:
-                        # if (not j.find("GATE_attitude") == -1) and (j.find("speculation") == -1) and (j.find("other-attitude") == -1):
-                        if (not j.find("GATE_attitude") == -1) and (not j.find("sentiment-pos") == -1 or not j.find("sentiment-neg") == -1):
-                            attitude_properties = dict()
-                            attitude_properties["byte"] = j.split("\t")[1].split(",")
-                            properties = j.split("\t")[-1].strip().split('" ')
-                            for k in properties:
-                                split_prop = k.split('="')
-                                if split_prop[1].find(",") == -1:
-                                    attitude_properties[split_prop[0]] = split_prop[1]
-                                else:
-                                    attitude_properties[split_prop[0]] = [l.strip() for l in split_prop[1].split(",")]
-                            attitude_anns.append(attitude_properties)
+            with open(script_dir + MAN_ANNS_REL_PATH + file + "/" + ANNOTATION_FILE_NAME) as anns_file:
+                attitude_anns = list()
+                target_bytes = dict()
+                for j in anns_file:
+                    # if (not j.find("GATE_attitude") == -1) and (j.find("speculation") == -1) and (j.find("other-attitude") == -1):
+                    if (not j.find("GATE_attitude") == -1) and (not j.find("sentiment-pos") == -1 or not j.find("sentiment-neg") == -1):
+                        attitude_properties = dict()
+                        attitude_properties["byte"] = j.split("\t")[1].split(",")
+                        properties = j.split("\t")[-1].strip().split('" ')
+                        for k in properties:
+                            split_prop = k.split('="')
+                            if split_prop[1].find(",") == -1:
+                                attitude_properties[split_prop[0]] = split_prop[1]
+                            else:
+                                attitude_properties[split_prop[0]] = [l.strip() for l in split_prop[1].split(",")]
+                        attitude_anns.append(attitude_properties)
 
-                        elif not j.find("GATE_target") == -1:
-                            space_split = j.split()
-                            target_bytes[space_split[4][4:-1]] = space_split[1].split(",")
+                    elif not j.find("GATE_target") == -1:
+                        space_split = j.split()
+                        target_bytes[space_split[4][4:-1]] = space_split[1].split(",")
 
-                # print(target_bytes)
-                # print(attitude_anns)
-                SENTENCES_PATH = script_dir + MAN_ANNS_REL_PATH + file + "/" + SENTENCES_FILE_NAME
-                with open(script_dir + DOCS_REL_PATH + file) as doc_file:
-                    file_string = doc_file.read().replace("\n", " ").replace("\t", " ")
-                    for attitude in attitude_anns:
-                        targets = attitude["target-link"]
-                        if not targets == "none":
-                            if not isinstance(targets, list):
-                                targets = [targets]
-                            for target in targets:
-                                target_loc = [int(j) for j in target_bytes[target]]
-                                sentence_bytes = find_sentence_bytes(target_loc[0], SENTENCES_PATH)
-                                sentence = file_string[sentence_bytes[0]:sentence_bytes[1]].replace("  ", " ")
-                                target = file_string[target_loc[0]:target_loc[1]].replace("  ", " ")
-                                sentiment = get_sentiment_pos_neg(attitude["attitude-type"])
-                                new_sentence = sentence.replace(target, "$T$")
-                                print("sentence: " + sentence)
-                                print("target: " + target)
-                                print("sentiment: " + str(sentiment))
-                                print("")
-                                if len(target.split()) <= 5:
-                                    with open(OUT_PATH, "a") as write_file:
-                                        write_file.write(new_sentence + "\n")
-                                        write_file.write(target + "\n")
-                                        write_file.write(str(sentiment) + "\n")
+            # print(target_bytes)
+            # print(attitude_anns)
+            SENTENCES_PATH = script_dir + MAN_ANNS_REL_PATH + file + "/" + SENTENCES_FILE_NAME
+            with open(script_dir + DOCS_REL_PATH + file) as doc_file:
+                file_string = doc_file.read().replace("\n", " ").replace("\t", " ")
+                for attitude in attitude_anns:
+                    targets = attitude["target-link"]
+                    if not targets == "none":
+                        if not isinstance(targets, list):
+                            targets = [targets]
+                        for target in targets:
+                            target_loc = [int(j) for j in target_bytes[target]]
+                            sentence_bytes = find_sentence_bytes(target_loc[0], SENTENCES_PATH)
+                            sentence = file_string[sentence_bytes[0]:sentence_bytes[1]].replace("  ", " ")
+                            target = file_string[target_loc[0]:target_loc[1]].replace("  ", " ")
+                            new_target = re.sub('(?<! )(?=[][.,!?():;\"\'-])|(?<=[][.,!?():;\"\'-])(?! )', r' ', target).strip()
+                            sentiment = get_sentiment_pos_neg(attitude["attitude-type"])
+                            # space punctuation marks then check that target is isolated word
+                            new_sentence = " " + re.sub('(?<! )(?=[][.,!?():;\"\'-])|(?<=[][.,!?():;\"\'-])(?! )', r' ', sentence) + " "
+                            new_sentence = new_sentence.replace(" " + new_target + " ", " $T$ ").strip()
+                            print("sentence: " + new_sentence)
+                            print("target: " + target)
+                            print("sentiment: " + str(sentiment))
+                            print("")
+                            if len(target.split()) <= 5 and new_sentence.count("$T$") == 1:
+                                with open(OUT_PATH, "a") as write_file:
+                                    write_file.write(new_sentence + "\n")
+                                    write_file.write(target + "\n")
+                                    write_file.write(str(sentiment) + "\n")
 
 
 
