@@ -230,6 +230,7 @@ a:active{
 	display: table;
 	height: 365px;
 	width: 100%;
+	overflow: hidden;
 }
 #instruction, #loading, #empty {
 	color: #727277;

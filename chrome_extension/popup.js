@@ -152,10 +152,10 @@ $(window).ready(function() {
         animations: [
             anime ({
                 targets: "#loading",
-                easing: 'spring(2, 100, 0, 0)',
-                translateY: [0, -7],
+                easing: "cubicBezier(0.215, 0.61, 0.355, 1)",
+                translateY: [17,-17],
                 direction: 'alternate',
-                duration: 1000,
+                duration: 750,
                 loop: true,
                 autoplay: false,
             }),
@@ -397,5 +397,5 @@ $(window).ready(function() {
         thisSiteControl.showThisSite(testData.thisPage);
         totalControl.currentValue = cardJson.length;
         scaleControl.setUpHistogram(frequenciesResult);
-    }, 3000)
+    }, 300)
 });
