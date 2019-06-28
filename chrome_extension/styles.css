@@ -151,8 +151,8 @@ a:active{
 }
 .open-icon {
 	pointer-events: none;
-	height: 24px;
-	width: 24px;
+	height: 22px;
+	width: 22px;
 	filter: invert(99%) sepia(46%) saturate(2%) hue-rotate(189deg) brightness(112%) contrast(100%);
 }
 .first-row, #help-tip > div {
