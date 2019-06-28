@@ -139,6 +139,15 @@ $(window).ready(function() {
         }
     }
 
+    function clickLinkEvent(event) {
+        event.preventDefault();
+        let targetPage = event.currentTarget.href;
+
+        chrome.tabs.create({
+            url: targetPage,
+        });
+    }
+
     var placeholderControl = {
         domElements: {
             instruction: $("#instruction"), 
@@ -235,7 +244,9 @@ $(window).ready(function() {
     var cardsControl = {
         domElements: {
             cardContainer: $("#card-container"),
-            cards: $("#card-container > a"),
+            get cards() {
+                return $(".card");
+            },
             content: $("#items > div.simplebar-wrapper > div.simplebar-mask > div > div > div"),
         },
         clearCards: function() {
@@ -250,18 +261,13 @@ $(window).ready(function() {
             placeholderControl.hideElements();
             var toggleState = this.domElements.content.prop("scrollHeight") > $("#histogram-spacer").prop("offsetHeight");
             container.toggleClass("card-scrollbar-active", toggleState);
+            
+            this.domElements.cards.slice(0, 6).addClass("slideIn");
         },
         init: function () {
             this.clearCards();
 
-            this.domElements.cardContainer.on("click", "a", function (event) {
-                event.preventDefault();
-                let targetPage = event.currentTarget.href;
-
-                chrome.tabs.create({
-                    url: targetPage,
-                });
-            })
+            this.domElements.cardContainer.on("click", "a", clickLinkEvent)
 
             return this;
         }
@@ -385,6 +391,15 @@ $(window).ready(function() {
         }
     }.init();
 
+    var dropdownControl = {
+        domElements: {
+            row: $(".dropdown>a")
+        },
+        init: function () {
+            this.domElements.row.click(clickLinkEvent);
+        }
+    }.init();
+
     bodyControl.minimiseBody();
     placeholderControl.showElement(placeholderControl.domElements.loading);
 
@@ -392,8 +407,6 @@ $(window).ready(function() {
     setTimeout(function () {
         bodyControl.maximiseBody();
         placeholderControl.showElement(placeholderControl.domElements.instruction);
-        //placeholderControl.hideElements();
-        //cardsControl.changeCards(cardJson);
         thisSiteControl.showThisSite(testData.thisPage);
         totalControl.currentValue = cardJson.length;
         scaleControl.setUpHistogram(frequenciesResult);

@@ -80,6 +80,12 @@ a:active{
 #card-container {
 	padding-right: 8px;
 	padding-left: 8px;
+	overflow-x: hidden;
+}
+.slideIn {
+	animation-name: slideIn;
+	animation-duration: 0.213s;
+	animation-timing-function: linear;
 }
 .card {
 	color: rgb(232, 236, 247);
@@ -87,7 +93,12 @@ a:active{
 	margin-bottom: 12px;
 	box-shadow: 2px 3px 1px rgba(32,34,37,.7), 2px 4px 0.5px rgba(0,0,0,.06);
 	cursor: pointer;
+	position: relative;
 }
+@keyframes slideIn {
+	from {transform: translateX(calc(0px - 100% - 8px));}
+	to {transform: translateX(0px);}
+  }
 #items a:first-child .card {
 	margin-top: 4px;
 }
@@ -104,8 +115,11 @@ a:active{
 	font-size: 12px;
 	shape-rendering: crispEdges;
 }
-.dropdown>div, #help-tip>div{
+.dropdown>*, #help-tip>div{
 	background: rgb(90, 118, 197);
+}
+.dropdown>a {
+	cursor: pointer;
 }
 .dropdown {
 	right: 3px;
@@ -113,29 +127,43 @@ a:active{
 	grid-auto-rows: 40px; 
 	float: right;
 	position: relative;
-	width: 175px;
 	text-align: center;
-	/*
-		display: grid;
-	*/
+	line-height: 32px;
 }
-.dropdown>div{
+.dropdown>.dropdown-row {
+	display: grid;
+	grid-template-columns: 150px 65px;
+}
+.dropdown-row{
+	text-align: left;
+}
+.icon-control {
+	display: flex;
+	justify-content: center;
+  	align-items: center;
+}
+.dropdown>*{
 	display: block;
-	line-height: 40px;
 	font-weight: 700;
-	padding-left: 3px;
-	padding-right: 3px;
 	cursor: auto;
+	padding: 5px;
+	font-size: 15px
 }
-.dropdown div:first-child, #help-tip > div {
+.open-icon {
+	pointer-events: none;
+	height: 24px;
+	width: 24px;
+	filter: invert(99%) sepia(46%) saturate(2%) hue-rotate(189deg) brightness(112%) contrast(100%);
+}
+.first-row, #help-tip > div {
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 }
-.dropdown div:last-child, #help-tip > div {
+.last-row, #help-tip > div {
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 }
-.dropdown>div:hover {
+.dropdown>*:hover {
 	background-color: rgb(64, 86, 145);
 }
 .publisher {
@@ -400,7 +428,7 @@ svg * {
 .toggleBar+label {
 	display: inline-block;
 	width: 54px;
-	height: 32px;
+	height: 28px;
 	margin: 0px auto;
 	border-radius: 100px;
 	transition: all 0.2s ease-in-out;
@@ -412,13 +440,13 @@ input.toggleBar {
 	display: none;
 }
 input.toggleBar+label>i {
-	height: 28px;
-	width: 28px;
+	height: 24px;
+	width: 24px;
 	background: #f8f8f8;
 	display: inline-block;
 	border-radius: 100px;
 	margin-top: 2px;
-	margin-right: 24px;
+	margin-left: 2px;
 	transition: all 0.2s ease-in-out;
 	-webkit-transition: all 0.2s ease-in-out;
 	pointer-events: none;
@@ -429,7 +457,7 @@ input.toggleBar+label:hover>i {
 	transform: scale(1.01);
 }
 input.toggleBar:checked+label>i {
-	margin-right: 2px;
+	margin-left: 28px;
 }
 input.toggleBar+label:active {
 	background-color: #A6B9CB;
