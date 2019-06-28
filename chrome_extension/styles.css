@@ -21,7 +21,7 @@ a:active{
 }
 .content {
 	display: grid;
-	grid-template-columns: 350px 65px 185px;
+	grid-template-columns: 350px 80px 185px;
 	grid-template-rows: 30px 380px;
 	transition: 2s;
 }
@@ -361,7 +361,7 @@ a:active{
 	border-bottom-right-radius: 2.5px;
 }
 .selection-line-container {
-	width: 24px;
+	width: 31px;
 	display: inline-block;
 }
 .selection-line {

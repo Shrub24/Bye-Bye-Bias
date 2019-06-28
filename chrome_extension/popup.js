@@ -316,7 +316,7 @@ $(window).ready(function() {
 
     var scaleControl = {
         maxLengthofHistogram: 152,
-        maxLengthOfSelectionLine: 24,
+        maxLengthOfSelectionLine: 31,
         domElements: {
             selectionLine: $(".selection-line"),
             histogramLine: $(".histogram-line"),
