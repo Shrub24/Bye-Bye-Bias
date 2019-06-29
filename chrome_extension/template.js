@@ -1,17 +1,21 @@
 var precompiledTemplateCard = {"1":function(container,depth0,helpers,partials,data) {
   var helper;
 
-return "<div class=\"card\" style=\"background-color: "
+return "         <a href=\""
+  + container.escapeExpression(container.lambda((depth0 != null ? depth0.URL : depth0), depth0))
+  + "\">\n            <div class=\"card\" style=\"background-color: "
   + container.escapeExpression(((helper = (helper = helpers.Color || (depth0 != null ? depth0.Color : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"Color","hash":{},"data":data}) : helper)))
-  + "\">\n  <div class=\"title\">"
+  + "\" title=\""
   + container.escapeExpression(container.lambda((depth0 != null ? depth0.Title : depth0), depth0))
-  + "</div>\n  <div class=\"date\">"
+  + "\">\n            <div class=\"title\">"
+  + container.escapeExpression(container.lambda((depth0 != null ? depth0.Title : depth0), depth0))
+  + "</div>\n            <div class=\"date\">"
   + container.escapeExpression(container.lambda((depth0 != null ? depth0.Date : depth0), depth0))
-  + "</div>\n  <div class=\"info\">\n	 <object type=\"image/svg+xml\" data=\"./info_icon.svg\" class=\"info-icon\"></object>\n	 <div class=\"publisher\">"
+  + "</div>\n            <div class=\"info\">\n               <object type=\"image/svg+xml\" data=\"./info_icon.svg\" class=\"info-icon\"></object>\n               <div class=\"publisher\">"
   + container.escapeExpression(container.lambda((depth0 != null ? depth0.Publisher : depth0), depth0))
-  + "</div>\n	 <object type=\"image/svg+xml\" data=\"./head_icon.svg\" class=\"info-icon\"></object>\n	 <div class=\"author\">"
+  + "</div>\n               <object type=\"image/svg+xml\" data=\"./head_icon.svg\" class=\"info-icon\"></object>\n               <div class=\"author\">"
   + container.escapeExpression(container.lambda((depth0 != null ? depth0.Author : depth0), depth0))
-  + "</div>\n  </div>\n</div>\n";
+  + "</div>\n            </div>\n            </div>\n         </a>\n";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
   var stack1;
 

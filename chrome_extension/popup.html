@@ -1,43 +1,128 @@
 <!DOCTYPE html>
 <html>
    <head>
-      <link rel="stylesheet" href="https://unpkg.com/simplebar@latest/dist/simplebar.css" />
-      <script src="https://unpkg.com/simplebar@latest/dist/simplebar.min.js"></script>
+      <link rel="stylesheet" href="simplebar.css" />
+      <script src="simplebar.min.js"></script>
       <link rel="stylesheet" href="./styles.css">
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.2/handlebars.runtime.min.js"></script>
+      <link href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" rel="stylesheet">
+      <script src="handlebars.runtime.min.js"></script>
+      <script src="jquery-3.4.1.min.js"></script>
       <script src="template.js"></script>
       <script src="popup.js"></script>
-
+      <script src="anime.min.js"></script>
       <script id="card_template" type="text/x-handlebars-template">
          {{#each Cards}}
-         <div class="card" style="background-color: {{Color}}">
-         <div class="title">{{this.Title}}</div>
-         <div class="date">{{this.Date}}</div>
-         <div class="info">
-            <object type="image/svg+xml" data="./info_icon.svg" class="info-icon"></object>
-            <div class="publisher">{{this.Publisher}}</div>
-            <object type="image/svg+xml" data="./head_icon.svg" class="info-icon"></object>
-            <div class="author">{{this.Author}}</div>
-         </div>
-         </div>
+         <a href="{{this.URL}}">
+            <div class="card" style="background-color: {{Color}}" title="{{this.Title}}">
+            <div class="title">{{this.Title}}</div>
+            <div class="date">{{this.Date}}</div>
+            <div class="info">
+               <object type="image/svg+xml" data="./info_icon.svg" class="info-icon"></object>
+               <div class="publisher">{{this.Publisher}}</div>
+               <object type="image/svg+xml" data="./head_icon.svg" class="info-icon"></object>
+               <div class="author">{{this.Author}}</div>
+            </div>
+            </div>
+         </a>
          {{/each}}
       </script>
    </head>
    <body>
       <div class="content">
-         <div id="scale">Positive</div>
-         <div id="help">?</div>
+         <div class="scale-grid" id="scale-spacer">
+               <div id="total-positioner">
+                  <div id="total">Total sites found: <span id="total-number">5</span></div>
+               </div>
+         </div>
+         <div class="scale-grid">
+            <div id="positive">Positive</div>
+               <div id="histogram" class="scale-container">
+                  <div class="histogram-line-spacer"><div class="selection-line-container"><div class="selection-line"></div></div><div class="circle-spacer"></div><div class="histogram-line"></div><div class="this-site">This site</div></div>
+                  <div class="histogram-line-spacer"><div class="selection-line-container"><div class="selection-line"></div></div><div class="circle-spacer"></div><div class="histogram-line"></div><div class="this-site">This site</div></div>
+                  <div class="histogram-line-spacer"><div class="selection-line-container"><div class="selection-line"></div></div><div class="circle-spacer"></div><div class="histogram-line"></div><div class="this-site">This site</div></div>
+                  <div class="histogram-line-spacer"><div class="selection-line-container"><div class="selection-line"></div></div><div class="circle-spacer"></div><div class="histogram-line"></div><div class="this-site">This site</div></div>
+                  <div class="histogram-line-spacer"><div class="selection-line-container"><div class="selection-line"></div></div><div class="circle-spacer"></div><div class="histogram-line"></div><div class="this-site">This site</div></div>
+                  <div class="histogram-line-spacer"><div class="selection-line-container"><div class="selection-line"></div></div><div class="circle-spacer"></div><div class="histogram-line"></div><div class="this-site">This site</div></div>
+                  <div class="histogram-line-spacer"><div class="selection-line-container"><div class="selection-line"></div></div><div class="circle-spacer"></div><div class="histogram-line"></div><div class="this-site">This site</div></div>
+                  <div class="histogram-line-spacer"><div class="selection-line-container"><div class="selection-line"></div></div><div class="circle-spacer"></div><div class="histogram-line"></div><div class="this-site">This site</div></div>
+                  <div class="histogram-line-spacer"><div class="selection-line-container"><div class="selection-line"></div></div><div class="circle-spacer"></div><div class="histogram-line"></div><div class="this-site">This site</div></div>
+                  <div class="histogram-line-spacer"><div class="selection-line-container"><div class="selection-line"></div></div><div class="circle-spacer"></div><div class="histogram-line"></div><div class="this-site">This site</div></div>
+               </div>
+               <div id="bar-scale" class="scale-container">
+                  <div class="scale-rectangle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+               </div>
+            <div id="negative">
+               Negative
+            </div>
+         </div>
+         <div id="helpBlock">
+            <div id="help-tip" class="tool-tip">
+               ?
+               <span id="title">BYE BYE BIAS</span>
+               <div>
+                  <b>Score meaning:</b>
+                  <div id="scaleRectangle"></div>
+                  <div class="left-align">
+                     Positive
+                  </div>
+                  <div class="right-align">
+                     Negative
+                  </div>
+                  <br>
+                     Lolor sit amet, modus suscipit appetere an duo, suas idque postulant an vix. Ei omnes forensibus incorrupte quo, hinc conclusionemque no nam. At quo sale rebum numquam, an enim dicat per. Laudem fastidii conceptam ei vis. Insolens erroribus est ad, aeque inermis et mea.
+               </div>
+            </div>
+         </div>
          <div id="settings">
-            <div id="dots">&#8942</div>
+            <div id="dots" class="tool-tip active-target">&#8942
+               <div class="dropdown">
+                  <a class="dropdown-row first-row" href="https://www.haileybury.com.au/">
+                     <div>
+                        About us
+                     </div>
+                     <div class="icon-control">
+                        <object type="image/svg+xml" data="./new_window_icon.svg" class="open-icon"></object>
+                     </div>
+                  </a>
+                  <div class="dropdown-row">
+                     <div>
+                        Reduce animations
+                     </div>
+                     <div class="icon-control">
+                        <input type="checkbox" class="toggleBar" id="likeUs">
+                        <label for="likeUs"><i></i></label>
+                     </div>
+                  </div>
+                  <div class="dropdown-row last-row">Bye</div>
+               </div>
+            </div>
          </div>
-         
          <div id="items" data-simplebar data-simplebar-auto-hide="false">
+            <div id="card-container"></div>
+            <div id="placeholder">
+               <div id="instruction">
+                  Click on the scale to reveal other sites...
+               </div>
+               <div id="loading">
+                  Loading please wait
+               </div>
+               <div id="empty">
+                  Sorry but no sites under that value :(
+               </div>
+            </div>
          </div>
-         <div id="histogram"></div>
+         <div id="histogram-spacer">
+         </div>
       </div>
-      <!-- currently just for show remove and replace and change js to use info taken from server -->
-      <div id="topic"></div>
-      <div id="strength"></div>
-      <div id="articles"></div>
    </body>
 </html>
