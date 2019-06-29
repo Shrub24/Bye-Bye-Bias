@@ -7,34 +7,40 @@ class entity_getter():
         self.nlp = spacy.load("en")
         neuralcoref.add_to_pipe(self.nlp, greedyness=0.54, max_dist=100)
         self.RELEVANT_ENTITY_TYPES = {"PERSON", "NORP", "FAC", "ORG", "GPE", "LOC", "PRODUCT", "EVENT", "WORK_OF_ART", "LAW", "LANGUAGE"}
+        self.ALLOWED_ENTITY_TYPES_MAIN_ENTITIES = {"PERSON", "NORP", "FAC", "ORG", "PRODUCT", "EVENT", "WORk_OF_ART", "LAW"}
         self.DISALLOWED_CHARACTERS = {".", "'", "’", "@", "/"}
         self.ACCEPTABLE_POS_IN_ENTITIES = {"NOUN", "PROPN"}
+        # self.TITLES = {"mr", "mr.", "ms", "ms.", "miss", "master", "madam", "mp", "representative", "senator", "speaker", "president", "councillor", "mayor", "governor", "premier", "secretary", "king", "prince", "justice", "doctor", "dr", "dr.", "professor", "prof."}
         self.ENTITY_LENGTH_CAP = 3
 
     def get_entities(self, text):
         document = self.nlp(text)
         return [ent for ent in document.ents]
 
-    def get_unique_relevant_entities(self, text):
+    def get_unique_relevant_entities(self, text, relevant_types):
         document = self.nlp(text)
-        return list({str(ent) for ent in document.ents if (ent.label_ in self.RELEVANT_ENTITY_TYPES)})
+        # print({str(ent): ent.label_ for ent in document.ents})
+        return list({str(ent) for ent in document.ents if (ent.label_ in relevant_types)})
 
     def get_unique_relevant_entities_stripped(self, text):
-        unique_relevant_entities = self.get_unique_relevant_entities(text)
+        unique_relevant_entities = self.get_unique_relevant_entities(text, self.RELEVANT_ENTITY_TYPES)
         # remove entries that have disallowed characters
         unique_relevant_entities = [ent for ent in unique_relevant_entities if not any(x in ent for x in self.DISALLOWED_CHARACTERS)]
         # remove "the "
-        return list({ent.replace("the ", "") for ent in unique_relevant_entities})
+        return list({ent[4:] if ent.startswith("the ") else ent for ent in unique_relevant_entities})
+
+    def get_allowed_entities_for_main_stripped(self, text):
+        unique_relevant_entities = self.get_unique_relevant_entities(text, self.ALLOWED_ENTITY_TYPES_MAIN_ENTITIES)
+        # remove entries that have disallowed characters
+        unique_relevant_entities = [ent for ent in unique_relevant_entities if not any(x in ent for x in self.DISALLOWED_CHARACTERS)]
+        # remove "the "
+        return list({ent[4:] if ent.startswith("the ") else ent for ent in unique_relevant_entities})
 
     def get_pos_tags(self, text):
         document = self.nlp(text)
         return {token.text: token.pos_ for token in document}
 
     # todo refactor
-    # todo stem as well?
-    # todo restrict allowed entity types more?
-    # todo people/organisations only??
-    # todo restrict to one word?
     def get_n_important_entities(self, text, n):
         document = self.nlp(text)
         entity_occurences = dict()
@@ -42,21 +48,22 @@ class entity_getter():
             raw_entity_string = str(cluster.main)
             occurences = len(cluster)
             # if discernible ners add ners to entities
-            ners = self.get_unique_relevant_entities_stripped(raw_entity_string)
+            ners = self.get_allowed_entities_for_main_stripped(raw_entity_string)
             if ners:
                 entities = ners
             # otherwise get pos tags and find nouns
             else:
-                pos_tags = self.get_pos_tags(raw_entity_string)
-                # construct just nouns string
-                entity_string = ""
-                for word in pos_tags.keys():
-                    if pos_tags[word] in self.ACCEPTABLE_POS_IN_ENTITIES:
-                        entity_string += word + " "
-                if entity_string:
-                    entities = [entity_string[:-1]]
-                else:
-                    entities = []
+                # pos_tags = self.get_pos_tags(raw_entity_string)
+                # # construct just nouns string
+                # entity_string = ""
+                # for word in pos_tags.keys():
+                #     if pos_tags[word] in self.ACCEPTABLE_POS_IN_ENTITIES:
+                #         entity_string += word + " "
+                # if entity_string:
+                #     entities = [entity_string[:-1]]
+                # else:
+                #     entities = []
+                entities = []
             for entity in entities:
                 # check entity is long enough and lowercase everything in final dict
                 if len(entity.split()) <= self.ENTITY_LENGTH_CAP:
@@ -67,6 +74,14 @@ class entity_getter():
         return sorted(list(entity_occurences.keys()), key=lambda x: entity_occurences[x], reverse=True)[:n]
         # clusters_by_len = sorted(document._.coref_clusters, key=len, reverse=True)[:n]
         # return [cluster.main for cluster in clusters_by_len]
+
+    # def get_coreferences(self, text, string):
+    #     document = self.nlp(text)
+    #     return [token._.coref_clusters[0].mentions for token in document if string == str(token).lower() and token._.in_coref]
+    #     # return list({token._.coref_clusters.mentions[0] for token in document if string in str(token).lower() and token._.in_coref})
+    #
+
+
 
 # def get_similarity_value(entities_a, entities_b):
 #     similar = len(set(entities_a).intersection(entities_b))
@@ -81,7 +96,10 @@ class entity_getter():
 #     article = Article(url)
 #     article.download()
 #     article.parse()
-#     print(entity_getter_instance.get_n_important_entities(article.text, 6))
+#     entities = entity_getter_instance.get_n_important_entities(article.text, 6)
+#     print(entities)
+#     print(entity_getter_instance.get_coreferences(article.text, entities[0]))
+
 #
 # for i in entity_list:
 #     for j in entity_list:
