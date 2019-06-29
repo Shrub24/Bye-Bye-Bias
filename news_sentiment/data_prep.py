@@ -1,42 +1,24 @@
+import random
+
 import torch
 
-import os
 from io import open
 import numpy as np
-import pickle as pkl
-
-embedding_name = "glove.twitter.27B.100d"
-embedding = os.path.join("embeddings", embedding_name + ".txt")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-zero_count = 0
 
 
 def load_glove_model(file):
     print("Loading Glove Model")
     f = open(file, 'rb')
     model = {}
-    for line in f:
+    for line in f.readlines():
         splitLine = line.split()
         word = splitLine[0]
         embedding = np.array([float(val) for val in splitLine[1:]])
         model[word] = embedding
     print("Done.", len(model), " words loaded!")
     return model
-
-
-try:
-    file = open(os.path.join("embedding_model", embedding_name), 'rb')
-    model = pkl.load(file)
-except FileNotFoundError:
-    model = load_glove_model(embedding)
-    file = open(os.path.join("embedding_model", embedding_name), 'wb')
-    pkl.dump(model, file)
-
-
-max_sentence_length = 30
-dp = 0.5
 
 
 def prep_twitter_data(train, test):
@@ -46,7 +28,7 @@ def prep_twitter_data(train, test):
             samples = list()
             sample = list()
             y = list()
-            for line in df:
+            for line in df.readlines():
                 if i % 3 == 0:
                     if i != 0:
                         samples.append(sample)
@@ -59,6 +41,11 @@ def prep_twitter_data(train, test):
                 else:
                     sample.append(line)
                 i += 1
+            temp = list(zip(samples, y))
+
+            random.shuffle(temp)
+
+            samples, y = zip(*temp)
             if data == train:
                 train_x = samples
                 train_y = y
@@ -68,31 +55,41 @@ def prep_twitter_data(train, test):
     return train_x, train_y, test_x, test_y
 
 
-def embed_to_tensor(b, embed_model):
-    # batch = b.copy()
+def embed_to_tensor(b, embed_model, sentence_length, window_size, count, total):
     batch = np.array(b)
+    x = list()
+    x.append(list())
+    x.append(list())
     for sample in batch:
-        if (type(sample[1]) is np.ndarray) or (type(sample[1]) is list):
-            embeddings = [get_embedding(s, embed_model) for s in sample[1]]
-            sample[1] = sum(embeddings)/len(embeddings)
-        else:
-            sample[1] = get_embedding(sample[1], embed_model)
-        for i in range(30):
+        t_loc = 0
+        sentence = list()
+        length = sentence_length - (len(sample[1]) - 1) * sample[0].count(b'$T$')
+        for i in range(length):
             if i < len(sample[0]):
-                temp = list()
-                temp.append(sample[1][i] if sample[0][i] == "$T$" else get_embedding(sample[0][i], embed_model))
+                if sample[0][i] == b'$T$':
+                    t_loc = i
+                    if type(sample[1]) != np.ndarray and type(sample[1]) != list:
+                        sample[1] = [sample[1]]
+                    sentence += [get_embedding(i, embed_model, count, total) for i in sample[1]]
+                else:
+                    sentence.append(get_embedding(sample[0][i], embed_model, count, total))
             else:
-                temp.append(np.zeros(100))
-            sample[0] = temp
-    x = [sample[0] for sample in batch]
-    t = [sample[1] for sample in batch]
+                sentence.append(np.zeros(100))
+
+        x[0].append(sentence)
+        window = [np.zeros(100) for i in range(sentence_length)]
+        window[t_loc-window_size:t_loc+len(sample[1])+window_size] = sentence[t_loc-window_size:t_loc+len(sample[1])+window_size]
+        x[1].append(window)
     x = torch.tensor(x, dtype=torch.float32).transpose(0, 1)
-    t = torch.tensor(t, dtype=torch.float32)[None, :, :]
-    return x, t
+    return x
 
 
-def get_embedding(word, embed_model):
+def get_embedding(word, embed_model, count, total):
+    total[0] += 1
+    if type(word) != bytes:
+        word = word.encode()
     try:
         return embed_model[word]
     except KeyError:
+        count[0] += 1
         return np.zeros(100)
