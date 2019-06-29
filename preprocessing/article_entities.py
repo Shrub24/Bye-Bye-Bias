@@ -33,6 +33,7 @@ class entity_getter():
     # todo refactor
     # todo stem as well?
     # todo restrict allowed entity types more?
+    # todo people/organisations only??
     # todo restrict to one word?
     def get_n_important_entities(self, text, n):
         document = self.nlp(text)
@@ -75,6 +76,7 @@ class entity_getter():
 # entity_getter_instance = entity_getter()
 # urls = ["https://www.usatoday.com/story/news/politics/2019/06/20/oregon-senate-republicans-gop-walk-out-capitol-second-time-house-bill-2020/1517308001/", "https://www.vox.com/2019/6/21/18700741/oregon-republican-walkout-climate-change-bill", "https://www.apnews.com/9783213088c845beaa379f4a17128790", "https://www.cbsnews.com/news/oregon-senate-walkout-more-than-100-bills-in-jeopardy-as-gop-senators-stay-in-hiding/"]
 # urls = ["https://www.cnbc.com/2019/06/28/trump-and-xi-to-discuss-us-china-trade-war-at-g-20-summit-in-osaka.html", "https://www.scmp.com/news/china/diplomacy/article/3016167/us-china-trade-war-deal-90-cent-complete-us-treasury-chief", "https://www.aljazeera.com/ajimpact/christmas-cancelled-chinese-factories-feel-chill-trade-190627144329359.html", "https://edition.cnn.com/2019/06/27/politics/china-us-trade-war-trump-xi-intl-hnk/index.html"]
+# urls = ["https://www.abc.net.au/news/2019-06-28/don-burke-defeats-wendy-dent-defamation-action/11260302", "https://www.abc.net.au/news/2019-06-28/consumer-watchdog-loses-flushable-wipes-case/11261688", "https://www.abc.net.au/news/2019-06-28/rotorua-mud-pool-opens-whakarewarewa-backyard-new-zealand/11262272", "https://www.abc.net.au/news/2019-06-28/sirius-building-sold-to-developers-for-150-million-dollars/11262638", "https://www.abc.net.au/news/2019-06-28/trump-asks-putin-not-to-meddle-in-the-us-election/11262976", "https://www.abc.net.au/news/2019-06-28/five-takeaways-from-the-democratic-debates/11260074", "https://www.abc.net.au/news/2019-06-28/two-dead-in-wollongong-princes-motorway-crash/11262688", "https://www.abc.net.au/news/2019-06-28/the-g20-will-really-be-about-donald-trump-and-xi-jinping/11256802"]
 # for url in urls:
 #     article = Article(url)
 #     article.download()
