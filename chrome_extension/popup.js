@@ -66,7 +66,7 @@ $(window).ready(function() {
         init: function() {
             loopDelegate(this, element => element.click(this.setStorage));
             //Checked boxes are stored as their ID in local storage
-            this.resetToDefault(this.domElements.reduceAnimations, false);
+            this.resetToDefault(this.domElements.reduceAnimations, true);
             this.resetToDefault(this.domElements.fetchOnLoad, true);
             return this;
         }
@@ -348,7 +348,7 @@ $(window).ready(function() {
             frequenciesResult[key] = scortedResult[key].length
         }
         
-        //Convert to color
+        //Note: references the original object Cards
         var cardsWithColors = data.Cards;
         cardsWithColors.forEach(function(item) {
             item.Color = scoreToColor(item.Score);
@@ -358,7 +358,7 @@ $(window).ready(function() {
         bodyControl.maximiseBody();
         placeholderControl.showElement(placeholderControl.domElements.instruction);
         thisSiteControl.showThisSite(data.thisPage);
-        totalControl.currentValue = cardsWithColors.length;
+        totalControl.currentValue = data.Cards.length;
         scaleControl.cardData = scortedResult;
         scaleControl.setUpHistogram(frequenciesResult);
     }
@@ -371,8 +371,9 @@ $(window).ready(function() {
     var query = { active: true, currentWindow: true };
 
     chrome.tabs.query(query, function (tabs) {
-        var currentTab = tabs[0]; 
+        var currentTab = tabs[0];
         var data = localStorage.getItem(currentTab.url);
+        //Doesnt exist
         if(data == undefined) {
             if(localStorage.getItem(fetchOnLoad) == "true") {
                 //Wait for background page to get the result

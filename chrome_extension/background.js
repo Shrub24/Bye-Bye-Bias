@@ -89,7 +89,22 @@ var urls = [
 ];
 
 function fetchUrlAndStore(urlToFetch) {
+  if(localStorage.length > 52) {
+    var filtered = Object.keys(localStorage).filter(function (value) {
+      return JSON.parse(localStorage.getItem(value)).hasOwnProperty("date");
+    });
+
+    if(filtered != []) {
+      var oldest = filtered.reduce(function(acc, val) {
+        return JSON.parse(localStorage.getItem(acc)).date < JSON.parse(localStorage.getItem(val)).date ? acc : val;
+      });
+      localStorage.removeItem(oldest);
+    }
+  }
+  
+  testData.date = new Date();
   setTimeout(function () {localStorage.setItem(urlToFetch, JSON.stringify(testData))}, 1000);
+
   /*
   fetch(serverUrl + "?" + urlToFetch, {method: "GET"}).then(function (response) {
     return response.json();
