@@ -89,11 +89,15 @@ var urls = [
 ];
 
 function fetchUrlAndStore(urlToFetch) {
-  if(localStorage.length > 52) {
-    var filtered = Object.keys(localStorage).filter(function (value) {
-      return JSON.parse(localStorage.getItem(value)).hasOwnProperty("date");
-    });
+  var filtered = Object.keys(localStorage).filter(function (value) {
+    return JSON.parse(localStorage.getItem(value)).hasOwnProperty("date");
+  });
 
+  
+  testData.date = new Date();
+  setTimeout(function () {localStorage.setItem(urlToFetch, JSON.stringify(testData))}, 1000);
+
+  if(filtered.length > 50) {
     if(filtered != []) {
       var oldest = filtered.reduce(function(acc, val) {
         return JSON.parse(localStorage.getItem(acc)).date < JSON.parse(localStorage.getItem(val)).date ? acc : val;
@@ -101,9 +105,6 @@ function fetchUrlAndStore(urlToFetch) {
       localStorage.removeItem(oldest);
     }
   }
-  
-  testData.date = new Date();
-  setTimeout(function () {localStorage.setItem(urlToFetch, JSON.stringify(testData))}, 1000);
 
   /*
   fetch(serverUrl + "?" + urlToFetch, {method: "GET"}).then(function (response) {
