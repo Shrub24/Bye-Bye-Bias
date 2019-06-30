@@ -1,104 +1,3 @@
-var testData = {
-    "thisPage":5,
-    "Cards": [
-        {"Title": "4", 
-        "Score": 1,
-        "Date": "4444 44",
-        "Publisher": "Jhin",
-        "Author": "Idk who made numbers",
-        "URL": "http://www.google.com",
-        },
-        {"Title": "4", 
-        "Score": 1,
-        "Date": "4444 44",
-        "Publisher": "Jhin",
-        "Author": "Idk who made numbers",
-        "URL": "http://www.google.com",
-        },
-        {"Title": "4", 
-        "Score": 1,
-        "Date": "4444 44",
-        "Publisher": "Jhin",
-        "Author": "Idk who made numbers",
-        "URL": "http://www.google.com",
-        },
-        {"Title": "4", 
-        "Score": 1,
-        "Date": "4444 44",
-        "Publisher": "Jhin",
-        "Author": "Idk who made numbers",
-        "URL": "http://www.google.com",
-        },
-        {"Title": "4", 
-        "Score": 1,
-        "Date": "4444 44",
-        "Publisher": "Jhin",
-        "Author": "Idk who made numbers",
-        "URL": "http://www.google.com",
-        },
-        {"Title": "4", 
-        "Score": 1,
-        "Date": "4444 44",
-        "Publisher": "Jhin",
-        "Author": "Idk who made numbers",
-        "URL": "http://www.google.com",
-        },
-        {"Title": "4", 
-        "Score": 1,
-        "Date": "4444 44",
-        "Publisher": "Jhin",
-        "Author": "Idk who made numbers",
-        "URL": "http://www.google.com",
-        },
-        {"Title": "Ey", 
-        "Score": 3,
-        "Date": "1234 11",
-        "Publisher": "Me",
-        "Author": "Him",
-        "URL": "http://www.google.com",
-        },
-        {"Title": "Ey", 
-        "Score": 3,
-        "Date": "1234 11",
-        "Publisher": "Me",
-        "Author": "Him",
-        "URL": "http://www.google.com",
-        },
-        {"Title": "Ey", 
-        "Score": 5,
-        "Date": "1234 11",
-        "Publisher": "Me",
-        "Author": "Him",
-        "URL": "http://www.google.com",
-        },
-        {"Title": "Ey", 
-        "Score": 9,
-        "Date": "1234 11",
-        "Publisher": "Me",
-        "Author": "Him",
-        "URL": "http://www.google.com",
-        }
-    ]
-}
-
-var scortedResult = testData.Cards.reduce(function (acc, curr) {
-    acc[curr.Score] = acc[curr.Score] || [];
-    acc[curr.Score].push(curr);
-    return acc;
-}, Object.create(null));
-
-var frequenciesResult = {};
-
-for (var key in scortedResult) {
-    var value = scortedResult[key];
-    frequenciesResult[key] = scortedResult[key].length
-}
-
-var cardJson = testData.Cards;
-cardJson.forEach(function(item) {
-    item.Color = scoreToColor(item.Score);
-});
-
 function scoreToColor(score) {
     var conversion = {
         10: "#1955F2",
@@ -124,12 +23,12 @@ String.prototype.format = function () {
   };
 
 $(window).ready(function() {
-    function hideAllElements() {
-        loopDelegate(this, x => x.hide());
+    function hideAllElements(self) {
+        loopDelegate(self, element => element.hide());
     }
 
-    function showAllElements() {
-        loopDelegate(this, x => x.show());
+    function showAllElements(self) {
+        loopDelegate(self, element => element.show());
     }
 
     function loopDelegate(self, func) {
@@ -145,8 +44,33 @@ $(window).ready(function() {
 
         chrome.tabs.create({
             url: targetPage,
+            active: false,
         });
     }
+
+    var checkboxControl = {
+        domElements: {
+            reduceAnimations: $("#reduceAnimations"),
+            fetchOnLoad: $("#fetchOnLoad"),
+        },
+        setStorage: function(event) {
+            localStorage.setItem($(event.target).attr('id'), $(this).is(':checked'));
+        },
+        resetToDefault: function(element, defaultValue) {
+            var storageValue = localStorage.getItem(element.attr("id"));
+            if(storageValue != "true" && storageValue != "false") {
+                localStorage.setItem(element.attr("id"), defaultValue);
+            }
+            element.prop("checked", $.parseJSON(localStorage.getItem(element.attr("id"))));
+        },
+        init: function() {
+            loopDelegate(this, element => element.click(this.setStorage));
+            //Checked boxes are stored as their ID in local storage
+            this.resetToDefault(this.domElements.reduceAnimations, false);
+            this.resetToDefault(this.domElements.fetchOnLoad, true);
+            return this;
+        }
+    }.init();
 
     var placeholderControl = {
         domElements: {
@@ -156,7 +80,7 @@ $(window).ready(function() {
             placeholder: $("#placeholder"),
         },
         hideElements: function () {
-            hideAllElements.call(this);
+            hideAllElements(this);
         },
         animations: [
             anime ({
@@ -254,7 +178,7 @@ $(window).ready(function() {
         },
         changeCards: function(jsonData) {
             var container = this.domElements.cardContainer;
-
+            
             var templateCard = Handlebars.template(precompiledTemplateCard);
             container.html(templateCard({Cards: jsonData}));
             
@@ -262,7 +186,10 @@ $(window).ready(function() {
             var toggleState = this.domElements.content.prop("scrollHeight") > $("#histogram-spacer").prop("offsetHeight");
             container.toggleClass("card-scrollbar-active", toggleState);
             
-            this.domElements.cards.slice(0, 6).addClass("slideIn");
+
+            if(!$.parseJSON(localStorage.getItem('reduceAnimations'))) {
+                this.domElements.cards.slice(0, 6).addClass("slideIn");
+            }
         },
         init: function () {
             this.clearCards();
@@ -279,10 +206,10 @@ $(window).ready(function() {
             totalNumber: $("#total-number"),
         },
         makeVisible: function() {
-            showAllElements.call(this);
+            showAllElements(this);
         },
         makeHidden: function () {
-            hideAllElements.call(this);
+            hideAllElements(this);
         },
         _currentValue: 0,
         set currentValue(newValue) {
@@ -309,69 +236,9 @@ $(window).ready(function() {
             $(this.domElements.thisSite.toArray()[index-1]).show();
         },
         init: function() {
-            hideAllElements.call(this);
+            hideAllElements(this);
             return this;
         },
-    }.init();
-
-    var scaleControl = {
-        maxLengthofHistogram: 152,
-        maxLengthOfSelectionLine: 31,
-        domElements: {
-            selectionLine: $(".selection-line"),
-            histogramLine: $(".histogram-line"),
-            histogramLineSpacer: $(".histogram-line-spacer"),
-            circle: $(".circle"),
-        },
-        _selectedIndex: 0,
-        set selectedIndex(newValue) {
-            this.currentIndex = newValue;
-
-            this.domElements.circle.text("");
-            this.domElements.selectionLine.css("width", 0);
-            $(this.domElements.selectionLine.toArray()[newValue]).css("width", this.maxLengthOfSelectionLine);
-            $(this.domElements.circle.toArray()[newValue]).text(newValue+1);
-        },
-        get selectedIndex() {
-            return this.currentIndex;
-        },
-        setUpHistogram: function(dataDictionary) {
-            var valuesOfData = Object.values(dataDictionary);
-            var maxValue = valuesOfData.reduce(function(acc, cur) {
-                return Math.max(acc, cur);
-            });
-            for(var key in dataDictionary) {
-                dataDictionary[key] = (dataDictionary[key]/maxValue) * this.maxLengthofHistogram;
-                $(this.domElements.histogramLine.toArray()[key-1]).width(dataDictionary[key]);
-            }
-        },
-        clickEvent: function() {
-            var clickedIndex = $(this).index() - 1;
-            var score = clickedIndex + 1;
-            scaleControl.selectedIndex = clickedIndex;
-
-            if(score in scortedResult) {
-                cardsControl.changeCards(scortedResult[score]);
-            } else {
-                cardsControl.clearCards();
-                placeholderControl.showElement(placeholderControl.domElements.empty);
-            }
-        },
-        hoverOnEvent: function() {
-            $(this).text($(this).index());
-        },
-        hoverOffEvent: function() {
-            if(scaleControl.selectedIndex != $(this).index() - 1) {
-                $(this).text("");
-            }
-        },
-        init: function() {
-            this.domElements.selectionLine.css("width", 0);
-            this.domElements.circle.click(this.clickEvent);
-            this.domElements.circle.hover(this.hoverOnEvent, this.hoverOffEvent);
-
-            return this;
-        }
     }.init();
 
     var bodyControl = {
@@ -400,15 +267,135 @@ $(window).ready(function() {
         }
     }.init();
 
+    var scaleControl = {
+        maxLengthofHistogram: 152,
+        maxLengthOfSelectionLine: 31,
+        domElements: {
+            selectionLine: $(".selection-line"),
+            histogramLine: $(".histogram-line"),
+            histogramLineSpacer: $(".histogram-line-spacer"),
+            circle: $(".circle"),
+        },
+        _selectedIndex: 0,
+        set selectedIndex(newValue) {
+            this.currentIndex = newValue;
+            
+            this.domElements.circle.text("");
+            this.domElements.selectionLine.css("width", 0);
+            $(this.domElements.selectionLine.toArray()[newValue]).css("width", this.maxLengthOfSelectionLine);
+            $(this.domElements.circle.toArray()[newValue]).text(newValue+1);
+        },
+        get selectedIndex() {
+            return this.currentIndex;
+        },
+        setUpHistogram: function(dataDictionary) {
+            var valuesOfData = Object.values(dataDictionary);
+            var maxValue = valuesOfData.reduce(function(acc, cur) {
+                return Math.max(acc, cur);
+            });
+            for(var key in dataDictionary) {
+                dataDictionary[key] = (dataDictionary[key]/maxValue) * this.maxLengthofHistogram;
+                $(this.domElements.histogramLine.toArray()[key-1]).width(dataDictionary[key]);
+            }
+        },
+        cardData: {},
+        clickEvent: function() {
+            var clickedIndex = $(this).index() - 1;
+            var score = clickedIndex + 1;
+            
+            if(score in scaleControl.cardData) {
+                if(scaleControl.selectedIndex != clickedIndex)
+                    cardsControl.changeCards(scaleControl.cardData[score]);
+            } else {
+                cardsControl.clearCards();
+                placeholderControl.showElement(placeholderControl.domElements.empty);
+            }
+
+            scaleControl.selectedIndex = clickedIndex;
+        },
+        hoverOnEvent: function() {
+            $(this).text($(this).index());
+        },
+        hoverOffEvent: function() {
+            if(scaleControl.selectedIndex != $(this).index() - 1) {
+                $(this).text("");
+            }
+        },
+        init: function() {
+            this.domElements.selectionLine.css("width", 0);
+            this.domElements.circle.click(this.clickEvent);
+            this.domElements.circle.hover(this.hoverOnEvent, this.hoverOffEvent);
+            
+            return this;
+        },
+    }.init();
+    
+    function activatePage(JSONdata) {
+        //Parse data
+        var data = JSON.parse(JSONdata);
+
+        //Organise by score
+        var scortedResult = data.Cards.reduce(function (acc, curr) {
+            acc[curr.Score] = acc[curr.Score] || [];
+            acc[curr.Score].push(curr);
+            return acc;
+        }, Object.create(null));
+
+        //Oragnise by frequencies
+        var frequenciesResult = {};
+        for (var key in scortedResult) {
+            var value = scortedResult[key];
+            frequenciesResult[key] = scortedResult[key].length
+        }
+        
+        //Convert to color
+        var cardsWithColors = data.Cards;
+        cardsWithColors.forEach(function(item) {
+            item.Color = scoreToColor(item.Score);
+        });
+
+        //Prepare page
+        bodyControl.maximiseBody();
+        placeholderControl.showElement(placeholderControl.domElements.instruction);
+        thisSiteControl.showThisSite(data.thisPage);
+        totalControl.currentValue = cardsWithColors.length;
+        scaleControl.cardData = scortedResult;
+        scaleControl.setUpHistogram(frequenciesResult);
+    }
+
+    //Show loading setup
     bodyControl.minimiseBody();
     placeholderControl.showElement(placeholderControl.domElements.loading);
 
-    //stimulate loading
-    setTimeout(function () {
-        bodyControl.maximiseBody();
-        placeholderControl.showElement(placeholderControl.domElements.instruction);
-        thisSiteControl.showThisSite(testData.thisPage);
-        totalControl.currentValue = cardJson.length;
-        scaleControl.setUpHistogram(frequenciesResult);
-    }, 300)
+    //Check if data has been cached
+    var query = { active: true, currentWindow: true };
+
+    chrome.tabs.query(query, function (tabs) {
+        var currentTab = tabs[0]; 
+        var data = localStorage.getItem(currentTab.url);
+        if(data == undefined) {
+            if(localStorage.getItem(fetchOnLoad) == "true") {
+                //Wait for background page to get the result
+                $(window).bind('storage', function(event) {
+                    if(event.originalEvent.key == currentTab.url) {
+                        //Parse new data
+                        activatePage(localStorage.getItem(event.key));
+                    } 
+                });
+            } else {
+                //Get background page to fetch in case the user closes the popup
+                var backgroundPage = chrome.extension.getBackgroundPage();
+                backgroundPage.fetchUrlAndStore(currentTab.url);
+                $(window).bind('storage', function(event) {
+                    if(event.originalEvent.key == currentTab.url) {
+                        //Parse new data
+                        activatePage(localStorage.getItem(event.key));
+                    } 
+                });
+            }
+        } else {
+            //Cache results exists then immediately parse it
+            activatePage(data);
+        }
+    });
 });

@@ -2,8 +2,8 @@
 	"name": "Bye Bye Bias",
 	"version": "1.0",
 	"description": "Combatting confirmation bias one article at a time",
-	"permissions": ["storage", "tabs", "activeTab", "<all_urls>"],
-    "browser_action": {
+	"permissions": ["tabs", "activeTab"],
+    "page_action": {
       // "default_icon": {                    // optional
       //   "16": "images/icon16.png",           // optional
       //   "24": "images/icon24.png",           // optional
