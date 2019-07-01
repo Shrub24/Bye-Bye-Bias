@@ -1,7 +1,7 @@
 var testData = {
   "thisPage":5,
   "Cards": [
-      {"Title": "4", 
+      {"Title": "4THIS IS A REALLY LONG NAME THAT IS EXTRA LONG SO THAT IT CAN BE LONGER THAN USUAL AND BE TRUNCATED BY THE JAVASCRIPT FUNCTION CALLED TRUNC,", 
       "Score": 1,
       "Date": "4444 44",
       "Publisher": "Jhin",

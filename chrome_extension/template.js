@@ -1,5 +1,5 @@
 var precompiledTemplateCard = {"1":function(container,depth0,helpers,partials,data) {
-  var helper;
+  var stack1, helper;
 
 return "         <a href=\""
   + container.escapeExpression(container.lambda((depth0 != null ? depth0.URL : depth0), depth0))
@@ -8,7 +8,7 @@ return "         <a href=\""
   + "\" title=\""
   + container.escapeExpression(container.lambda((depth0 != null ? depth0.Title : depth0), depth0))
   + "\">\n            <div class=\"title\">"
-  + container.escapeExpression(container.lambda((depth0 != null ? depth0.Title : depth0), depth0))
+  + ((stack1 = container.lambda((depth0 != null ? depth0.truncatedTitle : depth0), depth0)) != null ? stack1 : "")
   + "</div>\n            <div class=\"date\">"
   + container.escapeExpression(container.lambda((depth0 != null ? depth0.Date : depth0), depth0))
   + "</div>\n            <div class=\"info\">\n               <object type=\"image/svg+xml\" data=\"./info_icon.svg\" class=\"info-icon\"></object>\n               <div class=\"publisher\">"

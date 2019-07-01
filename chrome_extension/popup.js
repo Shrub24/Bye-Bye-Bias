@@ -22,6 +22,15 @@ String.prototype.format = function () {
     });
   };
 
+String.prototype.trunc =
+    function( n, useWordBoundary ){
+        if (this.length <= n) { return this; }
+        var subString = this.substr(0, n-1);
+        return (useWordBoundary 
+        ? subString.substr(0, subString.lastIndexOf(' ')) 
+        : subString) + "&hellip;";
+    };
+
 $(window).ready(function() {
     function hideAllElements(self) {
         loopDelegate(self, element => element.hide());
@@ -347,11 +356,12 @@ $(window).ready(function() {
             var value = scortedResult[key];
             frequenciesResult[key] = scortedResult[key].length
         }
-        
+
         //Note: references the original object Cards
         var cardsWithColors = data.Cards;
         cardsWithColors.forEach(function(item) {
             item.Color = scoreToColor(item.Score);
+            item.truncatedTitle = item.Title.trunc(95);
         });
 
         //Prepare page

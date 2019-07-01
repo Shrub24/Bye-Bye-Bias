@@ -14,7 +14,7 @@
          {{#each Cards}}
          <a href="{{this.URL}}">
             <div class="card" style="background-color: {{Color}}" title="{{this.Title}}">
-            <div class="title">{{this.Title}}</div>
+            <div class="title">{{{this.truncatedTitle}}}</div>
             <div class="date">{{this.Date}}</div>
             <div class="info">
                <object type="image/svg+xml" data="./info_icon.svg" class="info-icon"></object>
