@@ -37,14 +37,14 @@ $(window).ready(function() {
             func(self.domElements[keys[i]]);
         }
     }
-
+    
     function clickLinkEvent(event) {
         event.preventDefault();
         let targetPage = event.currentTarget.href;
 
         chrome.tabs.create({
             url: targetPage,
-            active: false,
+            active: true,
         });
     }
 
@@ -83,7 +83,7 @@ $(window).ready(function() {
             hideAllElements(this);
         },
         animations: [
-            anime ({
+            anime({
                 targets: "#loading",
                 easing: "cubicBezier(0.215, 0.61, 0.355, 1)",
                 translateY: [17,-17],
@@ -373,27 +373,19 @@ $(window).ready(function() {
     chrome.tabs.query(query, function (tabs) {
         var currentTab = tabs[0];
         var data = localStorage.getItem(currentTab.url);
+
         //Doesnt exist
         if(data == undefined) {
-            if(localStorage.getItem(fetchOnLoad) == "true") {
-                //Wait for background page to get the result
-                $(window).bind('storage', function(event) {
-                    if(event.originalEvent.key == currentTab.url) {
-                        //Parse new data
-                        activatePage(localStorage.getItem(event.key));
-                    } 
-                });
-            } else {
-                //Get background page to fetch in case the user closes the popup
+            if(localStorage.getItem("fetchOnLoad") != "true") {
                 var backgroundPage = chrome.extension.getBackgroundPage();
                 backgroundPage.fetchUrlAndStore(currentTab.url);
-                $(window).bind('storage', function(event) {
-                    if(event.originalEvent.key == currentTab.url) {
-                        //Parse new data
-                        activatePage(localStorage.getItem(event.key));
-                    } 
-                });
             }
+            $(window).bind('storage', function(event) {
+                if(event.originalEvent.key == currentTab.url) {
+                    //Parse new data
+                    activatePage(localStorage.getItem(event.key));
+                } 
+            });
         } else {
             //Cache results exists then immediately parse it
             activatePage(data);

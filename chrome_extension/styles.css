@@ -84,8 +84,8 @@ a:active{
 }
 .slideIn {
 	animation-name: slideIn;
-	animation-duration: 0.153s;
-	animation-timing-function: linear;
+	animation-duration: 0.389s;
+	animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 .card {
 	color: rgb(232, 236, 247);

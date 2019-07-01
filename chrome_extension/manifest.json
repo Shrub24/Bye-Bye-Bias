@@ -1,6 +1,6 @@
 {
 	"name": "Bye Bye Bias",
-	"version": "1.0",
+	"version": "6.9",
 	"description": "Combatting confirmation bias one article at a time",
 	"permissions": ["tabs", "activeTab"],
     "page_action": {
@@ -13,7 +13,7 @@
     },
 	"background": {
 		"scripts": ["background.js"],
-		"persistent": false
+		"persistent": true
 	},
 	"manifest_version": 2
 }

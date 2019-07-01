@@ -95,7 +95,7 @@ function fetchUrlAndStore(urlToFetch) {
 
   
   testData.date = new Date();
-  setTimeout(function () {localStorage.setItem(urlToFetch, JSON.stringify(testData))}, 1000);
+  setTimeout(function () {localStorage.setItem(urlToFetch, JSON.stringify(testData))}, 5000);
 
   if(filtered.length > 50) {
     if(filtered != []) {
@@ -121,9 +121,9 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   for(var i=0; i<urls.length; i++) {
     if (tab.url.indexOf(urls[i]) == 0) {
       chrome.pageAction.show(tabId);
-
+      
       //Check storage first
-      if(localStorage.getItem('fetchOnLoad') == "true"  && localStorage.getItem(tab.url) != undefined) {
+      if(localStorage.getItem('fetchOnLoad') == "true"  && localStorage.getItem(tab.url) == undefined) {
         //Cached result doesnt exist and fetchOnLoad is true therefore fetch now
         fetchUrlAndStore(tab.url);
       } else {
