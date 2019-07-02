@@ -59,7 +59,7 @@ class Net(nn.Module):
 
 net = Net()
 num_epochs = 50
-lr = 0.001
+lr = 0.0001
 batch_size = 8
 label_names = ["negative, neutral, positive"]
 
@@ -147,7 +147,7 @@ for epoch in range(num_epochs):
 
 
 r = int(np.random.uniform()*10)
-x, _, t = embed_to_tensor(test_x_batches[r], model, count, total)
+x, _, t = embed_to_tensor(test_x_batches[r], model, max_sentence_length, window_size,4 count, total)
 x = x.transpose(0, 1)[None, :, :, :].transpose(0, 1)
 out = net(x, t)
 for i in range(len(test_x_batches[r])):
