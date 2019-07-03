@@ -53,7 +53,7 @@ $(window).ready(function() {
 
         chrome.tabs.create({
             url: targetPage,
-            active: true,
+            active: event.data.active,
         });
     }
 
@@ -203,7 +203,7 @@ $(window).ready(function() {
         init: function () {
             this.clearCards();
 
-            this.domElements.cardContainer.on("click", "a", clickLinkEvent)
+            this.domElements.cardContainer.on("click", "a", {active:false}, clickLinkEvent)
 
             return this;
         }
@@ -272,7 +272,7 @@ $(window).ready(function() {
             row: $(".dropdown>a")
         },
         init: function () {
-            this.domElements.row.click(clickLinkEvent);
+            this.domElements.row.click({active: true}, clickLinkEvent);
         }
     }.init();
 
