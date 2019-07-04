@@ -29,7 +29,7 @@ class Handler(BaseHTTPRequestHandler):
         cur.execute("SELECT entities, main_entities, title, publish_date, authors, publisher FROM articles WHERE url='" + url + "'")
         query_result = cur.fetchall()
         if not query_result:
-            return {"title": "unknown", "strength": 0, "articles": [], "publish_date": "unknown", "publisher": "unknown", "authors": "unknown"}
+            return "unknown"
         else:
             result = query_result[0]
             entities, main_entities, title, publish_date, authors, publisher = result
