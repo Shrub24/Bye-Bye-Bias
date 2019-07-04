@@ -84,8 +84,8 @@ a:active{
 }
 .slideIn {
 	animation-name: slideIn;
-	animation-duration: 0.213s;
-	animation-timing-function: linear;
+	animation-duration: 0.389s;
+	animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 .card {
 	color: rgb(232, 236, 247);
@@ -144,10 +144,11 @@ a:active{
 }
 .dropdown>*{
 	display: block;
-	font-weight: 700;
+	font-weight: normal;
 	cursor: auto;
-	padding: 5px;
-	font-size: 15px
+	padding: 3px;
+	padding-left: 8px;
+	font-size: 13px
 }
 .open-icon {
 	pointer-events: none;
@@ -353,7 +354,7 @@ a:active{
 	z-index: 20;
 }
 .histogram-line {
-	transition: width 2.752s cubic-bezier(0.165, 0.84, 0.44, 1);
+	transition: width 1.43s cubic-bezier(0.165, 0.84, 0.44, 1);
 	display: inline-block;
 	height: 2.5px;
 	width: 0px;
