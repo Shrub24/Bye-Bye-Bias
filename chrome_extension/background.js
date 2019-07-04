@@ -1,86 +1,3 @@
-var testData = {
-  "thisPage":5,
-  "Cards": [
-      {"Title": "4THIS IS A REALLY LONG NAME THAT IS EXTRA LONG SO THAT IT CAN BE LONGER THAN USUAL AND BE TRUNCATED BY THE JAVASCRIPT FUNCTION CALLED TRUNC,", 
-      "Score": 1,
-      "Date": "4444 44",
-      "Publisher": "Jhin",
-      "Author": "Idk who made numbers",
-      "URL": "http://www.google.com",
-      },
-      {"Title": "4", 
-      "Score": 1,
-      "Date": "4444 44",
-      "Publisher": "Jhin",
-      "Author": "Idk who made numbers",
-      "URL": "http://www.google.com",
-      },
-      {"Title": "4", 
-      "Score": 1,
-      "Date": "4444 44",
-      "Publisher": "Jhin",
-      "Author": "Idk who made numbers",
-      "URL": "http://www.google.com",
-      },
-      {"Title": "4", 
-      "Score": 1,
-      "Date": "4444 44",
-      "Publisher": "Jhin",
-      "Author": "Idk who made numbers",
-      "URL": "http://www.google.com",
-      },
-      {"Title": "4", 
-      "Score": 1,
-      "Date": "4444 44",
-      "Publisher": "Jhin",
-      "Author": "Idk who made numbers",
-      "URL": "http://www.google.com",
-      },
-      {"Title": "4", 
-      "Score": 1,
-      "Date": "4444 44",
-      "Publisher": "Jhin",
-      "Author": "Idk who made numbers",
-      "URL": "http://www.google.com",
-      },
-      {"Title": "4", 
-      "Score": 1,
-      "Date": "4444 44",
-      "Publisher": "Jhin",
-      "Author": "Idk who made numbers",
-      "URL": "http://www.google.com",
-      },
-      {"Title": "Ey", 
-      "Score": 3,
-      "Date": "1234 11",
-      "Publisher": "Me",
-      "Author": "Him",
-      "URL": "http://www.google.com",
-      },
-      {"Title": "Ey", 
-      "Score": 3,
-      "Date": "1234 11",
-      "Publisher": "Me",
-      "Author": "Him",
-      "URL": "http://www.google.com",
-      },
-      {"Title": "Ey", 
-      "Score": 5,
-      "Date": "1234 11",
-      "Publisher": "Me",
-      "Author": "Him",
-      "URL": "http://www.google.com",
-      },
-      {"Title": "Ey", 
-      "Score": 9,
-      "Date": "1234 11",
-      "Publisher": "Me",
-      "Author": "Him",
-      "URL": "http://www.google.com",
-      }
-  ]
-}
-
 var serverUrl = "http://localhost:8000/"
 
 var urls = [
@@ -93,9 +10,13 @@ function fetchUrlAndStore(urlToFetch) {
     return JSON.parse(localStorage.getItem(value)).hasOwnProperty("date");
   });
 
-  
-  testData.date = new Date();
-  setTimeout(function () {localStorage.setItem(urlToFetch, JSON.stringify(testData))}, 5000);
+  fetch(serverUrl + "?" + urlToFetch, {method: "GET"}).then(function (response) {
+    localStorage.setItem(urlToFetch, response);
+  })
+  .then(function(body) {
+    body.day = new Date();
+    localStorage.setItem(urlToFetch, JSON.stringify(body));
+  });
 
   if(filtered.length > 50) {
     if(filtered != []) {
@@ -105,15 +26,6 @@ function fetchUrlAndStore(urlToFetch) {
       localStorage.removeItem(oldest);
     }
   }
-
-  /*
-  fetch(serverUrl + "?" + urlToFetch, {method: "GET"}).then(function (response) {
-    return response.json();
-  })
-  .then(function(body) {
-    localStorage.setItem(urlToFetch, body);
-  });
-  */
 }
 
 // Listen for any changes to the URL of any tab.
