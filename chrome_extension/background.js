@@ -16,16 +16,16 @@ function fetchUrlAndStore(urlToFetch) {
   .then(function(body) {
     body.day = new Date();
     localStorage.setItem(urlToFetch, JSON.stringify(body));
-  });
 
-  if(filtered.length > 50) {
-    if(filtered != []) {
-      var oldest = filtered.reduce(function(acc, val) {
-        return JSON.parse(localStorage.getItem(acc)).date < JSON.parse(localStorage.getItem(val)).date ? acc : val;
-      });
-      localStorage.removeItem(oldest);
+    if(filtered.length > 50) {
+      if(filtered != []) {
+        var oldest = filtered.reduce(function(acc, val) {
+          return JSON.parse(localStorage.getItem(acc)).date < JSON.parse(localStorage.getItem(val)).date ? acc : val;
+        });
+        localStorage.removeItem(oldest);
+      }
     }
-  }
+  });
 }
 
 // Listen for any changes to the URL of any tab.
