@@ -11,7 +11,7 @@ function fetchUrlAndStore(urlToFetch) {
   });
 
   fetch(serverUrl + "?" + urlToFetch, {method: "GET"}).then(function (response) {
-    localStorage.setItem(urlToFetch, response);
+    return response.json();
   })
   .then(function(body) {
     body.day = new Date();
