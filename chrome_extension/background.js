@@ -33,6 +33,7 @@ function fetchUrlAndStore(urlToFetch) {
   })
   .catch(function(err) {
     // No server
+    throw err;
   });
 }
 
