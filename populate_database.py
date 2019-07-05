@@ -8,6 +8,7 @@ def scrape_article(article_url):
     article = Article(url=article_url)
     article.download()
     article.parse()
+    print(article_url)
     return {"title": article.title, "publish_date": article.publish_date.strftime("%x"), "authors": ", ".join(article.authors), "text": article.text, "url": article_url}
 
 # adds entry to mysql database given by values of dict corresponding to column titles of dict keys
@@ -42,7 +43,7 @@ if __name__ == "__main__":
             main_entities = dict()
             for entity in enttity_getter_instance.get_n_important_entities(text, NUMBER_OF_MAIN_ENTITIES_STORED):
                 # todo get sentiment from neural network
-                sentiment = 0
+                sentiment = 1
                 main_entities[entity] = sentiment
             article_info["main_entities"] = json.dumps(main_entities)
             add_to_database({key: article_info[key] for key in KEYS_TO_STORE}, DB, "articles")

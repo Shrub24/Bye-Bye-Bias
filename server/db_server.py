@@ -50,7 +50,9 @@ class Handler(BaseHTTPRequestHandler):
                 other_articles_similarity[similar_url] = self.get_similarity_value(entities, similar_entities)
             similar_urls = sorted(list(other_articles_similarity.keys()), key=lambda x: other_articles_similarity[x], reverse=True)[:NUMBER_OF_RETURNED_ARTICLES]
 
-            return {"title": title, "strength": strength, "articles": [other_articles[url] for url in similar_urls], "publish_date": publish_date, "publisher": publisher, "authors": authors}
+            relevant_info = {"title": title, "strength": strength, "articles": [other_articles[url] for url in similar_urls], "publish_date": publish_date, "publisher": publisher, "authors": authors}
+            # return in format wanted by frontend
+            return {"thisPage": relevant_info["strength"], "Cards": [{"Title": article["title"], "Score": article["strength"], "Date": article["publish_date"], "Publisher": article["publisher"], "Author": article["authors"], "URL": article["url"]} for article in relevant_info["articles"]]}
 
     def get_similarity_value(self, entities_a, entities_b):
         similar = len(set(entities_a).intersection(entities_b))
