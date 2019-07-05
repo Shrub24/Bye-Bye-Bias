@@ -385,8 +385,8 @@ $(window).ready(function() {
         var data = localStorage.getItem(currentTab.url);
 
         //Doesnt exist
-        if(data == undefined) {
-            if(localStorage.getItem("fetchOnLoad") != "true") {
+        if(data == undefined || data == "fetching") {
+            if(localStorage.getItem("fetchOnLoad") == "false" && data == undefined) {
                 var backgroundPage = chrome.extension.getBackgroundPage();
                 backgroundPage.fetchUrlAndStore(currentTab.url);
             }

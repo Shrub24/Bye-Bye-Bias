@@ -1,6 +1,8 @@
 var serverUrl = "http://localhost:8000/"
 
 function fetchUrlAndStore(urlToFetch) {
+  localStorage.setItem(urlToFetch, "fetching");
+  
   var filtered = Object.keys(localStorage).filter(function (value) {
     return JSON.parse(localStorage.getItem(value)).hasOwnProperty("date");
   });
