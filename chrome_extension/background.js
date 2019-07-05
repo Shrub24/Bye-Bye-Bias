@@ -6,6 +6,8 @@ var urls = [
 ];
 
 function fetchUrlAndStore(urlToFetch) {
+  localStorage.setItem(urlToFetch, "fetching");
+  
   var filtered = Object.keys(localStorage).filter(function (value) {
     return JSON.parse(localStorage.getItem(value)).hasOwnProperty("date");
   });
@@ -16,7 +18,7 @@ function fetchUrlAndStore(urlToFetch) {
   .then(function(body) {
     body.day = new Date();
     localStorage.setItem(urlToFetch, JSON.stringify(body));
-
+    
     if(filtered.length > 50) {
       if(filtered != []) {
         var oldest = filtered.reduce(function(acc, val) {
