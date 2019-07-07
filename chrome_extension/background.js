@@ -7,11 +7,7 @@ function fetchUrlAndStore(urlToFetch, tabId, callback) {
     if (!response.ok) {
       return false
     }
-    try {
-      return response.json();
-    } catch (error) {
-      return response.text();
-    }
+    return response.text();
   })
   .then(function(body) {
     if (body == "unknown") {
@@ -19,7 +15,8 @@ function fetchUrlAndStore(urlToFetch, tabId, callback) {
       localStorage.setItem(urlToFetch, JSON.stringify({"unknown":true, Date: currentDate}));
     } else if (body) {
       body.day = new Date();
-      localStorage.setItem(urlToFetch, JSON.stringify(body));
+      console.log(body);
+      localStorage.setItem(urlToFetch, body);
     } else {
       // Request error
     }
