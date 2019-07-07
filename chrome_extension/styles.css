@@ -261,7 +261,7 @@ a:active{
 	width: 100%;
 	overflow: hidden;
 }
-#instruction, #loading, #empty {
+.placeholder-text {
 	color: #727277;
 	display: table-cell;
 	vertical-align: middle;

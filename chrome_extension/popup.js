@@ -11,7 +11,6 @@ function scoreToColor(score) {
         2: "#D64464",
         1: "#EE4152",
     }
-
     return conversion[score];
 }
 
@@ -86,7 +85,9 @@ $(window).ready(function() {
             instruction: $("#instruction"), 
             loading: $("#loading"), 
             empty: $("#empty"),
+            unknown: $("#unknown"),
             placeholder: $("#placeholder"),
+            serverError: $("#serverError"),
         },
         hideElements: function () {
             hideAllElements(this);
@@ -277,7 +278,7 @@ $(window).ready(function() {
     }.init();
 
     var scaleControl = {
-        maxLengthofHistogram: 152,
+        maxLengthofHistogram: 160,
         maxLengthOfSelectionLine: 31,
         domElements: {
             selectionLine: $(".selection-line"),
@@ -341,36 +342,49 @@ $(window).ready(function() {
     
     function activatePage(JSONdata) {
         //Parse data
-        var data = JSON.parse(JSONdata);
-
-        //Organise by score
-        var scortedResult = data.Cards.reduce(function (acc, curr) {
-            acc[curr.Score] = acc[curr.Score] || [];
-            acc[curr.Score].push(curr);
-            return acc;
-        }, Object.create(null));
-
-        //Oragnise by frequencies
-        var frequenciesResult = {};
-        for (var key in scortedResult) {
-            var value = scortedResult[key];
-            frequenciesResult[key] = scortedResult[key].length
+        try {
+            var data = JSON.parse(JSONdata);
+            if(data.hasOwnProperty("unknown")) {
+                data = "unknown";
+            }
+        } catch (error) {
+            var data = JSONdata;
         }
 
-        //Note: references the original object Cards
-        var cardsWithColors = data.Cards;
-        cardsWithColors.forEach(function(item) {
-            item.Color = scoreToColor(item.Score);
-            item.truncatedTitle = item.Title.trunc(95);
-        });
+        if(data == "unknown") {
+            placeholderControl.showElement(placeholderControl.domElements.unknown);
+        } else if(data != "fetching"){
+            //All good to go
 
-        //Prepare page
-        bodyControl.maximiseBody();
-        placeholderControl.showElement(placeholderControl.domElements.instruction);
-        thisSiteControl.showThisSite(data.thisPage);
-        totalControl.currentValue = data.Cards.length;
-        scaleControl.cardData = scortedResult;
-        scaleControl.setUpHistogram(frequenciesResult);
+            //Organise by score
+            var scortedResult = data.Cards.reduce(function (acc, curr) {
+                acc[curr.Score] = acc[curr.Score] || [];
+                acc[curr.Score].push(curr);
+                return acc;
+            }, Object.create(null));
+
+            //Oragnise by frequencies
+            var frequenciesResult = {};
+            for (var key in scortedResult) {
+                var value = scortedResult[key];
+                frequenciesResult[key] = scortedResult[key].length
+            }
+
+            //Note: references the original object Cards
+            var cardsWithColors = data.Cards;
+            cardsWithColors.forEach(function(item) {
+                item.Color = scoreToColor(item.Score);
+                item.truncatedTitle = item.Title.trunc(95);
+            });
+
+            //Prepare page
+            bodyControl.maximiseBody();
+            placeholderControl.showElement(placeholderControl.domElements.instruction);
+            thisSiteControl.showThisSite(data.thisPage);
+            totalControl.currentValue = data.Cards.length;
+            scaleControl.cardData = scortedResult;
+            scaleControl.setUpHistogram(frequenciesResult);
+        }
     }
 
     //Show loading setup
@@ -383,21 +397,23 @@ $(window).ready(function() {
     chrome.tabs.query(query, function (tabs) {
         var currentTab = tabs[0];
         var data = localStorage.getItem(currentTab.url);
+        var backgroundPage = chrome.extension.getBackgroundPage();
 
-        //Doesnt exist
+        //Data does not exist
         if(data == undefined || data == "fetching") {
             if(localStorage.getItem("fetchOnLoad") == "false" && data == undefined) {
-                var backgroundPage = chrome.extension.getBackgroundPage();
                 backgroundPage.fetchUrlAndStore(currentTab.url);
             }
+
             $(window).bind('storage', function(event) {
-                if(event.originalEvent.key == currentTab.url) {
-                    //Parse new data
+                var newValue = localStorage.getItem(event.originalEvent.key);
+
+                if(event.originalEvent.key == currentTab.url && newValue != "fetching" && newValue != undefined) {
                     activatePage(localStorage.getItem(event.key));
                 } 
             });
         } else {
-            //Cache results exists then immediately parse it
+            //Cached results exists then immediately parse it
             activatePage(data);
         }
     });

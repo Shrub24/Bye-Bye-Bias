@@ -3,7 +3,7 @@
 	"version": "6.9",
 	"description": "Combatting confirmation bias one article at a time",
 	"permissions": ["tabs", "activeTab"],
-    "page_action": {
+    "browser_action": {
       // "default_icon": {                    // optional
       //   "16": "images/icon16.png",           // optional
       //   "24": "images/icon24.png",           // optional

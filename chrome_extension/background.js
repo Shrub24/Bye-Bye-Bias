@@ -1,60 +1,61 @@
 var serverUrl = "http://localhost:8000/"
 
-function fetchUrlAndStore(urlToFetch) {
+function fetchUrlAndStore(urlToFetch, tabId, callback) {
   localStorage.setItem(urlToFetch, "fetching");
   
-  var filtered = Object.keys(localStorage).filter(function (value) {
-    return JSON.parse(localStorage.getItem(value)).hasOwnProperty("date");
-  });
-
   fetch(serverUrl + "?" + urlToFetch, {method: "GET"}).then(function (response) {
     if (!response.ok) {
       return false
     }
-    return response.json();
+    try {
+      return JSON.parse(response);
+    } catch (error) {
+      return response.text();
+    }
   })
   .then(function(body) {
-    if (body && body != "unknown") {
+    if (body == "unknown") {
+      var currentDate = new Date();
+      localStorage.setItem(urlToFetch, JSON.stringify({"unknown":true, Date: currentDate}));
+    } else if (body) {
       body.day = new Date();
       localStorage.setItem(urlToFetch, JSON.stringify(body));
+    } else {
+      // Request error
+    }
 
-      if(filtered.length > 50) {
-        if(filtered != []) {
-          var oldest = filtered.reduce(function(acc, val) {
-            return JSON.parse(localStorage.getItem(acc)).date < JSON.parse(localStorage.getItem(val)).date ? acc : val;
-          });
-          localStorage.removeItem(oldest);
-        }
+    var filtered = Object.keys(localStorage).filter(function (value) {
+      try {
+        return JSON.parse(localStorage.getItem(value)).hasOwnProperty("date");
+      } catch (error) {
+        return false;
+      }
+    });
+    
+    if(filtered.length > 50) {
+      if(filtered != []) {
+        var oldest = filtered.reduce(function(acc, val) {
+          return JSON.parse(localStorage.getItem(acc)).date < JSON.parse(localStorage.getItem(val)).date ? acc : val;
+        });
+        localStorage.removeItem(oldest);
       }
     }
-    else{
-      // Invalid response
-    }
+    
+    if(callback != undefined)
+      callback(urlToFetch, tabId);
   })
   .catch(function(err) {
     // No server
+    localStorage.removeItem(urlToFetch);
     throw err;
   });
 }
 
 // Listen for any changes to the URL of any tab.
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-      if(localStorage.getItem('fetchOnLoad') == "true") {
-        // Check storage first
-        // todo store no stored solution value?
-        if(localStorage.getItem(tab.url) == undefined) {
-          chrome.pageAction.hide(tabId)
-          // Cached result doesnt exist and fetchOnLoad is true therefore fetch now
-          fetchUrlAndStore(tab.url)
-          if(localStorage.getItem(tab.url) != undefined) {
-            chrome.pageAction.show(tabId)
-          }
-        }
-        else {
-          // Cached version exists
-          chrome.pageAction.show(tabId);
-        }
-      }
+  if(localStorage.getItem('fetchOnLoad') == "true" && localStorage.getItem(tab.url) == undefined) {
+    fetchUrlAndStore(tab.url);
+  }
 });
 
 chrome.runtime.onInstalled.addListener(function (details) {
