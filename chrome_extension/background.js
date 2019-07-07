@@ -8,7 +8,7 @@ function fetchUrlAndStore(urlToFetch, tabId, callback) {
       return false
     }
     try {
-      return JSON.parse(response);
+      return response.json();
     } catch (error) {
       return response.text();
     }

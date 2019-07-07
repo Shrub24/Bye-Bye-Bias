@@ -353,7 +353,9 @@ $(window).ready(function() {
 
         if(data == "unknown") {
             placeholderControl.showElement(placeholderControl.domElements.unknown);
-        } else if(data != "fetching"){
+        } else if (data=="error") {
+            placeholderControl.showElement(placeholderControl.domElements.serverError);
+        } else if(data != "fetching") {
             //All good to go
 
             //Organise by score
@@ -401,15 +403,24 @@ $(window).ready(function() {
 
         //Data does not exist
         if(data == undefined || data == "fetching") {
-            if(localStorage.getItem("fetchOnLoad") == "false" && data == undefined) {
+            if(data != "fetching") {
                 backgroundPage.fetchUrlAndStore(currentTab.url);
             }
 
+            var count = 1;
             $(window).bind('storage', function(event) {
                 var newValue = localStorage.getItem(event.originalEvent.key);
-
-                if(event.originalEvent.key == currentTab.url && newValue != "fetching" && newValue != undefined) {
-                    activatePage(localStorage.getItem(event.key));
+                if(event.originalEvent.key == currentTab.url && newValue != "fetching") {
+                    if(count < 3) {
+                        if(newValue != undefined) {
+                            activatePage(localStorage.getItem(event.key));  
+                        } else {
+                            count += 1;
+                            backgroundPage.fetchUrlAndStore(currentTab.url);
+                        }
+                    } else {
+                        activatePage("error");
+                    }
                 } 
             });
         } else {
