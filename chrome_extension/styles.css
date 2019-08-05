@@ -406,15 +406,14 @@ a:active{
 	background-color: rgb(51, 54, 59);
 }
 #title {
-	font-family: 'Press Start 2P', cursive;
-	left: 35px;
+	font-family: 'Permanent Marker', cursive;
+	left: 32px;
 	position: absolute;
-	color: rgb(226, 230, 240);
+	color: rgb(221, 225, 235);
 	font-weight: normal;
-	font-size: 18px;
+	font-size: 29px;
 	border-radius: 5px;
 	box-sizing: content-box;
-	line-height: 25px;
 	pointer-events: none;
 }
 #help-tip > div {
