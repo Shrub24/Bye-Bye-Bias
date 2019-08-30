@@ -106,22 +106,15 @@ $(window).ready(function() {
         init: function() {
             var letters = String(this.domElements.loading.text().trim());
             this.domElements.loading.html("");
-
-            var delays = []
-            for(var i=0; i<letters.length; i++) {
-                delays.push(String((20 - i) * 2 * 0.3 / 20) + "s");
-            }
-
-            delays = delays.reverse()
-
-            var cssToAppend = String((40 - i) * 2 * 0.3 / 40) + "s";
+            
             for(var i=0; i<letters.length; i++) {
                 if(letters[i] === " ") {
                     var targetToAppend = "&nbsp;";
                 } else {  
                     var targetToAppend = letters[i];
                 }
-                this.domElements.loading.append( $("<span>").html(targetToAppend).css("animation-delay", delays[i]));
+                this.domElements.loading.append( $("<span>").html(targetToAppend).css("animation-delay", 
+                    String((i - 20) * 2 * 0.3 / 20) + "s"));
             }
             this.hideElements();
             return this;

@@ -431,7 +431,7 @@ a:active{
 }
 @keyframes wave {
 	from { transform : translateY(0); color: white; }
-	to   { transform : translateY( -10px ); }
+	to   { transform : translateY( -2.5px ); }
 }
   
 #loading span {
@@ -459,7 +459,7 @@ svg * {
 	border-radius: 100px;
 	transition: all 0.2s ease-in-out;
 	-webkit-transition: all 0.2s ease-in-out;
-	background: rgb(9, 87, 255);
+	background: rgb(103, 138, 214);
 	vertical-align: middle;
 }
 input.toggleBar {
