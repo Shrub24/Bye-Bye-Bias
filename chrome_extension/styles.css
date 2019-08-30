@@ -84,7 +84,7 @@ a:active{
 }
 .slideIn {
 	animation-name: slideIn;
-	animation-duration: 0.389s;
+	animation-duration: 0.15s;
 	animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 .card {
@@ -116,7 +116,7 @@ a:active{
 	shape-rendering: crispEdges;
 }
 .dropdown>*, #help-tip>div{
-	background: rgb(90, 118, 197);
+	background: #232224;
 }
 .dropdown>a {
 	cursor: pointer;
@@ -216,7 +216,7 @@ a:active{
 .tool-tip>div {
 	z-index: 50;
 	box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
-	color: #FFF;
+	color: rgb(215, 216, 219);
 	font-size: 13px;
 }
 #help-tip>div:before {
@@ -226,9 +226,9 @@ a:active{
 	width: 0;
 	height: 0;
 	border: 6px solid transparent;
-	border-bottom-color: rgb(90, 118, 197);
+	border-bottom-color: #232224;
 	left: 5px;
-	top: -12px;
+	top: -11px;
 }
 #scaleRectangle {
 	height: 12.5px;
@@ -380,7 +380,7 @@ a:active{
 	display: inline-block;
 	white-space: nowrap;
 	font-size: 12px;
-	padding-left: 2px;
+	padding-left: 3.2px;
 	font-weight: 700;
 }
 #total-positioner {
@@ -406,12 +406,15 @@ a:active{
 	background-color: rgb(51, 54, 59);
 }
 #title {
-	font-family: 'Permanent Marker', cursive;
+	display: none;
+	font-family: 'Rubik', sans-serif;
 	left: 32px;
+	top: -3px;
 	position: absolute;
 	color: rgb(221, 225, 235);
 	font-weight: normal;
-	font-size: 29px;
+	font-size: 25.65px;
+	line-height: 35px;
 	border-radius: 5px;
 	box-sizing: content-box;
 	pointer-events: none;
@@ -428,20 +431,20 @@ svg * {
 .toggleBar+label {
 	display: inline-block;
 	width: 54px;
-	height: 28px;
+	height: 26px;
 	margin: 0px auto;
 	border-radius: 100px;
 	transition: all 0.2s ease-in-out;
 	-webkit-transition: all 0.2s ease-in-out;
-	background-color: rgb(205, 207, 209);
+	background-color: rgb(153, 160, 170);
 	vertical-align: middle;
 }
 input.toggleBar {
 	display: none;
 }
 input.toggleBar+label>i {
-	height: 24px;
-	width: 24px;
+	height: 22px;
+	width: 22px;
 	background: #f8f8f8;
 	display: inline-block;
 	border-radius: 100px;
@@ -470,5 +473,5 @@ input.toggleBar:checked+label:active>i {
 	margin-left: 18px;
 }
 input.toggleBar:checked+label {
-	background-color: #008FFF;
+	background-color: rgb(96, 117, 172);
 }

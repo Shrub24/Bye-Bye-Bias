@@ -278,7 +278,7 @@ $(window).ready(function() {
     }.init();
 
     var scaleControl = {
-        maxLengthofHistogram: 160,
+        maxLengthofHistogram: 157.8,
         maxLengthOfSelectionLine: 31,
         domElements: {
             selectionLine: $(".selection-line"),
@@ -298,7 +298,7 @@ $(window).ready(function() {
         get selectedIndex() {
             return this.currentIndex;
         },
-        setUpHistogram: function(dataDictionary) {
+        setUpHistogram: function(dataDictionary, thisSite) {
             var valuesOfData = Object.values(dataDictionary);
             var maxValue = valuesOfData.reduce(function(acc, cur) {
                 return Math.max(acc, cur);
@@ -306,6 +306,9 @@ $(window).ready(function() {
             for(var key in dataDictionary) {
                 dataDictionary[key] = (dataDictionary[key]/maxValue) * this.maxLengthofHistogram;
                 $(this.domElements.histogramLine.toArray()[key-1]).width(dataDictionary[key]);
+            }
+            if (dataDictionary[thisSite] == null) {
+                $(this.domElements.histogramLine.toArray()[thisSite - 1]).width(5);
             }
         },
         cardData: {},
@@ -385,7 +388,7 @@ $(window).ready(function() {
             thisSiteControl.showThisSite(data.thisPage);
             totalControl.currentValue = data.Cards.length;
             scaleControl.cardData = scortedResult;
-            scaleControl.setUpHistogram(frequenciesResult);
+            scaleControl.setUpHistogram(frequenciesResult, data.thisPage);
         }
     }
 
