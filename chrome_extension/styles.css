@@ -165,7 +165,7 @@ a:active{
 	border-bottom-right-radius: 5px;
 }
 .dropdown>*:hover {
-	background-color: rgb(38, 39, 41);
+	background-color: rgb(19, 19, 19);
 }
 .publisher {
 	margin-right: 6px;
@@ -288,11 +288,20 @@ a:active{
 	background-position: 29px 29px;
 	background-attachment: fixed;
 }
+.animatedColorGradient {
+	animation: gradientShift 2s ease-in-out infinite alternate;
+}
+@keyframes gradientShift { 
+    0%{color:rgb(115, 159, 253)}
+    100%{color:#F9414B}
+}
+/*
 #loading {
 	color: transparent;
 	-webkit-background-clip: text;
 	background-clip: text;
 }
+*/
 #positive, #negative {
 	text-align: center;
 }
@@ -407,7 +416,8 @@ a:active{
 }
 #title {
 	display: none;
-	font-family: 'Rubik', sans-serif;
+	font-family: 'Cabin Condensed', sans-serif;
+	font-weight: bold;
 	left: 32px;
 	top: -3px;
 	position: absolute;
@@ -419,6 +429,19 @@ a:active{
 	box-sizing: content-box;
 	pointer-events: none;
 }
+@keyframes wave {
+	from { transform : translateY(0); color: white; }
+	to   { transform : translateY( -10px ); }
+}
+  
+#loading span {
+	display: inline-block;
+	animation-duration: 0.3s;
+	animation-name: wave;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+}
+
 #help-tip > div {
 	font-weight: normal;
 }
@@ -436,7 +459,7 @@ svg * {
 	border-radius: 100px;
 	transition: all 0.2s ease-in-out;
 	-webkit-transition: all 0.2s ease-in-out;
-	background-color: rgb(153, 160, 170);
+	background: rgb(9, 87, 255);
 	vertical-align: middle;
 }
 input.toggleBar {
@@ -457,21 +480,18 @@ input.toggleBar+label>i {
 }
 input.toggleBar+label:hover>i {
 	box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.20);
-	transform: scale(1.01);
+	transform: scale(1.03);
 }
 input.toggleBar:checked+label>i {
 	margin-left: 30px;
 }
-input.toggleBar+label:active {
-	background-color: #A6B9CB;
-}
 input.toggleBar+:active>i {
-	width: 34px;
+	width: 30px;
 	box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.20);
 }
 input.toggleBar:checked+label:active>i {
 	margin-left: 18px;
 }
 input.toggleBar:checked+label {
-	background-color: rgb(96, 117, 172);
+	background: #F9414B;
 }

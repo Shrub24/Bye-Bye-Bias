@@ -56,6 +56,78 @@ $(window).ready(function() {
         });
     }
 
+    var placeholderControl = {
+        domElements: {
+            instruction: $("#instruction"), 
+            loading: $("#loading"), 
+            empty: $("#empty"),
+            unknown: $("#unknown"),
+            placeholder: $("#placeholder"),
+            serverError: $("#serverError"),
+        },
+        hideElements: function () {
+            hideAllElements(this);
+        },
+        animations: [
+            /*
+            anime({
+                targets: "#loading",
+                easing: "cubicBezier(0.215, 0.61, 0.355, 1)",
+                translateY: [17,-17],
+                direction: 'alternate',
+                duration: 750,
+                loop: true,
+                autoplay: false,
+            }),
+            */
+            /*
+            anime({
+                targets: "#loading",
+                backgroundColor: ["rgb(9, 87, 255)", "#F9414B"],
+                easing: 'linear',
+                direction: "alternate",
+                duration: 2000,
+                loop: true,
+                autoplay: false,
+            }),
+            */
+        ],
+        showElement: function(visibleElement) {
+            this.hideElements();
+            this.domElements.placeholder.show();
+            visibleElement.show();
+
+            if(visibleElement == this.domElements.loading) {
+                this.animations.forEach(animation => animation.play());
+            } else {
+                this.animations.forEach(animation => animation.pause());
+            }
+        },
+        init: function() {
+            var letters = String(this.domElements.loading.text().trim());
+            this.domElements.loading.html("");
+
+            var delays = []
+            for(var i=0; i<letters.length; i++) {
+                delays.push(String((20 - i) * 2 * 0.3 / 20) + "s");
+            }
+
+            delays = delays.reverse()
+
+            var cssToAppend = String((40 - i) * 2 * 0.3 / 40) + "s";
+            for(var i=0; i<letters.length; i++) {
+                if(letters[i] === " ") {
+                    var targetToAppend = "&nbsp;";
+                } else {  
+                    var targetToAppend = letters[i];
+                }
+                this.domElements.loading.append( $("<span>").html(targetToAppend).css("animation-delay", delays[i]));
+            }
+            this.hideElements();
+            return this;
+        }
+    }.init();
+
     var checkboxControl = {
         domElements: {
             reduceAnimations: $("#reduceAnimations"),
@@ -76,55 +148,6 @@ $(window).ready(function() {
             //Checked boxes are stored as their ID in local storage
             this.resetToDefault(this.domElements.reduceAnimations, true);
             this.resetToDefault(this.domElements.fetchOnLoad, true);
-            return this;
-        }
-    }.init();
-
-    var placeholderControl = {
-        domElements: {
-            instruction: $("#instruction"), 
-            loading: $("#loading"), 
-            empty: $("#empty"),
-            unknown: $("#unknown"),
-            placeholder: $("#placeholder"),
-            serverError: $("#serverError"),
-        },
-        hideElements: function () {
-            hideAllElements(this);
-        },
-        animations: [
-            anime({
-                targets: "#loading",
-                easing: "cubicBezier(0.215, 0.61, 0.355, 1)",
-                translateY: [17,-17],
-                direction: 'alternate',
-                duration: 750,
-                loop: true,
-                autoplay: false,
-            }),
-            anime({
-                targets: "#loading",
-                backgroundColor: ["rgb(9, 87, 255)", "#F9414B"],
-                easing: 'linear',
-                direction: "alternate",
-                duration: 2000,
-                loop: true,
-                autoplay: false,
-            }),
-        ],
-        showElement: function(visibleElement) {
-            this.hideElements();
-            this.domElements.placeholder.show();
-            visibleElement.show();
-
-            if(visibleElement == this.domElements.loading) {
-                this.animations.forEach(animation => animation.play());
-            } else {
-                this.animations.forEach(animation => animation.pause());
-            }
-        },
-        init: function() {
-            this.hideElements();
             return this;
         }
     }.init();
