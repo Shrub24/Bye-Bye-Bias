@@ -13,12 +13,6 @@ EMBEDDING = os.path.join("embeddings", EMBEDDING_NAME + ".txt")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-count = list()
-count.append(0)
-
-total = list()
-total.append(0)
-
 
 try:
     file = open(os.path.join("embedding_model", EMBEDDING_NAME), 'rb')
@@ -50,7 +44,7 @@ class Net(nn.Module):
         x = self.dropout1(x)
         x = F.relu(self.conv(x))
         x = self.max_pooling(x)
-        x = x.view(batch_size, 512)
+        x = x.view(-1, 512)
         x = self.dropout2(x)
         x = F.relu(self.fc1(x))
         x = F.softmax(self.fc2(x), dim=1)
@@ -58,13 +52,13 @@ class Net(nn.Module):
 
 
 net = Net()
-num_epochs = 50
+num_epochs = 20
 lr = 0.0001
 batch_size = 8
 label_names = ["negative, neutral, positive"]
 
 criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(net.parameters(), lr=lr, weight_decay=0.01)
+optimizer = torch.optim.Adam(net.parameters(), lr=lr, weight_decay=0.007)
 # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, 5600, eta_min=0.0001)
 
 data_path = "data\\acl-14-short-data"
@@ -89,7 +83,7 @@ for epoch in range(num_epochs):
 
         # scheduler.step()
 
-        x = embed_to_tensor(x_batches[i], model, max_sentence_length, window_size, count, total)
+        x = embed_to_tensor(x_batches[i], model, max_sentence_length, window_size)
 
         labels = torch.tensor([j+1 for j in y_batches[i]], dtype=torch.long)
 
@@ -127,7 +121,7 @@ for epoch in range(num_epochs):
                      range(0, batch_size * int(len(test_y) / batch_size), batch_size)]
 
         for i in range(len(test_x_batches)):
-            x = embed_to_tensor(test_x_batches[i], model, max_sentence_length, window_size, count, total)
+            x = embed_to_tensor(test_x_batches[i], model, max_sentence_length, window_size)
 
             labels = torch.tensor([j + 1 for j in test_y_batches[i]], dtype=torch.long)
 
@@ -146,9 +140,7 @@ for epoch in range(num_epochs):
     print("finished training!")
 
 
-r = int(np.random.uniform()*10)
-x, _, t = embed_to_tensor(test_x_batches[r], model, max_sentence_length, window_size,4 count, total)
-x = x.transpose(0, 1)[None, :, :, :].transpose(0, 1)
-out = net(x, t)
-for i in range(len(test_x_batches[r])):
-    print(str(test_x_batches[r][i]) + "\n" + str(out[i]))
+def forward_prop(x):
+    inputs = embed_to_tensor(x, model, max_sentence_length, window_size)
+    return torch.argmax(net(inputs), dim=1)
+

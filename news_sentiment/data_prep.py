@@ -6,6 +6,7 @@ from io import open
 import numpy as np
 import pickle as pkl
 import re
+import os
 
 embedding_name = "glove.twitter.27B.100d"
 embedding = os.path.join("embeddings", embedding_name + ".txt")
@@ -61,7 +62,7 @@ def prep_twitter_data(train, test):
     return train_x, train_y, test_x, test_y
 
 
-def embed_to_tensor(b, embed_model, sentence_length, window_size, count, total):
+def embed_to_tensor(b, embed_model, sentence_length, window_size):
     batch = np.array(b)
     x = list()
     x.append(list())
@@ -76,9 +77,9 @@ def embed_to_tensor(b, embed_model, sentence_length, window_size, count, total):
                     t_loc = i
                     if type(sample[1]) != np.ndarray and type(sample[1]) != list:
                         sample[1] = [sample[1]]
-                    sentence += [get_embedding(i, embed_model, count, total) for i in sample[1]]
+                    sentence += [get_embedding(i, embed_model) for i in sample[1]]
                 else:
-                    sentence.append(get_embedding(sample[0][i], embed_model, count, total))
+                    sentence.append(get_embedding(sample[0][i], embed_model))
             else:
                 sentence.append(np.zeros(100))
 
@@ -90,15 +91,14 @@ def embed_to_tensor(b, embed_model, sentence_length, window_size, count, total):
     return x
 
 
-def get_embedding(word, embed_model, count, total):
-    total[0] += 1
+def get_embedding(word, embed_model):
     if type(word) != bytes:
         word = word.encode()
     try:
         return embed_model[word]
     except KeyError:
-      count[0] += 1
       return np.zeros(100)
+
 
 # path = "/data/database.mpqa.2.0/"
 def generate_mpqa_data(path, out_path):
@@ -171,7 +171,6 @@ def generate_mpqa_data(path, out_path):
                                     write_file.write(str(sentiment) + "\n")
 
 
-
 def find_sentence_bytes(byte_within, path):
     with open(path) as sentences_file:
         lowest = None
@@ -185,6 +184,7 @@ def find_sentence_bytes(byte_within, path):
                     lowest_compare = compare
     return lowest
 
+
 def get_sentiment_pos_neg(sentiment_string):
     if sentiment_string == "sentiment-pos":
         return 1
@@ -192,5 +192,4 @@ def get_sentiment_pos_neg(sentiment_string):
         return -1
 
 
-
-generate_mpqa_data("/data/database.mpqa.2.0/", "/data/mpqa.raw")
+# generate_mpqa_data("/data/database.mpqa.2.0/", "/data/mpqa.raw")
