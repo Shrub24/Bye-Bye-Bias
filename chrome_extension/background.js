@@ -1,19 +1,63 @@
-var serverUrl = "http://localhost:8000"
+var serverUrl = "http://localhost:8000/"
 
-function getData(callback){
-  var httpRequest = new XMLHttpRequest();
+function fetchUrlAndStore(urlToFetch, tabId, callback) {
+  localStorage.setItem(urlToFetch, "fetching");
   
-	chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
-      var current_url = tabs[0].url
+  fetch(serverUrl + "?" + urlToFetch, {method: "GET"}).then(function (response) {
+    if (!response.ok) {
+      return false
+    }
+    return response.text();
+  })
+  .then(function(body) {
+    if (body == "unknown") {
+      var currentDate = new Date();
+      localStorage.setItem(urlToFetch, JSON.stringify({"unknown":true, Date: currentDate}));
+    } else if (body) {
+      body.day = new Date();
+      console.log(body);
+      localStorage.setItem(urlToFetch, body);
+    } else {
+      // Request error
+    }
 
-      httpRequest.onload(function () {
-        callback();
-      });
-
-      httpRequest.open("GET", serverUrl + "?" + current_url, true);
-      httpRequest.send();
-
-      info = JSON.parse(httpRequest.responseText)
-      return info;
-	});
+    var filtered = Object.keys(localStorage).filter(function (value) {
+      try {
+        return JSON.parse(localStorage.getItem(value)).hasOwnProperty("date");
+      } catch (error) {
+        return false;
+      }
+    });
+    
+    if(filtered.length > 50) {
+      if(filtered != []) {
+        var oldest = filtered.reduce(function(acc, val) {
+          return JSON.parse(localStorage.getItem(acc)).date < JSON.parse(localStorage.getItem(val)).date ? acc : val;
+        });
+        localStorage.removeItem(oldest);
+      }
+    }
+    
+    if(callback != undefined)
+      callback(urlToFetch, tabId);
+  })
+  .catch(function(err) {
+    // No server
+    localStorage.removeItem(urlToFetch);
+    throw err;
+  });
 }
+
+// Listen for any changes to the URL of any tab.
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+  if(localStorage.getItem('fetchOnLoad') == "true" && localStorage.getItem(tab.url) == undefined) {
+    fetchUrlAndStore(tab.url);
+  }
+});
+
+chrome.runtime.onInstalled.addListener(function (details) {
+  if(details.reason == "install") {
+    localStorage.setItem('reduceAnimations', 'false');
+    localStorage.setItem('fetchOnLoad', 'true');
+  }
+});

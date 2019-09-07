@@ -84,8 +84,8 @@ a:active{
 }
 .slideIn {
 	animation-name: slideIn;
-	animation-duration: 0.213s;
-	animation-timing-function: linear;
+	animation-duration: 0.15s;
+	animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 .card {
 	color: rgb(232, 236, 247);
@@ -116,7 +116,7 @@ a:active{
 	shape-rendering: crispEdges;
 }
 .dropdown>*, #help-tip>div{
-	background: rgb(90, 118, 197);
+	background: #232224;
 }
 .dropdown>a {
 	cursor: pointer;
@@ -144,27 +144,28 @@ a:active{
 }
 .dropdown>*{
 	display: block;
-	font-weight: 700;
+	font-weight: normal;
 	cursor: auto;
-	padding: 5px;
-	font-size: 15px
+	padding: 3px;
+	padding-left: 8px;
+	font-size: 13px
 }
 .open-icon {
 	pointer-events: none;
-	height: 22px;
-	width: 22px;
+	height: 20px;
+	width: 20px;
 	filter: invert(99%) sepia(46%) saturate(2%) hue-rotate(189deg) brightness(112%) contrast(100%);
 }
-.first-row, #help-tip > div {
+.first-row, #help-tip > div, #dots > div {
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 }
-.last-row, #help-tip > div {
+.last-row, #help-tip > div, #dots > div {
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 }
 .dropdown>*:hover {
-	background-color: rgb(64, 86, 145);
+	background-color: rgb(19, 19, 19);
 }
 .publisher {
 	margin-right: 6px;
@@ -215,7 +216,7 @@ a:active{
 .tool-tip>div {
 	z-index: 50;
 	box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
-	color: #FFF;
+	color: rgb(215, 216, 219);
 	font-size: 13px;
 }
 #help-tip>div:before {
@@ -225,9 +226,9 @@ a:active{
 	width: 0;
 	height: 0;
 	border: 6px solid transparent;
-	border-bottom-color: rgb(90, 118, 197);
+	border-bottom-color: #232224;
 	left: 5px;
-	top: -12px;
+	top: -11px;
 }
 #scaleRectangle {
 	height: 12.5px;
@@ -260,7 +261,7 @@ a:active{
 	width: 100%;
 	overflow: hidden;
 }
-#instruction, #loading, #empty {
+.placeholder-text {
 	color: #727277;
 	display: table-cell;
 	vertical-align: middle;
@@ -287,11 +288,20 @@ a:active{
 	background-position: 29px 29px;
 	background-attachment: fixed;
 }
+.animatedColorGradient {
+	animation: gradientShift 2s ease-in-out infinite alternate;
+}
+@keyframes gradientShift { 
+    0%{color:rgb(115, 159, 253)}
+    100%{color:#F9414B}
+}
+/*
 #loading {
 	color: transparent;
 	-webkit-background-clip: text;
 	background-clip: text;
 }
+*/
 #positive, #negative {
 	text-align: center;
 }
@@ -353,7 +363,7 @@ a:active{
 	z-index: 20;
 }
 .histogram-line {
-	transition: width 2.752s cubic-bezier(0.165, 0.84, 0.44, 1);
+	transition: width 1.43s cubic-bezier(0.165, 0.84, 0.44, 1);
 	display: inline-block;
 	height: 2.5px;
 	width: 0px;
@@ -379,7 +389,7 @@ a:active{
 	display: inline-block;
 	white-space: nowrap;
 	font-size: 12px;
-	padding-left: 2px;
+	padding-left: 3.2px;
 	font-weight: 700;
 }
 #total-positioner {
@@ -405,17 +415,33 @@ a:active{
 	background-color: rgb(51, 54, 59);
 }
 #title {
-	font-family: 'Press Start 2P', cursive;
-	left: 35px;
+	display: none;
+	font-family: 'Cabin Condensed', sans-serif;
+	font-weight: bold;
+	left: 32px;
+	top: -3px;
 	position: absolute;
-	color: rgb(226, 230, 240);
+	color: rgb(221, 225, 235);
 	font-weight: normal;
-	font-size: 18px;
+	font-size: 25.65px;
+	line-height: 35px;
 	border-radius: 5px;
 	box-sizing: content-box;
-	line-height: 25px;
 	pointer-events: none;
 }
+@keyframes wave {
+	from { transform : translateY(0); color: white; }
+	to   { transform : translateY( -2.5px ); }
+}
+  
+#loading span {
+	display: inline-block;
+	animation-duration: 0.3s;
+	animation-name: wave;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+}
+
 #help-tip > div {
 	font-weight: normal;
 }
@@ -428,20 +454,20 @@ svg * {
 .toggleBar+label {
 	display: inline-block;
 	width: 54px;
-	height: 28px;
+	height: 26px;
 	margin: 0px auto;
 	border-radius: 100px;
 	transition: all 0.2s ease-in-out;
 	-webkit-transition: all 0.2s ease-in-out;
-	background-color: rgb(205, 207, 209);
+	background: rgb(103, 138, 214);
 	vertical-align: middle;
 }
 input.toggleBar {
 	display: none;
 }
 input.toggleBar+label>i {
-	height: 24px;
-	width: 24px;
+	height: 22px;
+	width: 22px;
 	background: #f8f8f8;
 	display: inline-block;
 	border-radius: 100px;
@@ -454,21 +480,18 @@ input.toggleBar+label>i {
 }
 input.toggleBar+label:hover>i {
 	box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.20);
-	transform: scale(1.01);
+	transform: scale(1.03);
 }
 input.toggleBar:checked+label>i {
-	margin-left: 28px;
-}
-input.toggleBar+label:active {
-	background-color: #A6B9CB;
+	margin-left: 30px;
 }
 input.toggleBar+:active>i {
-	width: 34px;
+	width: 30px;
 	box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.20);
 }
 input.toggleBar:checked+label:active>i {
 	margin-left: 18px;
 }
 input.toggleBar:checked+label {
-	background-color: #008FFF;
+	background: #F9414B;
 }
