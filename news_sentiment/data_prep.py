@@ -160,10 +160,6 @@ def generate_mpqa_data(path, out_path):
                             # space punctuation marks then check that target is isolated word
                             new_sentence = " " + re.sub('(?<! )(?=[][.,!?():;\"\'-])|(?<=[][.,!?():;\"\'-])(?! )', r' ', sentence) + " "
                             new_sentence = new_sentence.replace(" " + new_target + " ", " $T$ ").strip()
-                            print("sentence: " + new_sentence)
-                            print("target: " + target)
-                            print("sentiment: " + str(sentiment))
-                            print("")
                             if len(target.split()) <= 5 and new_sentence.count("$T$") == 1:
                                 with open(OUT_PATH, "a") as write_file:
                                     write_file.write(new_sentence + "\n")
@@ -192,4 +188,4 @@ def get_sentiment_pos_neg(sentiment_string):
         return -1
 
 
-# generate_mpqa_data("/data/database.mpqa.2.0/", "/data/mpqa.raw")
+generate_mpqa_data("/data/database.mpqa.2.0/", "/data/mpqa.raw")
