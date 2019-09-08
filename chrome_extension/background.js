@@ -29,7 +29,7 @@ function fetchUrlAndStore(urlToFetch, tabId, callback) {
       }
     });
     
-    if(filtered.length > 50) {
+    if(filtered.length > 500) {
       if(filtered != []) {
         var oldest = filtered.reduce(function(acc, val) {
           return JSON.parse(localStorage.getItem(acc)).date < JSON.parse(localStorage.getItem(val)).date ? acc : val;

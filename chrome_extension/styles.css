@@ -142,7 +142,7 @@ a:active{
 	display: inline;
 	vertical-align: middle;
 }
-.dropdown>*, #help-tip>div, #fetch-text>.tool-tip{
+#help-tip>div, #fetch-text>.tool-tip{
 	background: #232224;
 }
 .dropdown>a {
@@ -156,6 +156,7 @@ a:active{
 	position: relative;
 	text-align: center;
 	line-height: 32px;
+	background-color: black;
 }
 .dropdown>.dropdown-row {
 	display: grid;
@@ -192,7 +193,7 @@ a:active{
 	border-bottom-right-radius: 5px;
 }
 .dropdown>*:hover {
-	background-color: rgb(43, 43, 43);
+	background-color: rgb(68, 65, 65);
 }
 .publisher {
 	margin-right: 7px;
