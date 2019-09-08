@@ -1,6 +1,7 @@
 from newspaper import Article
 import spacy
 import neuralcoref
+import re
 
 class entity_getter():
     def __init__(self):
@@ -30,7 +31,20 @@ class entity_getter():
         return list({ent[4:] if ent.startswith("the ") else ent for ent in unique_relevant_entities})
 
     def get_allowed_entities_for_main_stripped(self, text):
-        unique_relevant_entities = self.get_unique_relevant_entities(text, self.ALLOWED_ENTITY_TYPES_MAIN_ENTITIES)
+        # get entities and format person
+        relevant_types = self.ALLOWED_ENTITY_TYPES_MAIN_ENTITIES
+        document = self.nlp(text)
+        entities = set()
+        for ent in document.ents:
+            # print(str(ent).split())
+            if ent.label_ == "PERSON":
+                entities = entities.union({str(ent).split()[-1]})
+            elif ent.label_ in relevant_types:
+                # print(entities.union(str(ent)))
+                entities = entities.union({str(ent)})
+        # print(entities)
+        # format and filter entities
+        unique_relevant_entities = entities
         # remove entries that have disallowed characters
         unique_relevant_entities = [ent for ent in unique_relevant_entities if not any(x in ent for x in self.DISALLOWED_CHARACTERS)]
         # remove "the "
@@ -75,11 +89,36 @@ class entity_getter():
         # clusters_by_len = sorted(document._.coref_clusters, key=len, reverse=True)[:n]
         # return [cluster.main for cluster in clusters_by_len]
 
-    # def get_coreferences(self, text, string):
-    #     document = self.nlp(text)
-    #     return [token._.coref_clusters[0].mentions for token in document if string == str(token).lower() and token._.in_coref]
-    #     # return list({token._.coref_clusters.mentions[0] for token in document if string in str(token).lower() and token._.in_coref})
-    #
+    def get_coreferences(self, text, string):
+        document = self.nlp(text)
+        index_locations = set()
+
+        # # add index of equivalent strings
+        # for i in re.finditer(string.lower(), text.lower()):
+        #     index_locations = index_locations.union({(i.start(), i.end())})
+
+        # todo check all coref clusters? if string in token??
+        for token in document:
+            if string == str(token).lower() and token._.in_coref:
+                for cluster_token_span in token._.coref_clusters[0].mentions:
+                    last_length = len(cluster_token_span[-1])
+                    index_locations = index_locations.union({(cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)})
+                    # print(len(cluster_token))
+        return sorted(list(index_locations))
+
+        # return [token._.coref_clusters[0].mentions for token in document if string == str(token).lower() and token._.in_coref]
+
+def format_text(target_locations, text):
+    REPLACE_STRING = "$T$"
+    ret_text = text
+    target_list = list()
+    length_diff = 0
+    for location in target_locations:
+        target = text[location[0]:location[1]]
+        target_list.append(target)
+        ret_text = ret_text[0:location[0] + length_diff] + "$T$" + ret_text[location[1] + length_diff:]
+        length_diff += len(REPLACE_STRING) - len(target)
+    return ret_text, target_list
 
 
 
@@ -97,8 +136,15 @@ class entity_getter():
 #     article.download()
 #     article.parse()
 #     entities = entity_getter_instance.get_n_important_entities(article.text, 6)
-#     print(entities)
-#     print(entity_getter_instance.get_coreferences(article.text, entities[0]))
+#     # print(entities)
+#     print(entities[0])
+#     # print(entity_getter_instance.get_coreferences(article.text, entities[0]))
+#     coreference_index = entity_getter_instance.get_coreferences(article.text, entities[0])
+#     # txt = article.text
+#     # for i in coreference_index:
+#     #     txt = txt[0:i[0]] + "-" * (i[1] - i[0]) + txt[i[1]:]
+#     # print(txt)
+#     print(format_text(coreference_index, article.text))
 
 #
 # for i in entity_list:
