@@ -27,6 +27,13 @@ if __name__ == "__main__":
     NUMBER_OF_MAIN_ENTITIES_STORED = 3
     KEYS_TO_STORE = ("title", "publish_date", "authors", "url", "publisher", "entities", "main_entities")
     DB = mysql.connector.connect(host="localhost", user="byebyebias", passwd="bias123", db="articles")
+    # create database if does not exist
+    cur = DB.cursor()
+    cur.execute("SHOW TABLES LIKE 'articles'")
+    result = cur.fetchone()
+    if not result:
+        cur.execute("CREATE TABLE articles (title VARCHAR(350), publish_date VARCHAR (100), authors VARCHAR(500), url VARCHAR(600), publisher VARCHAR(500), entities VARCHAR(4000), main_entities VARCHAR(1000))")
+
     # todo import PUBLISHER_DICT from text doc
     PUBLISHER_DICT = dict()
     with open(URL_PATH, "r") as url_file:
