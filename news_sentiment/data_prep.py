@@ -142,7 +142,7 @@ def generate_mpqa_data(path, out_path):
                 attitude_anns = list()
                 target_bytes = dict()
                 for j in anns_file:
-                    if any(s in j for s in ["sentiment", "other-attitude", "speculation"]):
+                    if any(s in j for s in ["pos", "neg", "other-attitude"]) and "GATE_attitude" in j:
                         attitude_properties = dict()
                         elements = j.split("\t")
                         attitude_properties["byte"] = elements[1].split(",")
@@ -163,6 +163,7 @@ def generate_mpqa_data(path, out_path):
             with open(script_dir + DOCS_REL_PATH + file) as doc_file:
                 file_string = doc_file.read().replace("\n", " ").replace("\t", " ")
                 generate_mpqa_neutrals(file_string, attitude_anns, target_bytes, SENTENCES_PATH, OUT_PATH)
+                attitude_anns = [attitude for attitude in attitude_anns if "sentiment" in attitude["attitude-type"]]
                 for attitude in attitude_anns:
                     targets = attitude["target-link"]
                     if not targets == "none":
@@ -192,7 +193,7 @@ def tokenise(sentence):
 
 def sentence_prep(sentence, target):
     temp = " " + tokenise(sentence) + " "
-    temp = temp.replace(" " + target + " ", " " + "$T$" + " ").strip()
+    temp = temp.replace(" " + target + " ", " " + "$T$" + " ").strip().strip(".").strip()
     return temp
 
 
@@ -255,4 +256,4 @@ def get_sentiment_pos_neg(sentiment_string):
         return 0
 
 
-# generate_mpqa_data("/data/database.mpqa.2.0/", "/data/mpqa.raw")
+generate_mpqa_data("/data/database.mpqa.2.0/", "/data/mpqa.raw")
