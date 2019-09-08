@@ -104,10 +104,21 @@ class entity_getter():
                     last_length = len(cluster_token_span[-1])
                     index_locations = index_locations.union({(cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)})
                     # print(len(cluster_token))
-        return list(index_locations)
+        return sorted(list(index_locations))
 
         # return [token._.coref_clusters[0].mentions for token in document if string == str(token).lower() and token._.in_coref]
 
+def format_text(target_locations, text):
+    REPLACE_STRING = "$T$"
+    ret_text = text
+    target_list = list()
+    length_diff = 0
+    for location in target_locations:
+        target = text[location[0]:location[1]]
+        target_list.append(target)
+        ret_text = ret_text[0:location[0] + length_diff] + "$T$" + ret_text[location[1] + length_diff:]
+        length_diff += len(REPLACE_STRING) - len(target)
+    return ret_text, target_list
 
 
 
@@ -129,10 +140,11 @@ class entity_getter():
 #     print(entities[0])
 #     # print(entity_getter_instance.get_coreferences(article.text, entities[0]))
 #     coreference_index = entity_getter_instance.get_coreferences(article.text, entities[0])
-#     txt = article.text
-#     for i in coreference_index:
-#         txt = txt[0:i[0]] + "-" * (i[1] - i[0]) + txt[i[1]:]
-#     print(txt)
+#     # txt = article.text
+#     # for i in coreference_index:
+#     #     txt = txt[0:i[0]] + "-" * (i[1] - i[0]) + txt[i[1]:]
+#     # print(txt)
+#     print(format_text(coreference_index, article.text))
 
 #
 # for i in entity_list:
