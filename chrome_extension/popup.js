@@ -13,7 +13,11 @@ function scoreToColor(score) {
     }
     return conversion[score];
 }
-
+/*
+function scoreToColor(score) {
+    return "#3f4246";
+}
+*/
 String.prototype.format = function () {
     var i = 0, args = arguments;
     return this.replace(/{}/g, function () {
@@ -55,7 +59,39 @@ $(window).ready(function() {
             active: event.data.active,
         });
     }
-
+    /*
+    var helpControl = {
+        domElements: {
+            barScale: $("#barScale"),
+            helpTip: $("#help-tip"),
+            explanationScores: [],
+        },
+        hideAllElements: function () {
+            this.domElements.barScale.hide();
+            this.domElements.explanationScores.forEach(function (element) {
+                element.hide();
+            })
+        },
+        showScoreText: function (score) {
+            this.hideAllElements();
+            this.domElements.barScale.show();
+            
+            var selectedScore = this.domElements.explanationScores[score-1];
+            selectedScore.show();
+        },
+        hideToolTip: function () {
+            this.domElements.helpTip.hide();
+        },
+        init: function () {
+            this.hideToolTip();
+            for(var i=1; i<=10; i++) {
+                this.domElements.explanationScores.push($("#explanationText-"+i))
+            }
+            this.hideAllElements();
+            return this;
+        }
+    }.init();
+    */
     var placeholderControl = {
         domElements: {
             instruction: $("#instruction"), 
@@ -106,7 +142,7 @@ $(window).ready(function() {
         init: function() {
             var letters = String(this.domElements.loading.text().trim());
             this.domElements.loading.html("");
-            
+
             for(var i=0; i<letters.length; i++) {
                 if(letters[i] === " ") {
                     var targetToAppend = "&nbsp;";
@@ -114,7 +150,7 @@ $(window).ready(function() {
                     var targetToAppend = letters[i];
                 }
                 this.domElements.loading.append( $("<span>").html(targetToAppend).css("animation-delay", 
-                    String((i - 20) * 2 * 0.3 / 20) + "s"));
+                    String((i/20) - 10000) + "s"));
             }
             this.hideElements();
             return this;
@@ -190,36 +226,52 @@ $(window).ready(function() {
             return this;
         }
     }.init();
-
     var cardsControl = {
         domElements: {
             cardContainer: $("#card-container"),
             get cards() {
                 return $(".card");
             },
-            content: $("#items > div.simplebar-wrapper > div.simplebar-mask > div > div > div"),
+            helpBlock: $("#helpBlock"),
+            get content() {
+                return $(this.scrollBar);
+            },
+            get scrollBarTrack() {
+                return $("#items > div.simplebar-track.simplebar-vertical");
+            },
         },
+        scrollBar: new SimpleBar($("#items")[0]),
         clearCards: function() {
             this.domElements.cardContainer.html("");
         },
+        scrollEvent: function() {
+            var div = $(this);
+            if (div.scrollTop() == 0) {
+                cardsControl.domElements.helpBlock.toggleClass("helpBlockShadow", false);
+            } else {
+                cardsControl.domElements.helpBlock.toggleClass("helpBlockShadow", true);
+            }
+        },
         changeCards: function(jsonData) {
             var container = this.domElements.cardContainer;
-            
+            container.html("");
+
             var templateCard = Handlebars.template(precompiledTemplateCard);
-            container.html(templateCard({Cards: jsonData}));
+            jsonData.map(x => container.append(templateCard(x)));
+            
+            this.domElements.cards.slice(0,-1).after("<div class='divider'></div>");
             
             placeholderControl.hideElements();
             var toggleState = this.domElements.content.prop("scrollHeight") > $("#histogram-spacer").prop("offsetHeight");
             container.toggleClass("card-scrollbar-active", toggleState);
             
-
             if(!$.parseJSON(localStorage.getItem('reduceAnimations'))) {
                 this.domElements.cards.slice(0, 6).addClass("slideIn");
             }
         },
         init: function () {
             this.clearCards();
-
+            $(this.scrollBar.getScrollElement()).scroll(this.scrollEvent);
             this.domElements.cardContainer.on("click", "a", {active:false}, clickLinkEvent)
 
             return this;
@@ -340,6 +392,10 @@ $(window).ready(function() {
                 placeholderControl.showElement(placeholderControl.domElements.empty);
             }
 
+            //cardsControl.domElements.scrollBarTrack.toggleClass("forceVisible", true);
+            //cardsControl.domElements.scrollBarTrack.css("background-color", scoreToColor(score));
+
+            //helpControl.showScoreText(score);
             scaleControl.selectedIndex = clickedIndex;
         },
         hoverOnEvent: function() {
@@ -394,7 +450,7 @@ $(window).ready(function() {
             //Note: references the original object Cards
             var cardsWithColors = data.Cards;
             cardsWithColors.forEach(function(item) {
-                item.Color = scoreToColor(item.Score);
+                //item.Color = scoreToColor(item.Score);
                 item.truncatedTitle = item.Title.trunc(95);
             });
 
