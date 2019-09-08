@@ -6,9 +6,6 @@ body {
 	margin: 0px;
 	outline-style: dashed;
 }
-* {
-	text-rendering: geometricPrecision;
-}
 #items > div.simplebar-wrapper {
 	height: 100%;
 }
@@ -26,23 +23,15 @@ a:active{
 	transition: 2s;
 }
 #helpBlock {
+	z-index: 10;
 	grid-column: 1/2;
 	grid-row: 1/2;
 	background-color: #292b2e;
 	padding-top: 3px;
 	padding-left: 3px;
 }
-#help-tip {
-	width: 22px;
-	height: 22px;
-	border-radius: 50%;
-	font-size: 16px;
-	line-height: 22px;
-	text-align: center;
-	font-weight: bold;
-	background: #B9BBBE;
-	color: rgb(68, 70, 73);
-	margin-bottom: 5px;
+.helpBlockShadow {
+	box-shadow: 0 1px 0 rgba(0,0,0,.2), 0 1.5px 0 rgba(0,0,0,.05), 0 2px 0 rgba(0,0,0,.05), 0 3px 0 rgba(0,0,0,.05);
 }
 #settings {
 	z-index: 200;
@@ -59,7 +48,12 @@ a:active{
 	text-align: center;
 	height: 100%;
 	position: relative;
+}
+#dots, #help-tip {
 	user-select: none;
+}
+#fetch-text>.tool-tip, #help-tip>.tool-tip {
+	user-select: text;
 }
 #items {
 	grid-row: 2/3;
@@ -74,48 +68,81 @@ a:active{
 	grid-row: 2/3;
 	position: relative;
 }
+.underline {
+	border-bottom: 1px dotted;
+	margin-bottom: -3px;
+}
 .card-scrollbar-active {
 	margin-right: 13px;
 }
 #card-container {
+	/*
 	padding-right: 8px;
 	padding-left: 8px;
+	*/
 	overflow-x: hidden;
 }
-.slideIn {
-	animation-name: slideIn;
-	animation-duration: 0.15s;
-	animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+.card:hover {
+	background-color: #9395982a;
 }
 .card {
-	color: rgb(232, 236, 247);
+	font-family: 'Roboto', sans-serif;
+	color: rgb(240, 242, 250);
 	padding: 3.75px;
+	padding-right: 11px;
+	background-color: #424346;
+	/*
 	margin-bottom: 12px;
 	box-shadow: 2px 3px 1px rgba(32,34,37,.7), 2px 4px 0.5px rgba(0,0,0,.06);
+	*/
 	cursor: pointer;
 	position: relative;
 }
+.divider {
+	width: 75%;
+	border-bottom-color: hsla(0,0%,100%,.04);
+	border-bottom: 1.4px solid transparent;
+	/*
+	background: linear-gradient(0.25turn, rgba(102, 104, 108, 0.39), rgba(102, 104, 108, 0.2));
+	*/
+}
+.divider::after {
+	content: "";
+	width: auto;
+	border-bottom-color: red;
+	border-bottom: 1.4px solid transparent;
+	/*
+	background: linear-gradient(0.25turn, rgba(102, 104, 108, 0.39), rgba(102, 104, 108, 0.2));
+	*/
+}
+.slideIn {
+	animation-name: slideIn;
+	animation-duration: 0.20s;
+	animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+}
 @keyframes slideIn {
-	from {transform: translateX(calc(0px - 100% - 8px));}
+	from {transform: translateX(calc(0px + 100% + 8px));}
 	to {transform: translateX(0px);}
-  }
+}
+/*
 #items a:first-child .card {
 	margin-top: 4px;
 }
 #items a:last-child .card {
 	margin-bottom: 4px;
 }
+*/
 .info {
 	margin-top: 7px;
+	margin-bottom: 1px;
 	line-height: 16px;
+	font-size: 13px;
 }
 .info * {
 	display: inline;
 	vertical-align: middle;
-	font-size: 12px;
-	shape-rendering: crispEdges;
 }
-.dropdown>*, #help-tip>div{
+.dropdown>*, #help-tip>div, #fetch-text>.tool-tip{
 	background: #232224;
 }
 .dropdown>a {
@@ -154,91 +181,119 @@ a:active{
 	pointer-events: none;
 	height: 20px;
 	width: 20px;
-	filter: invert(99%) sepia(46%) saturate(2%) hue-rotate(189deg) brightness(112%) contrast(100%);
+	filter: invert(88%) sepia(0%) saturate(62%) hue-rotate(147deg) brightness(99%) contrast(85%);
 }
-.first-row, #help-tip > div, #dots > div {
+.first-row, .tool-tip, #dots > div {
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 }
-.last-row, #help-tip > div, #dots > div {
+.last-row, .tool-tip, #dots > div {
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 }
 .dropdown>*:hover {
-	background-color: rgb(19, 19, 19);
+	background-color: rgb(43, 43, 43);
 }
 .publisher {
-	margin-right: 6px;
+	margin-right: 7px;
 }
 .info-icon {
 	width: 14px;
 	height: 14px;
-	filter: invert(77%) sepia(6%) saturate(113%) hue-rotate(177deg) brightness(97%) contrast(88%);
+	filter: invert(91%) sepia(3%) saturate(1038%) hue-rotate(194deg) brightness(105%) contrast(94%);
 	pointer-events: none;
+	vertical-align: sub;
 }
 .title {
-	font-weight: 750;
 	margin-bottom: 1.5px;
-	font-size: 16px;
+	font-size: 1rem;
+}
+.info {
+	color: rgb(208, 208, 208);
 }
 .date {
-	font-size: 11.25px;
+	color: #bfc4cc;
+	font-size: .8rem;
 }
-#items>div.simplebar-track.simplebar-vertical {
-	background-color: #5F5F5F;
-	border-radius: 10px;
-	transform: scaleX(0.90);
+#help-tip {
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	font-size: 16px;
+	line-height: 22px;
+	text-align: center;
+	font-weight: bold;
+	background: #B9BBBE;
+	color: rgb(68, 70, 73);
+	margin-bottom: 5px;
 }
-#help-tip:hover>div {
+#help-tip:hover>.tool-tip, #fetch-text:hover>.tool-tip {
 	display: block;
 	opacity: 1.0;
 	pointer-events: auto;
 }
-#help-tip>div {
-	padding: 15px;
-	transition: opacity 0.2s linear;
-	opacity: 0.0;
-	pointer-events: none;
-	width: 300px;
-	top: 5.25px;
-	text-align: left;
+#fetch-text {
 	position: relative;
 }
-#help-tip>div:after{
-   /* Prevents the tooltip from being hidden */
-	width:100%;
-	height:40px;
-	content:'';
+#fetch-text>.tool-tip {
 	position: absolute;
-	top:-40px;
-	left:0;
+	top: 24px;
+	min-width: 165px;
 }
-.tool-tip>div {
+#fetch-text>.tool-tip::before {
+	top: -12px;
+}
+.tool-tip {
+	padding: 6px;
+	transition: opacity 0.2s linear;
+	opacity: 0.0;
+	text-align: left;
+	pointer-events: none;
+	line-height: 22px;
+}
+.popup {
 	z-index: 50;
 	box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 	color: rgb(215, 216, 219);
 	font-size: 13px;
 }
-#help-tip>div:before {
-   /* The pointer of the tooltip */
+.tool-tip::before {
 	position: absolute;
 	content: '';
 	width: 0;
 	height: 0;
 	border: 6px solid transparent;
 	border-bottom-color: #232224;
+}
+#help-tip>div {
+	position: relative;
+	width: 300px;
+	top: 5.25px;
+}
+/*
+#help-tip>div:after{
+	 width:100%;
+	 height:40px;
+	 content:'';
+	 position: absolute;
+	 top:-40px;
+	 left:0;
+ }
+ */
+#help-tip>div::before {
+   /* The pointer of the tooltip */
 	left: 5px;
 	top: -11px;
 }
 #scaleRectangle {
 	height: 12.5px;
-	background: linear-gradient(0.25turn, #F9414B, rgb(9, 87, 255));
+	background: linear-gradient(0.25turn, #F9414B, rgb(59, 90, 224));
 	width: auto;
 }
 .left-align, .right-align {
 	display: inline-block;
 	width: 50%;
-	padding-bottom: 6px;
+	padding-bottom: 7px;
 }
 .left-align {
 	float: left;
@@ -247,13 +302,28 @@ a:active{
 	float: right;
 	text-align: right;
 }
+.simplebar-track.simplebar-vertical .simplebar-scrollbar:before {
+	top: 0px;
+	bottom: -1px;
+}
 #items > div.simplebar-track.simplebar-vertical {
-	margin: 3px 5px 6px 0px;
-	background-color: rgb(68, 68, 68);
+	pointer-events: auto;
+	z-index: 20;
+	margin: 0px;
+	background-color: #5F5F5F;
+	transform: scaleX(0.90);
+}
+.forceVisible {
+	visibility: visible !important;
+}
+.simplebar-scrollbar {
+	right: 0;
+	width: 100%;
 }
 #items > div.simplebar-track.simplebar-vertical > div::before {
 	opacity: 1;
 	background-color: #2f3033;
+	border-radius: 0px;
 }
 #placeholder {
 	display: table;
@@ -284,16 +354,9 @@ a:active{
 	grid-template-columns: 250px;
 }
 .histogram-line-spacer > .histogram-line, .selection-line, #bar-scale > div{
-	background-image: repeating-linear-gradient(180deg, #F9414B, rgb(9, 87, 255) 350px);
+	background-image: repeating-linear-gradient(180deg, #F9414B, rgb(59, 90, 224) 350px);
 	background-position: 29px 29px;
 	background-attachment: fixed;
-}
-.animatedColorGradient {
-	animation: gradientShift 2s ease-in-out infinite alternate;
-}
-@keyframes gradientShift { 
-    0%{color:rgb(115, 159, 253)}
-    100%{color:#F9414B}
 }
 /*
 #loading {
@@ -377,8 +440,10 @@ a:active{
 .selection-line {
 	transition: width 0.423s cubic-bezier(0.165, 0.84, 0.44, 1);
 	float: right;
+	/*
 	border-top-left-radius: 2.5px;
 	border-bottom-left-radius: 2.5px;
+	*/
 	height: 2.5px;
 	width: 0px;
 }
@@ -429,15 +494,22 @@ a:active{
 	box-sizing: content-box;
 	pointer-events: none;
 }
-@keyframes wave {
-	from { transform : translateY(0); color: white; }
-	to   { transform : translateY( -2.5px ); }
+.animatedColorGradient {
+	animation: gradientShift 2s linear infinite alternate;
 }
-  
+@keyframes gradientShift { 
+    from {color:rgb(59, 90, 224)}
+    to {color:#F9414B}
+}
+@keyframes wave {
+	from { transform : translateY(0); }
+	to   { transform : translateY(0.36px); }
+}
 #loading span {
 	display: inline-block;
-	animation-duration: 0.3s;
-	animation-name: wave;
+	animation-duration: 0.70s;
+	animation-name: gradientShift, wave;
+	animation-timing-function: linear;
 	animation-iteration-count: infinite;
 	animation-direction: alternate;
 }

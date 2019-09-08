@@ -5,26 +5,27 @@
       <script src="simplebar.min.js"></script>
       <link rel="stylesheet" href="./styles.css">
       <link href="https://fonts.googleapis.com/css?family=Cabin+Condensed" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
       <script src="handlebars.runtime.min.js"></script>
       <script src="jquery-3.4.1.min.js"></script>
       <script src="template.js"></script>
       <script src="popup.js"></script>
       <script src="anime.min.js"></script>
       <script id="card_template" type="text/x-handlebars-template">
-         {{#each Cards}}
          <a href="{{this.URL}}">
-            <div class="card" style="background-color: {{Color}}" title="{{this.Title}}">
+            <div class="card"  title="{{this.Title}}">
             <div class="title">{{{this.truncatedTitle}}}</div>
             <div class="date">{{this.Date}}</div>
             <div class="info">
-               <object type="image/svg+xml" data="./info_icon.svg" class="info-icon"></object>
-               <div class="publisher">{{this.Publisher}}</div>
-               <object type="image/svg+xml" data="./head_icon.svg" class="info-icon"></object>
-               <div class="author">{{this.Author}}</div>
+               <!--
+                  <object type="image/svg+xml" data="./info_icon.svg" class="info-icon"></object>
+                  <object type="image/svg+xml" data="./head_icon.svg" class="info-icon"></object>
+               -->
+               <div class="publisher">Publisher: {{this.Publisher}}</div>
+               <div class="author">Author: {{this.Author}}</div>
             </div>
             </div>
          </a>
-         {{/each}}
       </script>
    </head>
    <body>
@@ -66,26 +67,60 @@
             </div>
          </div>
          <div id="helpBlock">
-            <div id="help-tip" class="tool-tip">
+            <div id="help-tip">
                ?
                <span id="title">Bye bye bias</span>
-               <div>
-                  <b>Score meaning:</b>
-                  <div id="scaleRectangle"></div>
-                  <div class="left-align">
-                     Positive
-                  </div>
-                  <div class="right-align">
-                     Negative
-                  </div>
-                  <br>
-                     Lolor sit amet, modus suscipit appetere an duo, suas idque postulant an vix. Ei omnes forensibus incorrupte quo, hinc conclusionemque no nam. At quo sale rebum numquam, an enim dicat per. Laudem fastidii conceptam ei vis. Insolens erroribus est ad, aeque inermis et mea.
+               <div class="tool-tip popup">
+                  <span id="barScale">
+                     <b>Score meaning:</b>
+                     <div id="scaleRectangle"></div>
+                     <div class="left-align">
+                        Positive
+                     </div>
+                     <div class="right-align">
+                        Negative
+                     </div>
+                     <br>
+                  </span>
+                  This extension collates other news articles and ranks them on their positive or negative sentiment to the same topic. A positive sentiment can express happiness, enthusiasm, kindness and such. A negative sentiment can indicate disagreement, anger or criticism towards the same topic.
+               <!--
+                  <span id="explanationText-1">
+                     This article is strongly in favour of the topic.
+                  </span>
+                  <span id="explanationText-2">
+                     This article is very in favour of the topic.
+                  </span>
+                  <span id="explanationText-3">
+                     This article is fairly in favour of the topic.
+                  </span>
+                  <span id="explanationText-4">
+                     This article is mildly in favour of the topic.
+                  </span>
+                  <span id="explanationText-5">
+                     This article is fairly neutral on the topic.
+                  </span>
+                  <span id="explanationText-6">
+                     This article is fairly neutral on the topic.
+                  </span>
+                  <span id="explanationText-7">
+                     This is article is mildly against the topic.
+                  </span>
+                  <span id="explanationText-8">
+                     This article is fairly against the topic.
+                  </span>
+                  <span id="explanationText-9">
+                     This article is very against the topic.
+                  </span>
+                  <span id="explanationText-10">
+                     This article is strongly against the topic.
+                  </span>
+               -->
                </div>
             </div>
          </div>
          <div id="settings">
-            <div id="dots" class="tool-tip active-target">&#8942
-               <div class="dropdown">
+            <div id="dots" class="active-target">&#8942
+               <div class="dropdown popup">
                   <a class="dropdown-row first-row" href="https://www.haileybury.com.au/">
                      <div>
                         Who we are
@@ -105,7 +140,11 @@
                   </div>
                   <div class="dropdown-row last-row">
                      <div>
-                        Fetch data on page load
+                        <span id="fetch-text" class="underline">Fetch data on page load
+                           <div class="tool-tip popup">
+                                 If enabled, the extension will automatically download the required data when a new webpage has been loaded. This may increase the page's loading time.
+                              </div>
+                        </span>
                      </div>
                      <div class="icon-control">
                         <input type="checkbox" class="toggleBar" id="fetchOnLoad">
@@ -115,13 +154,13 @@
                </div>
             </div>
          </div>
-         <div id="items" data-simplebar data-simplebar-auto-hide="false">
+         <div id="items">
             <div id="card-container"></div>
             <div id="placeholder">
                <div id="instruction" class="placeholder-text">
                   Click on the scale to reveal other sites...
                </div>
-               <div id="loading" class="placeholder-text animatedColorGradient">
+               <div id="loading" class="placeholder-text">
                   Loading please wait
                </div>
                <div id="empty" class="placeholder-text">
