@@ -1,0 +1,8 @@
+www.abc.net.au;ABC
+www.theguardian.com;The Guardian
+www.news.com.au;news.com.au
+www.smh.com.au;Sydney Morning Herald
+www.canberratimes.com.au;Canberra Times
+www.economist.com;Economist
+www.bloomberg.com;Bloomberg
+www.nytimes.com;New York Times

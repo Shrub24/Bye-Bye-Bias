@@ -108,17 +108,88 @@ class entity_getter():
 
         # return [token._.coref_clusters[0].mentions for token in document if string == str(token).lower() and token._.in_coref]
 
-def format_text(target_locations, text):
-    REPLACE_STRING = "$T$"
-    ret_text = text
-    target_list = list()
-    length_diff = 0
-    for location in target_locations:
-        target = text[location[0]:location[1]]
-        target_list.append(target)
-        ret_text = ret_text[0:location[0] + length_diff] + "$T$" + ret_text[location[1] + length_diff:]
-        length_diff += len(REPLACE_STRING) - len(target)
-    return ret_text, target_list
+    def get_sentence_target_tuples(self, text, string):
+        document = self.nlp(text)
+        current_indexes = dict()
+        sentence_target_tuples = list()
+
+        # # add index of equivalent strings
+        # for i in re.finditer(string.lower(), text.lower()):
+        #     index_locations = index_locations.union({(i.start(), i.end())})
+
+        # todo check all coref clusters? if string in token??
+        for token in document:
+            if string == str(token).lower() and token._.in_coref:
+                for cluster_token_span in token._.coref_clusters[0].mentions:
+                    sentence = cluster_token_span.sent
+                    last_length = len(cluster_token_span[-1])
+                    index_location = (cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)
+                    if index_location not in current_indexes:
+                        current_indexes[index_location] = True
+                        sentence_target_tuples.append((str(sentence), (index_location[0] - sentence.start_char, index_location[1] - sentence.start_char)))
+                    # print(len(cluster_token))
+        return sentence_target_tuples
+
+
+class text_entity_getter(entity_getter):
+    def __init__(self, text):
+        super().__init__()
+        self.document = self.nlp(text)
+
+    def get_unique_relevant_entities_stripped(self):
+        unique_relevant_entities = list({str(ent) for ent in self.document.ents if (ent.label_ in self.RELEVANT_ENTITY_TYPES)})
+        # remove entries that have disallowed characters
+        unique_relevant_entities = [ent for ent in unique_relevant_entities if not any(x in ent for x in self.DISALLOWED_CHARACTERS)]
+        # remove "the "
+        return list({ent[4:] if ent.startswith("the ") else ent for ent in unique_relevant_entities})
+
+
+    def get_n_important_entities(self, n):
+        entity_occurences = dict()
+        for cluster in self.document._.coref_clusters:
+            raw_entity_string = str(cluster.main)
+            occurences = len(cluster)
+            # if discernible ners add ners to entities
+            ners = self.get_allowed_entities_for_main_stripped(raw_entity_string)
+            if ners:
+                entities = ners
+            else:
+                entities = []
+            for entity in entities:
+                # check entity is long enough and lowercase everything in final dict
+                if len(entity.split()) <= self.ENTITY_LENGTH_CAP:
+                    if entity.lower() in entity_occurences:
+                        entity_occurences[entity.lower()] += occurences
+                    else:
+                        entity_occurences[entity.lower()] = occurences
+        return sorted(list(entity_occurences.keys()), key=lambda x: entity_occurences[x], reverse=True)[:n]
+
+    def get_sentence_target_tuples(self, string):
+        current_indexes = dict()
+        sentence_target_tuples = list()
+        for token in self.document:
+            if string == str(token).lower() and token._.in_coref:
+                for cluster_token_span in token._.coref_clusters[0].mentions:
+                    sentence = cluster_token_span.sent
+                    last_length = len(cluster_token_span[-1])
+                    index_location = (cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)
+                    if index_location not in current_indexes:
+                        current_indexes[index_location] = True
+                        sentence_target_tuples.append((str(sentence), (index_location[0] - sentence.start_char, index_location[1] - sentence.start_char)))
+        return sentence_target_tuples
+
+
+# def format_text(target_locations, text):
+#     REPLACE_STRING = "$T$"
+#     ret_text = text
+#     target_list = list()
+#     length_diff = 0
+#     for location in target_locations:
+#         target = text[location[0]:location[1]]
+#         target_list.append(target)
+#         ret_text = ret_text[0:location[0] + length_diff] + "$T$" + ret_text[location[1] + length_diff:]
+#         length_diff += len(REPLACE_STRING) - len(target)
+#     return ret_text, target_list
 
 
 
@@ -139,12 +210,14 @@ def format_text(target_locations, text):
 #     # print(entities)
 #     print(entities[0])
 #     # print(entity_getter_instance.get_coreferences(article.text, entities[0]))
-#     coreference_index = entity_getter_instance.get_coreferences(article.text, entities[0])
+#     # coreference_index = entity_getter_instance.get_coreferences(article.text, entities[0])
 #     # txt = article.text
 #     # for i in coreference_index:
 #     #     txt = txt[0:i[0]] + "-" * (i[1] - i[0]) + txt[i[1]:]
 #     # print(txt)
-#     print(format_text(coreference_index, article.text))
+#     ret = entity_getter_instance.get_sentence_target_lists(article.text, entities[0])
+#     for i, val in enumerate(ret[0]):
+#         print(val[:ret[1][i][0]] + "$T$" + val[ret[1][i][1]:])
 
 #
 # for i in entity_list:
