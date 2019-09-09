@@ -15,9 +15,9 @@ def get_doc_sentiment(x, model):
 
 
 def load_model(PATH):
-    net = Net()
-    net.load_state_dict(torch.load(PATH))
-    return net
+    model = Net()
+    model.load_state_dict(torch.load(PATH))
+    return model
 
 
 if __name__ == "__main__":

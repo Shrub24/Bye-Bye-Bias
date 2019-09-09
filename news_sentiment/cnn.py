@@ -25,11 +25,11 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 try:
     file = open(os.path.join("embedding_model", EMBEDDING_NAME), 'rb')
-    model = pkl.load(file)
+    embed_model = pkl.load(file)
 except FileNotFoundError:
-    model = load_glove_model(EMBEDDING)
+    embed_model = load_glove_model(EMBEDDING)
     file = open(os.path.join("embedding_model", EMBEDDING_NAME), 'wb')
-    pkl.dump(model, file)
+    pkl.dump(embed_model, file)
 
 
 filter_size = 5
@@ -99,7 +99,7 @@ def train(net, train_x, train_y, test_x, test_y, num_epochs=15, batch_size=8, le
         for i in range(len(x_batches)):
             net.train()
 
-            x = embed_to_tensor(x_batches[i], model, max_sentence_length, window_size)
+            x = embed_to_tensor(x_batches[i], embed_model, max_sentence_length, window_size)
 
             labels = torch.tensor([j+1 for j in y_batches[i]], dtype=torch.long)
 
@@ -139,7 +139,7 @@ def train(net, train_x, train_y, test_x, test_y, num_epochs=15, batch_size=8, le
             net.eval()
 
             for i in range(len(test_x_batches)):
-                x = embed_to_tensor(test_x_batches[i], model, max_sentence_length, window_size)
+                x = embed_to_tensor(test_x_batches[i], embed_model, max_sentence_length, window_size)
 
                 labels = torch.tensor([j + 1 for j in test_y_batches[i]], dtype=torch.long)
 
@@ -175,7 +175,7 @@ def forward_prop(x, net):
         length = len(x[0][0]) + len(x[0][1]) - 1
     else:
         length = max_sentence_length
-    inputs = embed_to_tensor(x, model, length, window_size)
+    inputs = embed_to_tensor(x, embed_model, length, window_size)
     outputs = net(inputs)
     return torch.argmax(outputs, dim=1).item() - 1
 
