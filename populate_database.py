@@ -24,6 +24,7 @@ def add_to_database(dict, db, table):
 if __name__ == "__main__":
     enttity_getter_instance = entity_getter()
     URL_PATH = "urls.txt"
+    PUBLISHER_PATH = "publishers.txt"
     NUMBER_OF_MAIN_ENTITIES_STORED = 3
     KEYS_TO_STORE = ("title", "publish_date", "authors", "url", "publisher", "entities", "main_entities")
     DB = mysql.connector.connect(host="localhost", user="byebyebias", passwd="bias123", db="articles")
@@ -34,13 +35,18 @@ if __name__ == "__main__":
     if not result:
         cur.execute("CREATE TABLE articles (title VARCHAR(350), publish_date VARCHAR (100), authors VARCHAR(500), url VARCHAR(600), publisher VARCHAR(500), entities VARCHAR(4000), main_entities VARCHAR(1000))")
 
-    # todo import PUBLISHER_DICT from text doc
+    # import PUBLISHER_DICT from text doc
     PUBLISHER_DICT = dict()
+    with open(PUBLISHER_PATH) as publish_file:
+        for line in publish_file:
+            split = line.split(";")
+            PUBLISHER_DICT[split[0]] = split[1].strip()
+
     with open(URL_PATH, "r") as url_file:
         for url in url_file:
             article_info = scrape_article(url.strip())
             # todo get part of url pertaining to publisher
-            url_publisher = url
+            url_publisher = url.split("/")[2]
             if url_publisher in PUBLISHER_DICT:
                 article_info["publisher"] = PUBLISHER_DICT[url_publisher]
             else:
