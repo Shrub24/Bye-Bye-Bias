@@ -1,5 +1,5 @@
-from cnn import *
-from data_prep import *
+from news_sentiment.cnn import *
+from news_sentiment.data_prep import *
 import numpy as np
 
 

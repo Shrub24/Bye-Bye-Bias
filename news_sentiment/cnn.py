@@ -7,7 +7,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.nn import Conv2d, Linear, Dropout, AdaptiveMaxPool2d
 import os
-from data_prep import *
+from news_sentiment.data_prep import *
 import pickle as pkl
 from torch.utils.tensorboard import SummaryWriter
 from matplotlib import pyplot as plt
