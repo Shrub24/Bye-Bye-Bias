@@ -1,6 +1,5 @@
 from newspaper import Article
 from preprocessing.article_entities import entity_getter
-# from news_sentiment import main
 import json
 import mysql.connector
 
