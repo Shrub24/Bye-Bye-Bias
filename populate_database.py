@@ -6,10 +6,10 @@ import mysql.connector
 
 
 def scrape_article(article_url):
-    article = Article(url=article_url)
+    print(article_url.strip())
+    article = Article(url=article_url.strip())
     article.download()
     article.parse()
-    print(article_url)
     return {"title": article.title, "publish_date": article.publish_date.strftime("%x"), "authors": ", ".join(article.authors), "text": article.text, "url": article_url}
 
 
@@ -84,3 +84,4 @@ def get_all_entities(text_list, entity_getter_instance):
 # def get_main_entities(text_list, entity_getter_instance, num_main_entities):
 #     return [entity_getter_instance.get_n_important_entities(text, num_main_entities) for text in text_list]
 
+# populate_database()
