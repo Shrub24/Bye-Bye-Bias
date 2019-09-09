@@ -273,4 +273,4 @@ def get_sentiment_pos_neg(sentiment_string):
         return 0
 
 
-generate_mpqa_data("/data/database.mpqa.2.0/", "/data/mpqa.raw")
+# generate_mpqa_data("/data/database.mpqa.2.0/", "/data/mpqa.raw")
