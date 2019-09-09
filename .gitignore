@@ -1,8 +1,7 @@
 
 *.xml
-news_sentiment/embedding_model/glove.twitter.27B.100d
-news_sentiment/embeddings/glove.twitter.27B.100d.txt
-news_sentiment/__pycache__/data_prep.cpython-36.pyc
+embedding_model/glove.twitter.27B.100d
+embeddings/glove.twitter.27B.100d.txt
 *.xml___jb_tmp___
-news_sentiment/__pycache__/data_prep.cpython-36.pyc
-news_sentiment/__pycache__/data_prep.cpython-36.pyc
+*.iml
+

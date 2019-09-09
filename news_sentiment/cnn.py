@@ -7,42 +7,36 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.nn import Conv2d, Linear, Dropout, AdaptiveMaxPool2d
 import os
-from data_prep import *
+from news_sentiment.data_prep import *
 import pickle as pkl
 from torch.utils.tensorboard import SummaryWriter
 from matplotlib import pyplot as plt
 
-
-print("Loading model files...")
-
-MODEL_PATH = "models\\cnn3.pkl"
-
-EMBEDDING_NAME = "glove.twitter.27B.100d"
-EMBEDDING = os.path.join("embeddings", EMBEDDING_NAME + ".txt")
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-try:
-    file = open(os.path.join("embedding_model", EMBEDDING_NAME), 'rb')
-    model = pkl.load(file)
-except FileNotFoundError:
-    model = load_glove_model(EMBEDDING)
-    file = open(os.path.join("embedding_model", EMBEDDING_NAME), 'wb')
-    pkl.dump(model, file)
+def load_embedding(path):
+    if os.path.exists(path):
+        file = open(EMBEDDING_PATH, 'rb')
+        embed_model = pkl.load(file)
+    else:
+        embed_model = load_glove_model(EMBEDDING)
+        file = open(EMBEDDING_PATH, 'wb')
+        pkl.dump(embed_model, file)
+    return embed_model
 
 
-filter_size = 5
-window_size = 2
-padding = math.ceil((filter_size - 1)/2)
-max_sentence_length = 100
+FILTER_SIZE = 5
+WINDOW_SIZE = 2
+PADDING = math.ceil((filter_size - 1)/2)
+MAX_SENTENCE_LENGTH = 100
 
 
 class Net(nn.Module):
 
     def __init__(self):
         super(Net, self).__init__()
-        self.conv = Conv2d(2, 512, (filter_size, 100), padding=(padding, 0))
+        self.conv = Conv2d(2, 512, (FILTER_SIZE, 100), padding=(PADDING, 0))
         self.max_pooling = AdaptiveMaxPool2d((1, 1))
         self.fc1 = Linear(512, 256)
         self.fc2 = Linear(256, 3)
@@ -60,17 +54,12 @@ class Net(nn.Module):
         return x
 
 
-label_names = ["negative, neutral, positive"]
-
-data_path = "data\\acl-14-short-data"
-train_path = os.path.join(data_path, "train.raw")
-test_path = os.path.join(data_path, "test.raw")
-mpqa_path = os.path.join("data", "mpqa.raw")
-
-train_x, train_y, test_x, test_y = prep_mpqa_data(mpqa_path)
+LABEL_NAMES = ["negative, neutral, positive"]
 
 
-def train(net, train_x, train_y, test_x, test_y, num_epochs=15, batch_size=8, learning_rate=0.0001, write=True):
+def train(net, train_x, train_y, test_x, test_y, embed_model, num_epochs=15, batch_size=8, learning_rate=0.0001, write=True, ):
+    # train_x, train_y, test_x, test_y = prep_mpqa_data(mpqa_path)
+
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(net.parameters(), lr=learning_rate)
 
@@ -99,7 +88,7 @@ def train(net, train_x, train_y, test_x, test_y, num_epochs=15, batch_size=8, le
         for i in range(len(x_batches)):
             net.train()
 
-            x = embed_to_tensor(x_batches[i], model, max_sentence_length, window_size)
+            x = embed_to_tensor(x_batches[i], embed_model, MAX_SENTENCE_LENGTH, WINDOW_SIZE)
 
             labels = torch.tensor([j+1 for j in y_batches[i]], dtype=torch.long)
 
@@ -139,7 +128,7 @@ def train(net, train_x, train_y, test_x, test_y, num_epochs=15, batch_size=8, le
             net.eval()
 
             for i in range(len(test_x_batches)):
-                x = embed_to_tensor(test_x_batches[i], model, max_sentence_length, window_size)
+                x = embed_to_tensor(test_x_batches[i], embed_model, MAX_SENTENCE_LENGTH, window_size)
 
                 labels = torch.tensor([j + 1 for j in test_y_batches[i]], dtype=torch.long)
 
@@ -159,9 +148,6 @@ def train(net, train_x, train_y, test_x, test_y, num_epochs=15, batch_size=8, le
             writer.add_scalar("accuracy/train", epoch_correct / epoch_samples, epoch)
             writer.add_scalar("accuracy/val", correct / samples, epoch)
 
-        # writer.add_scalars("epoch loss", {"validation": running_loss / len(test_x_batches), "train": epoch_loss / len(x_batches)}, epoch)
-        # writer.add_scalars("epoch accuracy", {"validation": correct / samples, "train": epoch_correct / epoch_samples}, epoch)
-
         torch.save(net.state_dict(), MODEL_PATH)
 
     print("finished training!")
@@ -170,33 +156,12 @@ def train(net, train_x, train_y, test_x, test_y, num_epochs=15, batch_size=8, le
     return running_loss/len(test_x_batches)
 
 
-def forward_prop(x, net):
+def forward_prop(x, net, embed):
     if len(x) == 1:
         length = len(x[0][0]) + len(x[0][1]) - 1
     else:
-        length = max_sentence_length
-    inputs = embed_to_tensor(x, model, length, window_size)
+        length = MAX_SENTENCE_LENGTH
+    inputs = embed_to_tensor(x, embed, length, WINDOW_SIZE)
     outputs = net(inputs)
     return torch.argmax(outputs, dim=1).item() - 1
-
-
-net = Net()
-
-
-# if input("Load state_dict (y/n)").lower() == "y":
-#     try:
-#         net.load_state_dict(torch.load(MODEL_PATH))
-#     except FileNotFoundError:
-#         print("no valid model state_dicts")
-# else:
-#     train(net, train_x, train_y, test_x, test_y, num_epochs=10)
-
-
-# for i, j in zip(test_x, test_y):
-#     print(" ".join([j.decode() for j in i[0]]))
-#     print(" ".join([j.decode() for j in i[1]]))
-#     print(forward_prop([i]).item() - 1)
-#     print(j)
-#     print()
-
 

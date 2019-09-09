@@ -1,7 +1,9 @@
 from newspaper import Article
 # from news_sentiment import main
+from preprocessing.article_entities import entity_getter
 import json
 import mysql.connector
+
 
 def scrape_article(article_url):
     article = Article(url=article_url)
@@ -10,6 +12,7 @@ def scrape_article(article_url):
     print(article_url)
     return {"title": article.title, "publish_date": article.publish_date.strftime("%x"), "authors": ", ".join(article.authors), "text": article.text, "url": article_url}
 
+
 # adds entry to mysql database given by values of dict corresponding to column titles of dict keys
 # no apostrophes allowed in keys
 def add_to_database(dict, db, table):
@@ -17,6 +20,7 @@ def add_to_database(dict, db, table):
     insert_command = "INSERT INTO " + table + " (" + str(dict.keys())[11:-2].replace("'", "") + ") VALUES (" + str(dict.values())[13:-2] + ");"
     cur.execute(insert_command)
     db.commit()
+
 
 # todo validate urls (check for errors when processing)
 # todo add create database condition
