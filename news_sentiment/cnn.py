@@ -16,19 +16,21 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def load_embedding(path):
-    if os.path.exists(path):
-        file = open(EMBEDDING_PATH, 'rb')
-        embed_model = pkl.load(file)
-    else:
-        embed_model = load_glove_model(EMBEDDING)
-        file = open(EMBEDDING_PATH, 'wb')
-        pkl.dump(embed_model, file)
+    file = open(path, 'rb')
+    embed_model = pkl.load(file)
+    return embed_model
+
+
+def create_embedding(path):
+    embed_model = load_glove_model(path)
+    file = open(path, 'wb')
+    pkl.dump(embed_model, file)
     return embed_model
 
 
 FILTER_SIZE = 5
 WINDOW_SIZE = 2
-PADDING = math.ceil((filter_size - 1)/2)
+PADDING = math.ceil((FILTER_SIZE - 1)/2)
 MAX_SENTENCE_LENGTH = 100
 
 
@@ -57,8 +59,7 @@ class Net(nn.Module):
 LABEL_NAMES = ["negative, neutral, positive"]
 
 
-def train(net, train_x, train_y, test_x, test_y, embed_model, num_epochs=15, batch_size=8, learning_rate=0.0001, write=True, ):
-    # train_x, train_y, test_x, test_y = prep_mpqa_data(mpqa_path)
+def train(net, train_x, train_y, test_x, test_y, embed_model, num_epochs=15, batch_size=8, learning_rate=0.0001, write=True, save_path="models\\cnn.pkl"):
 
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(net.parameters(), lr=learning_rate)
@@ -128,7 +129,7 @@ def train(net, train_x, train_y, test_x, test_y, embed_model, num_epochs=15, bat
             net.eval()
 
             for i in range(len(test_x_batches)):
-                x = embed_to_tensor(test_x_batches[i], embed_model, MAX_SENTENCE_LENGTH, window_size)
+                x = embed_to_tensor(test_x_batches[i], embed_model, MAX_SENTENCE_LENGTH, WINDOW_SIZE)
 
                 labels = torch.tensor([j + 1 for j in test_y_batches[i]], dtype=torch.long)
 
@@ -148,7 +149,7 @@ def train(net, train_x, train_y, test_x, test_y, embed_model, num_epochs=15, bat
             writer.add_scalar("accuracy/train", epoch_correct / epoch_samples, epoch)
             writer.add_scalar("accuracy/val", correct / samples, epoch)
 
-        torch.save(net.state_dict(), MODEL_PATH)
+        torch.save(net.state_dict(), save_path)
 
     print("finished training!")
     if write:
