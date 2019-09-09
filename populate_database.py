@@ -1,4 +1,5 @@
 from newspaper import Article
+# from news_sentiment import main
 from preprocessing.article_entities import entity_getter
 import json
 import mysql.connector
@@ -23,11 +24,7 @@ def add_to_database(dict, db, table):
 
 # todo validate urls (check for errors when processing)
 # todo add create database condition
-if __name__ == "__main__":
-    enttity_getter_instance = entity_getter()
-    URL_PATH = "urls.txt"
-    NUMBER_OF_MAIN_ENTITIES_STORED = 3
-    KEYS_TO_STORE = ("title", "publish_date", "authors", "url", "publisher", "entities", "main_entities")
+def populate_database(article_infos):
     DB = mysql.connector.connect(host="localhost", user="byebyebias", passwd="bias123", db="articles")
     # create database if does not exist
     cur = DB.cursor()
@@ -36,7 +33,15 @@ if __name__ == "__main__":
     if not result:
         cur.execute("CREATE TABLE articles (title VARCHAR(350), publish_date VARCHAR (100), authors VARCHAR(500), url VARCHAR(600), publisher VARCHAR(500), entities VARCHAR(4000), main_entities VARCHAR(1000))")
 
-    # todo import PUBLISHER_DICT from text doc
+    KEYS_TO_STORE = ("title", "publish_date", "authors", "url", "publisher", "entities", "main_entities")
+    for article_info in article_infos:
+        add_to_database({key: article_info[key] for key in KEYS_TO_STORE}, DB, "articles")
+
+
+def generate_article_infos(scraped_info, main_entity_sentiments, all_entities):
+    PUBLISHER_PATH = "publishers.txt"
+
+    # import PUBLISHER_DICT from text doc
     PUBLISHER_DICT = dict()
     with open(PUBLISHER_PATH) as publish_file:
         for line in publish_file:
@@ -76,4 +81,6 @@ def get_all_entities(text_list, entity_getter_instance):
     return [entity_getter_instance.get_unique_relevant_entities_stripped(text) for text in text_list]
 
 
+# def get_main_entities(text_list, entity_getter_instance, num_main_entities):
+#     return [entity_getter_instance.get_n_important_entities(text, num_main_entities) for text in text_list]
 
