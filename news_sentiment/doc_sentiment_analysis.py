@@ -30,6 +30,15 @@ def retrain(model_path, data, embed):
     return model
 
 
+# if __name__ == "__main__":
+#     net = load_model("models\\cnn3.pkl")
+#     embedding = load_embedding("embedding_model\\glove.twitter.27B.100d")
+#     data = prep_mpqa_data("data\\mpqa.raw")
+#     retrain("models\\cnn4.pkl", data, embedding)
+#
+#     define inputs
+#     inputs = [["sentence", (i, j)], ...]
+#     get_doc_sentiment(inputs, net, embedding)
 
 
 
