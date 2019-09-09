@@ -24,8 +24,7 @@ def add_to_database(dict, db, table):
 
 # todo validate urls (check for errors when processing)
 # todo add create database condition
-def populate_database(article_infos):
-    DB = mysql.connector.connect(host="localhost", user="byebyebias", passwd="bias123", db="articles")
+def populate_database(article_infos, DB):
     # create database if does not exist
     cur = DB.cursor()
     cur.execute("SHOW TABLES LIKE 'articles'")
@@ -80,5 +79,3 @@ def get_all_entities(text_list, entity_getter_instance):
 
 # def get_main_entities(text_list, entity_getter_instance, num_main_entities):
 #     return [entity_getter_instance.get_n_important_entities(text, num_main_entities) for text in text_list]
-
-# populate_database()
