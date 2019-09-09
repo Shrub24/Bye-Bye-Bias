@@ -38,23 +38,42 @@ if __name__ == "__main__":
 
     # todo import PUBLISHER_DICT from text doc
     PUBLISHER_DICT = dict()
-    with open(URL_PATH, "r") as url_file:
-        for url in url_file:
-            article_info = scrape_article(url.strip())
-            # todo get part of url pertaining to publisher
-            url_publisher = url
-            if url_publisher in PUBLISHER_DICT:
-                article_info["publisher"] = PUBLISHER_DICT[url_publisher]
-            else:
-                article_info["publisher"] = "Unknown"
-            text = article_info["text"]
-            article_info["entities"] = json.dumps(enttity_getter_instance.get_unique_relevant_entities_stripped(text))
-            main_entities = dict()
-            for entity in enttity_getter_instance.get_n_important_entities(text, NUMBER_OF_MAIN_ENTITIES_STORED):
-                # todo get sentiment from neural network
-                sentiment = 1
-                main_entities[entity] = sentiment
-            article_info["main_entities"] = json.dumps(main_entities)
-            add_to_database({key: article_info[key] for key in KEYS_TO_STORE}, DB, "articles")
+    with open(PUBLISHER_PATH) as publish_file:
+        for line in publish_file:
+            split = line.split(";")
+            PUBLISHER_DICT[split[0]] = split[1].strip()
+
+    # with open(URL_PATH, "r") as url_file:
+    article_infos = list()
+    for i, article_info_i in enumerate(scraped_info):
+
+        # article_info = scrape_article(url.strip())
+        article_info = dict(article_info_i)
+        # todo get part of url pertaining to publisher
+        url_publisher = article_info["url"].split("/")[2]
+        if url_publisher in PUBLISHER_DICT:
+            article_info["publisher"] = PUBLISHER_DICT[url_publisher]
+        else:
+            article_info["publisher"] = "Unknown"
+        text = article_info["text"]
+        # article_info["entities"] = json.dumps(enttity_getter_instance.get_unique_relevant_entities_stripped(text))
+        article_info["entities"] = json.dumps(all_entities[i])
+        # main_entities = dict()
+        # for entity in enttity_getter_instance.get_n_important_entities(text, NUMBER_OF_MAIN_ENTITIES_STORED):
+        #     # todo get sentiment from neural network
+        #     sentiment = get_doc_sentiment(enttity_getter_instance.get_sentence_target_lists(text, entity))
+        #     main_entities[entity] = sentiment
+        article_info["main_entities"] = json.dumps(main_entity_sentiments[i])
+        article_infos.append(article_info)
+    return article_infos
+
+
+def get_scraped_infos(url_list):
+    return [scrape_article(url) for url in url_list]
+
+
+def get_all_entities(text_list, entity_getter_instance):
+    return [entity_getter_instance.get_unique_relevant_entities_stripped(text) for text in text_list]
+
 
 

@@ -21,10 +21,10 @@ def load_embedding(path):
     return embed_model
 
 
-def create_embedding(path):
+def create_embedding(path, model_path):
     embed_model = load_glove_model(path)
-    file = open(path, 'wb')
-    pkl.dump(embed_model, file)
+    file = open(model_path, 'wb')
+    pkl.dump(embed_model, model_path)
     return embed_model
 
 

@@ -8,7 +8,7 @@ class entity_getter():
         self.nlp = spacy.load("en")
         neuralcoref.add_to_pipe(self.nlp, greedyness=0.54, max_dist=100)
         self.RELEVANT_ENTITY_TYPES = {"PERSON", "NORP", "FAC", "ORG", "GPE", "LOC", "PRODUCT", "EVENT", "WORK_OF_ART", "LAW", "LANGUAGE"}
-        self.ALLOWED_ENTITY_TYPES_MAIN_ENTITIES = {"PERSON", "NORP", "FAC", "ORG", "PRODUCT", "EVENT", "WORk_OF_ART", "LAW"}
+        self.ALLOWED_ENTITY_TYPES_MAIN_ENTITIES = {"PERSON", "NORP", "FAC", "ORG", "PRODUCT", "EVENT", "WORK_OF_ART", "LAW"}
         self.DISALLOWED_CHARACTERS = {".", "'", "’", "@", "/"}
         self.ACCEPTABLE_POS_IN_ENTITIES = {"NOUN", "PROPN"}
         # self.TITLES = {"mr", "mr.", "ms", "ms.", "miss", "master", "madam", "mp", "representative", "senator", "speaker", "president", "councillor", "mayor", "governor", "premier", "secretary", "king", "prince", "justice", "doctor", "dr", "dr.", "professor", "prof."}
