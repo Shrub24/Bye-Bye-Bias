@@ -171,7 +171,11 @@ def train(net, train_x, train_y, test_x, test_y, num_epochs=15, batch_size=8, le
 
 
 def forward_prop(x):
-    inputs = embed_to_tensor(x, model, max_sentence_length, window_size)
+    if len(x) == 1:
+        length = len(x[0][0]) + len(x[0][1]) - 1
+    else:
+        length = max_sentence_length
+    inputs = embed_to_tensor(x, model, length, window_size)
     outputs = net(inputs)
     return torch.argmax(outputs, dim=1).item() - 1
 
