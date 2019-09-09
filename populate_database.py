@@ -74,8 +74,8 @@ def generate_article_infos(scraped_info, main_entity_sentiments, all_entities):
 def get_scraped_infos(url_list):
     return [scrape_article(url) for url in url_list]
 
-def get_all_entities(text_list, entity_getter_instance):
-    return [entity_getter_instance.get_unique_relevant_entities_stripped(text) for text in text_list]
+# def get_all_entities(text_list, entity_getter_instance):
+#     return [entity_getter_instance.get_unique_relevant_entities_stripped(text) for text in text_list]
 
 # def get_main_entities(text_list, entity_getter_instance, num_main_entities):
 #     return [entity_getter_instance.get_n_important_entities(text, num_main_entities) for text in text_list]

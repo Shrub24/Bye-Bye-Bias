@@ -131,6 +131,53 @@ class entity_getter():
         return sentence_target_tuples
 
 
+class text_entity_getter(entity_getter):
+    def __init__(self, text):
+        super().__init__()
+        self.document = self.nlp(text)
+
+    def get_unique_relevant_entities_stripped(self):
+        unique_relevant_entities = list({str(ent) for ent in self.document.ents if (ent.label_ in self.RELEVANT_ENTITY_TYPES)})
+        # remove entries that have disallowed characters
+        unique_relevant_entities = [ent for ent in unique_relevant_entities if not any(x in ent for x in self.DISALLOWED_CHARACTERS)]
+        # remove "the "
+        return list({ent[4:] if ent.startswith("the ") else ent for ent in unique_relevant_entities})
+
+
+    def get_n_important_entities(self, n):
+        entity_occurences = dict()
+        for cluster in self.document._.coref_clusters:
+            raw_entity_string = str(cluster.main)
+            occurences = len(cluster)
+            # if discernible ners add ners to entities
+            ners = self.get_allowed_entities_for_main_stripped(raw_entity_string)
+            if ners:
+                entities = ners
+            else:
+                entities = []
+            for entity in entities:
+                # check entity is long enough and lowercase everything in final dict
+                if len(entity.split()) <= self.ENTITY_LENGTH_CAP:
+                    if entity.lower() in entity_occurences:
+                        entity_occurences[entity.lower()] += occurences
+                    else:
+                        entity_occurences[entity.lower()] = occurences
+        return sorted(list(entity_occurences.keys()), key=lambda x: entity_occurences[x], reverse=True)[:n]
+
+    def get_sentence_target_tuples(self, string):
+        current_indexes = dict()
+        sentence_target_tuples = list()
+        for token in self.document:
+            if string == str(token).lower() and token._.in_coref:
+                for cluster_token_span in token._.coref_clusters[0].mentions:
+                    sentence = cluster_token_span.sent
+                    last_length = len(cluster_token_span[-1])
+                    index_location = (cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)
+                    if index_location not in current_indexes:
+                        current_indexes[index_location] = True
+                        sentence_target_tuples.append((str(sentence), (index_location[0] - sentence.start_char, index_location[1] - sentence.start_char)))
+        return sentence_target_tuples
+
 
 # def format_text(target_locations, text):
 #     REPLACE_STRING = "$T$"
