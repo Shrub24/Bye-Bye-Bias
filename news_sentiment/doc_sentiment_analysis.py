@@ -6,7 +6,7 @@ import os
 
 def get_sentiments(x, model, embed):
     x = input_prep(x)
-    return [forward_prop(i, model, embed) for i in x]
+    return [forward_prop([i], model, embed) for i in x]
 
 
 def get_doc_sentiment(x, model, embed):

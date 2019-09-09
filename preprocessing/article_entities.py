@@ -108,11 +108,10 @@ class entity_getter():
 
         # return [token._.coref_clusters[0].mentions for token in document if string == str(token).lower() and token._.in_coref]
 
-    def get_sentence_target_lists(self, text, string):
+    def get_sentence_target_tuples(self, text, string):
         document = self.nlp(text)
         current_indexes = dict()
-        sentences = list()
-        target_indexes = list()
+        sentence_target_tuples = list()
 
         # # add index of equivalent strings
         # for i in re.finditer(string.lower(), text.lower()):
@@ -127,10 +126,9 @@ class entity_getter():
                     index_location = (cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)
                     if index_location not in current_indexes:
                         current_indexes[index_location] = True
-                        sentences.append(str(sentence))
-                        target_indexes.append((index_location[0] - sentence.start_char, index_location[1] - sentence.start_char))
+                        sentence_target_tuples.append((str(sentence), (index_location[0] - sentence.start_char, index_location[1] - sentence.start_char)))
                     # print(len(cluster_token))
-        return sentences, target_indexes
+        return sentence_target_tuples
 
 
 

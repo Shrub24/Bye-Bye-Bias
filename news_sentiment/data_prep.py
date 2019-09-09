@@ -209,7 +209,7 @@ def sentence_prep(sentence, target_indexes):
 def input_prep(x):
     prepped = list()
     for sample in x:
-        prepped_sample = map(lambda x: x.split(), sentence_prep(sample[0], sample[1]))
+        prepped_sample = list(map(lambda x: x.split(), sentence_prep(sample[0], sample[1])))
         prepped.append(prepped_sample)
     return prepped
 

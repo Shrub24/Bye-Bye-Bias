@@ -1,6 +1,6 @@
 from news_sentiment.doc_sentiment_analysis import *
 from news_sentiment.cnn import *
-import populate_database
+from populate_database import *
 from preprocessing.article_entities import entity_getter
 
 if __name__ == "__main__":
@@ -13,5 +13,5 @@ if __name__ == "__main__":
         url_list = url_file.readlines()
     raw_infos = get_scraped_infos(url_list)
     raw_texts = [info["text"] for info in raw_infos]
-    entity_sentiments = [{entity: get_doc_sentiment(entity_getter_instance.get_sentence_target_lists(text, entity), net, embedding) for entity in entity_getter_instance.get_n_important_entities(text, NUM_MAIN_ENTITIES)} for text in raw_texts]
+    entity_sentiments = [{entity: get_doc_sentiment(entity_getter_instance.get_sentence_target_tuples(text, entity), net, embedding) for entity in entity_getter_instance.get_n_important_entities(text, NUM_MAIN_ENTITIES)} for text in raw_texts]
     populate_database(generate_article_infos(raw_infos, entity_sentiments, get_all_entities(raw_texts, entity_getter_instance)))
