@@ -170,7 +170,7 @@ def train(net, train_x, train_y, test_x, test_y, num_epochs=15, batch_size=8, le
     return running_loss/len(test_x_batches)
 
 
-def forward_prop(x):
+def forward_prop(x, net):
     if len(x) == 1:
         length = len(x[0][0]) + len(x[0][1]) - 1
     else:
@@ -183,13 +183,13 @@ def forward_prop(x):
 net = Net()
 
 
-if input("Load state_dict (y/n)").lower() == "y":
-    try:
-        net.load_state_dict(torch.load(MODEL_PATH))
-    except FileNotFoundError:
-        print("no valid model state_dicts")
-else:
-    train(net, train_x, train_y, test_x, test_y, num_epochs=10)
+# if input("Load state_dict (y/n)").lower() == "y":
+#     try:
+#         net.load_state_dict(torch.load(MODEL_PATH))
+#     except FileNotFoundError:
+#         print("no valid model state_dicts")
+# else:
+#     train(net, train_x, train_y, test_x, test_y, num_epochs=10)
 
 
 # for i, j in zip(test_x, test_y):
