@@ -24,7 +24,7 @@ def load_glove_model(file):
     model = {}
     for line in f.readlines():
         splitLine = line.split()
-        word = splitLine[0]
+        word = splitLine[0].decode()
         embedding = np.array([float(val) for val in splitLine[1:]])
         model[word] = embedding
     print("Done.", len(model), " words loaded!")
@@ -89,10 +89,11 @@ def embed_to_tensor(b, embed_model, sentence_length, window_size):
         t_loc = 0
         sentence = list()
         sentence = sentence[:sentence_length]
-        length = sentence_length - (len(sample[1]) - 1) * list(sample[0]).count(b'$T$')
+
+        length = sentence_length - (len(sample[1]) - 1)  # * list(sample[0]).count(b'$T$')
         for i in range(length):
             if i < len(sample[0]):
-                if sample[0][i] == b'$T$':
+                if sample[0][i] == b'$T$' or sample[0][i] == "$T$":
                     t_loc = i
                     if type(sample[1]) != np.ndarray and type(sample[1]) != list:
                         sample[1] = [sample[1]]
@@ -142,7 +143,7 @@ def generate_mpqa_data(path, out_path):
                 attitude_anns = list()
                 target_bytes = dict()
                 for j in anns_file:
-                    if any(s in j for s in ["sentiment", "other-attitude", "speculation"]):
+                    if any(s in j for s in ["pos", "neg", "other-attitude"]) and "GATE_attitude" in j:
                         attitude_properties = dict()
                         elements = j.split("\t")
                         attitude_properties["byte"] = elements[1].split(",")
@@ -163,6 +164,7 @@ def generate_mpqa_data(path, out_path):
             with open(script_dir + DOCS_REL_PATH + file) as doc_file:
                 file_string = doc_file.read().replace("\n", " ").replace("\t", " ")
                 generate_mpqa_neutrals(file_string, attitude_anns, target_bytes, SENTENCES_PATH, OUT_PATH)
+                attitude_anns = [attitude for attitude in attitude_anns if "sentiment" in attitude["attitude-type"]]
                 for attitude in attitude_anns:
                     targets = attitude["target-link"]
                     if not targets == "none":
@@ -190,10 +192,26 @@ def tokenise(sentence):
     return re.sub('(?<! )(?=[][.,!?():;\"\'-])|(?<=[][.,!?():;\"\'-])(?! )', r' ', sentence)
 
 
-def sentence_prep(sentence, target):
+def train_sentence_prep(sentence, target):
     temp = " " + tokenise(sentence) + " "
-    temp = temp.replace(" " + target + " ", " " + "$T$" + " ").strip()
+    temp = temp.replace(" " + target + " ", " " + "$T$" + " ").strip().strip(".").strip()
     return temp
+
+
+def sentence_prep(sentence, target_indexes):
+    temp = sentence[:target_indexes[0]] + "$T$" + sentence[target_indexes[1]:]
+    target = sentence[target_indexes[0]:target_indexes[1]]
+    temp = tokenise(temp)
+    target = tokenise(target)
+    return temp, target
+
+
+def input_prep(x):
+    prepped = list()
+    for sample in x:
+        prepped_sample = map(lambda x: x.split(), sentence_prep(sample[0], sample[1]))
+        prepped.append(prepped_sample)
+    return prepped
 
 
 def generate_mpqa_neutrals(file_string, attitude_anns, target_bytes, sentence_path, out_path):
@@ -218,7 +236,7 @@ def generate_mpqa_neutrals(file_string, attitude_anns, target_bytes, sentence_pa
         target = get_entity(sentence)
         if target is None:
             break
-        new_sentence = sentence_prep(sentence, target)
+        new_sentence = train_sentence_prep(sentence, target)
         if len(target.split()) <= 5 and new_sentence.count("$T$") == 1:
             with open(out_path, "a") as write_file:
                 write_file.write(new_sentence + "\n")
@@ -255,4 +273,4 @@ def get_sentiment_pos_neg(sentiment_string):
         return 0
 
 
-# generate_mpqa_data("/data/database.mpqa.2.0/", "/data/mpqa.raw")
+generate_mpqa_data("/data/database.mpqa.2.0/", "/data/mpqa.raw")

@@ -1,16 +1,21 @@
+import copy
+
 import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.nn import Conv2d, Linear, Dropout, MaxPool2d
+from torch.nn import Conv2d, Linear, Dropout, AdaptiveMaxPool2d
 import os
 from data_prep import *
 import pickle as pkl
+from torch.utils.tensorboard import SummaryWriter
+from matplotlib import pyplot as plt
+
 
 print("Loading model files...")
 
-MODEL_PATH = "models\\cnn.pkl"
+MODEL_PATH = "models\\cnn3.pkl"
 
 EMBEDDING_NAME = "glove.twitter.27B.100d"
 EMBEDDING = os.path.join("embeddings", EMBEDDING_NAME + ".txt")
@@ -38,7 +43,7 @@ class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
         self.conv = Conv2d(2, 512, (filter_size, 100), padding=(padding, 0))
-        self.max_pooling = MaxPool2d((max_sentence_length, 100))
+        self.max_pooling = AdaptiveMaxPool2d((1, 1))
         self.fc1 = Linear(512, 256)
         self.fc2 = Linear(256, 3)
         self.dropout1 = Dropout(p=0.5)
@@ -46,24 +51,16 @@ class Net(nn.Module):
 
     def forward(self, x):
         x = self.dropout1(x)
-        x = F.relu(self.conv(x))
+        x = F.leaky_relu(self.conv(x))
         x = self.max_pooling(x)
         x = x.view(-1, 512)
         x = self.dropout2(x)
-        x = F.relu(self.fc1(x))
+        x = F.leaky_relu(self.fc1(x))
         x = F.softmax(self.fc2(x), dim=1)
         return x
 
 
-net = Net()
-num_epochs = 20
-lr = 0.0001
-batch_size = 8
 label_names = ["negative, neutral, positive"]
-
-criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(net.parameters(), lr=lr, weight_decay=0.01)
-# scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, 5600, eta_min=0.0001)
 
 data_path = "data\\acl-14-short-data"
 train_path = os.path.join(data_path, "train.raw")
@@ -73,21 +70,34 @@ mpqa_path = os.path.join("data", "mpqa.raw")
 train_x, train_y, test_x, test_y = prep_mpqa_data(mpqa_path)
 
 
-def train(net, train_x, train_y, test_x, test_y, num_epochs=15, batch_size=8):
+def train(net, train_x, train_y, test_x, test_y, num_epochs=15, batch_size=8, learning_rate=0.0001, write=True):
+    criterion = nn.CrossEntropyLoss()
+    optimizer = torch.optim.AdamW(net.parameters(), lr=learning_rate)
+
+    if write:
+        writer = SummaryWriter()
+
     x_batches = [train_x[i:i + batch_size] for i in range(0, batch_size * int(len(train_x) / batch_size), batch_size)]
     y_batches = [train_y[i:i + batch_size] for i in range(0, batch_size * int(len(train_y) / batch_size), batch_size)]
+    test_x_batches = [test_x[i:i + batch_size] for i in
+                      range(0, batch_size * int(len(test_x) / batch_size), batch_size)]
+    test_y_batches = [test_y[i:i + batch_size] for i in
+                      range(0, batch_size * int(len(test_y) / batch_size), batch_size)]
+
+    running_loss = 0.0
 
     for epoch in range(num_epochs):
         running_loss = 0.0
+        epoch_loss = 0.0
         c = list(zip(x_batches, y_batches))
         random.shuffle(c)
         x_batches, y_batches = zip(*c)
+        epoch_correct = 0
+        epoch_samples = 0
         correct = 0
         samples = 0
         for i in range(len(x_batches)):
             net.train()
-
-            # scheduler.step()
 
             x = embed_to_tensor(x_batches[i], model, max_sentence_length, window_size)
 
@@ -102,18 +112,24 @@ def train(net, train_x, train_y, test_x, test_y, num_epochs=15, batch_size=8):
             correct += sum(torch.eq(torch.argmax(outputs, dim=1), labels).cpu().detach().numpy())
             samples += batch_size
 
+            epoch_correct += sum(torch.eq(torch.argmax(outputs, dim=1), labels).cpu().detach().numpy())
+            epoch_samples += batch_size
+
             loss.backward()
 
             optimizer.step()
 
             running_loss += loss.item()
 
+            epoch_loss += loss.item()
+
             if i % 100 == 99:
                 print('[%d, %5d] loss: %.4f, acc: %.4f' %
                       (epoch + 1, i + 1, running_loss / 100, correct / samples))
-                running_loss = 0.0
 
-        # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, 5600)
+                running_loss = 0.0
+                correct = 0.0
+                samples = 0.0
 
         running_loss = 0.0
         correct = 0
@@ -121,10 +137,6 @@ def train(net, train_x, train_y, test_x, test_y, num_epochs=15, batch_size=8):
 
         with torch.no_grad():
             net.eval()
-            test_x_batches = [test_x[i:i + batch_size] for i in
-                         range(0, batch_size * int(len(test_x) / batch_size), batch_size)]
-            test_y_batches = [test_y[i:i + batch_size] for i in
-                         range(0, batch_size * int(len(test_y) / batch_size), batch_size)]
 
             for i in range(len(test_x_batches)):
                 x = embed_to_tensor(test_x_batches[i], model, max_sentence_length, window_size)
@@ -141,17 +153,34 @@ def train(net, train_x, train_y, test_x, test_y, num_epochs=15, batch_size=8):
 
         print('val_loss: %.4f, val_acc: %.4f' %
               (running_loss / len(test_x_batches), correct/samples), )
-        running_loss = 0.0
+        if write:
+            writer.add_scalar("loss/train", epoch_loss / len(x_batches), epoch)
+            writer.add_scalar("loss/val", running_loss / len(test_x_batches), epoch)
+            writer.add_scalar("accuracy/train", epoch_correct / epoch_samples, epoch)
+            writer.add_scalar("accuracy/val", correct / samples, epoch)
+
+        # writer.add_scalars("epoch loss", {"validation": running_loss / len(test_x_batches), "train": epoch_loss / len(x_batches)}, epoch)
+        # writer.add_scalars("epoch accuracy", {"validation": correct / samples, "train": epoch_correct / epoch_samples}, epoch)
 
         torch.save(net.state_dict(), MODEL_PATH)
 
     print("finished training!")
+    if write:
+        writer.close()
+    return running_loss/len(test_x_batches)
 
 
 def forward_prop(x):
-    inputs = embed_to_tensor(x, model, max_sentence_length, window_size)
+    if len(x) == 1:
+        length = len(x[0][0]) + len(x[0][1]) - 1
+    else:
+        length = max_sentence_length
+    inputs = embed_to_tensor(x, model, length, window_size)
     outputs = net(inputs)
-    return torch.argmax(outputs, dim=1)
+    return torch.argmax(outputs, dim=1).item() - 1
+
+
+net = Net()
 
 
 if input("Load state_dict (y/n)").lower() == "y":
@@ -160,12 +189,14 @@ if input("Load state_dict (y/n)").lower() == "y":
     except FileNotFoundError:
         print("no valid model state_dicts")
 else:
-    train(net, train_x, train_y, test_x, test_y, num_epochs=15)
+    train(net, train_x, train_y, test_x, test_y, num_epochs=10)
 
-for i, j in zip(test_x, test_y):
-    print(" ".join([j.decode() for j in i[0]]))
-    print(" ".join([j.decode() for j in i[1]]))
-    print(forward_prop([i]).item() - 1)
-    print(j)
+
+# for i, j in zip(test_x, test_y):
+#     print(" ".join([j.decode() for j in i[0]]))
+#     print(" ".join([j.decode() for j in i[1]]))
+#     print(forward_prop([i]).item() - 1)
+#     print(j)
+#     print()
 
 
