@@ -121,13 +121,15 @@ class entity_getter():
         for token in document:
             if string == str(token).lower() and token._.in_coref:
                 for cluster_token_span in token._.coref_clusters[0].mentions:
-                    sentence = cluster_token_span.sent
-                    last_length = len(cluster_token_span[-1])
-                    index_location = (cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)
-                    if index_location not in current_indexes:
-                        current_indexes[index_location] = True
-                        sentence_target_tuples.append((str(sentence), (index_location[0] - sentence.start_char, index_location[1] - sentence.start_char)))
-                    # print(len(cluster_token))
+                    # check if cluster_token_span less words than entity cap
+                    if len(cluster_token_span) <= self.ENTITY_LENGTH_CAP:
+                        sentence = cluster_token_span.sent
+                        last_length = len(cluster_token_span[-1])
+                        index_location = (cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)
+                        if index_location not in current_indexes:
+                            current_indexes[index_location] = True
+                            sentence_target_tuples.append((str(sentence), (index_location[0] - sentence.start_char, index_location[1] - sentence.start_char)))
+                        # print(len(cluster_token))
         return sentence_target_tuples
 
 
@@ -170,12 +172,14 @@ class text_entity_getter(entity_getter):
         for token in self.document:
             if string == str(token).lower() and token._.in_coref:
                 for cluster_token_span in token._.coref_clusters[0].mentions:
-                    sentence = cluster_token_span.sent
-                    last_length = len(cluster_token_span[-1])
-                    index_location = (cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)
-                    if index_location not in current_indexes:
-                        current_indexes[index_location] = True
-                        sentence_target_tuples.append((str(sentence), (index_location[0] - sentence.start_char, index_location[1] - sentence.start_char)))
+                    # check if cluster_token_span less words than entity cap
+                    if len(cluster_token_span) <= self.ENTITY_LENGTH_CAP:
+                        sentence = cluster_token_span.sent
+                        last_length = len(cluster_token_span[-1])
+                        index_location = (cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)
+                        if index_location not in current_indexes:
+                            current_indexes[index_location] = True
+                            sentence_target_tuples.append((str(sentence), (index_location[0] - sentence.start_char, index_location[1] - sentence.start_char)))
         return sentence_target_tuples
 
 
