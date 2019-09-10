@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.nn import Conv2d, Linear, Dropout, AdaptiveMaxPool2d
+from torch.nn import Conv2d, Linear, Dropout, AdaptiveMaxPool2d, BatchNorm2d
 import os
 from news_sentiment.data_prep import *
 import pickle as pkl
@@ -38,6 +38,7 @@ class Net(nn.Module):
 
     def __init__(self):
         super(Net, self).__init__()
+        self.batch_norm = BatchNorm2d(512)
         self.conv = Conv2d(2, 512, (FILTER_SIZE, 100), padding=(PADDING, 0))
         self.max_pooling = AdaptiveMaxPool2d((1, 1))
         self.fc1 = Linear(512, 256)
@@ -47,7 +48,8 @@ class Net(nn.Module):
 
     def forward(self, x):
         x = self.dropout1(x)
-        x = F.leaky_relu(self.conv(x))
+        x = self.conv(x)
+        x = F.leaky_relu(x)
         x = self.max_pooling(x)
         x = x.view(-1, 512)
         x = self.dropout2(x)
@@ -59,7 +61,7 @@ class Net(nn.Module):
 LABEL_NAMES = ["negative, neutral, positive"]
 
 
-def train(net, train_x, train_y, test_x, test_y, embed_model, num_epochs=15, batch_size=8, learning_rate=0.0001, write=True, save_path="models\\cnn.pkl"):
+def train(net, train_x, train_y, test_x, test_y, embed_model, num_epochs=10, batch_size=8, learning_rate=0.0001, write=True, save_path="models\\cnn.pkl"):
 
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(net.parameters(), lr=learning_rate)

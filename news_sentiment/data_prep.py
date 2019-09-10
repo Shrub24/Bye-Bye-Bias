@@ -66,7 +66,14 @@ def prep_data(train, test):
 
 def prep_twitter_data(train, test):
         train = open(train, 'rb').readlines()
+        train = [train[i:i + 3] for i in range(0, len(train), 3)]
+        random.shuffle(train)
+        train = list(itertools.chain.from_iterable(train))
         test = open(test, 'rb').readlines()
+        test = [test[i:i + 3] for i in range(0, len(test), 3)]
+        random.shuffle(test)
+        test = list(itertools.chain.from_iterable(test))
+
         return prep_data(train, test)
 
 
@@ -90,7 +97,7 @@ def embed_to_tensor(b, embed_model, sentence_length, window_size):
         sentence = list()
         sentence = sentence[:sentence_length]
 
-        length = sentence_length - (len(sample[1]) - 1)  # * list(sample[0]).count(b'$T$')
+        length = sentence_length - (len(sample[1]) - 1) * list(sample[0]).count(b'$T$')
         for i in range(length):
             if i < len(sample[0]):
                 if sample[0][i] == b'$T$' or sample[0][i] == "$T$":
@@ -102,7 +109,8 @@ def embed_to_tensor(b, embed_model, sentence_length, window_size):
                     sentence.append(get_embedding(sample[0][i], embed_model))
             else:
                 sentence.append(np.zeros(100))
-
+        if len(sentence) != 100:
+            print(len(sentence))
         x[0].append(sentence)
         window = [np.zeros(100) for i in range(sentence_length)]
         window[t_loc-window_size:t_loc+len(sample[1])+window_size] = sentence[t_loc-window_size:t_loc+len(sample[1])+window_size]
@@ -122,24 +130,26 @@ def get_embedding(word, embed_model):
 
 # path = "/data/database.mpqa.2.0/"
 def generate_mpqa_data(path, out_path):
-    script_dir = os.path.dirname(__file__)
-    OUT_PATH = script_dir + out_path
+    # script_dir = os.path.dirname(__file__)
+    # OUT_PATH = script_dir + out_path
+
+    OUT_PATH = out_path
     if os.path.exists(OUT_PATH):
         os.remove(OUT_PATH)
     file = open(OUT_PATH, "x")
     file.close()
     MPQA_REL_PATH = path
-    DOCS_REL_PATH = MPQA_REL_PATH + "docs/"
-    MAN_ANNS_REL_PATH = MPQA_REL_PATH + "man_anns/"
+    DOCS_REL_PATH = os.path.join(MPQA_REL_PATH, "docs")
+    MAN_ANNS_REL_PATH = os.path.join(MPQA_REL_PATH, "man_anns")
     ANNOTATION_FILE_NAME = "gateman.mpqa.lre.2.0"
     SENTENCES_FILE_NAME = "gatesentences.mpqa.2.0"
 
-    with open(script_dir + MPQA_REL_PATH + "doclist.mpqaOriginalByTopic", "r") as topic_file:
+    with open(os.path.join(MPQA_REL_PATH, "doclist.mpqaOriginalByTopic"), "r") as topic_file:
         for i in topic_file:
             split = i.split()
             topic = split[0][6:]
             file = split[1][5:]
-            with open(script_dir + MAN_ANNS_REL_PATH + file + "/" + ANNOTATION_FILE_NAME) as anns_file:
+            with open((os.path.join(os.path.join(MAN_ANNS_REL_PATH, file), ANNOTATION_FILE_NAME))) as anns_file:
                 attitude_anns = list()
                 target_bytes = dict()
                 for j in anns_file:
@@ -160,8 +170,8 @@ def generate_mpqa_data(path, out_path):
                         space_split = j.split()
                         target_bytes[space_split[4][4:-1]] = space_split[1].split(",")
 
-            SENTENCES_PATH = script_dir + MAN_ANNS_REL_PATH + file + "/" + SENTENCES_FILE_NAME
-            with open(script_dir + DOCS_REL_PATH + file) as doc_file:
+            SENTENCES_PATH = (os.path.join(os.path.join(MAN_ANNS_REL_PATH, file), SENTENCES_FILE_NAME))
+            with open(os.path.join(DOCS_REL_PATH, file)) as doc_file:
                 file_string = doc_file.read().replace("\n", " ").replace("\t", " ")
                 generate_mpqa_neutrals(file_string, attitude_anns, target_bytes, SENTENCES_PATH, OUT_PATH)
                 attitude_anns = [attitude for attitude in attitude_anns if "sentiment" in attitude["attitude-type"]]
@@ -211,7 +221,7 @@ def input_prep(x):
 
 
 def prep(x):
-    return map(lambda x: x.split(), sentence_prep(sample[0], sample[1]))
+    return list(map(lambda i: i.split(), sentence_prep(x[0], x[1])))
 
 
 def generate_mpqa_neutrals(file_string, attitude_anns, target_bytes, sentence_path, out_path):
@@ -237,7 +247,7 @@ def generate_mpqa_neutrals(file_string, attitude_anns, target_bytes, sentence_pa
         if target is None:
             break
         new_sentence = train_sentence_prep(sentence, target)
-        if len(target.split()) <= 5 and new_sentence.count("$T$") == 1:
+        if len(target.split()) <= 3 and new_sentence.count("$T$") == 1 and random.randint(1, 2) != 2:
             with open(out_path, "a") as write_file:
                 write_file.write(new_sentence + "\n")
                 write_file.write(target + "\n")
