@@ -5,3 +5,4 @@ embeddings/glove.twitter.27B.100d.txt
 *.xml___jb_tmp___
 *.iml
 
+articles/jsons/
