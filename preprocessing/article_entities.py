@@ -89,46 +89,47 @@ class entity_getter():
         # clusters_by_len = sorted(document._.coref_clusters, key=len, reverse=True)[:n]
         # return [cluster.main for cluster in clusters_by_len]
 
-    def get_coreferences(self, text, string):
-        document = self.nlp(text)
-        index_locations = set()
-
-        # # add index of equivalent strings
-        # for i in re.finditer(string.lower(), text.lower()):
-        #     index_locations = index_locations.union({(i.start(), i.end())})
-
-        # todo check all coref clusters? if string in token??
-        for token in document:
-            if string == str(token).lower() and token._.in_coref:
-                for cluster_token_span in token._.coref_clusters[0].mentions:
-                    last_length = len(cluster_token_span[-1])
-                    index_locations = index_locations.union({(cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)})
-                    # print(len(cluster_token))
-        return sorted(list(index_locations))
-
-        # return [token._.coref_clusters[0].mentions for token in document if string == str(token).lower() and token._.in_coref]
-
-    def get_sentence_target_tuples(self, text, string):
-        document = self.nlp(text)
-        current_indexes = dict()
-        sentence_target_tuples = list()
-
-        # # add index of equivalent strings
-        # for i in re.finditer(string.lower(), text.lower()):
-        #     index_locations = index_locations.union({(i.start(), i.end())})
-
-        # todo check all coref clusters? if string in token??
-        for token in document:
-            if string == str(token).lower() and token._.in_coref:
-                for cluster_token_span in token._.coref_clusters[0].mentions:
-                    sentence = cluster_token_span.sent
-                    last_length = len(cluster_token_span[-1])
-                    index_location = (cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)
-                    if index_location not in current_indexes:
-                        current_indexes[index_location] = True
-                        sentence_target_tuples.append((str(sentence), (index_location[0] - sentence.start_char, index_location[1] - sentence.start_char)))
-                    # print(len(cluster_token))
-        return sentence_target_tuples
+    # def get_coreferences(self, text, string):
+    #     document = self.nlp(text)
+    #     index_locations = set()
+    #
+    #     # # add index of equivalent strings
+    #     # for i in re.finditer(string.lower(), text.lower()):
+    #     #     index_locations = index_locations.union({(i.start(), i.end())})
+    #
+    #     # todo check all coref clusters? if string in token??
+    #     for token in document:
+    #         if string == str(token).lower() and token._.in_coref:
+    #             for cluster_token_span in token._.coref_clusters[0].mentions:
+    #                 last_length = len(cluster_token_span[-1])
+    #                 index_locations = index_locations.union({(cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)})
+    #                 # print(len(cluster_token))
+    #     return sorted(list(index_locations))
+    #
+    #     # return [token._.coref_clusters[0].mentions for token in document if string == str(token).lower() and token._.in_coref]
+    #
+    # def get_sentence_target_tuples(self, text, string):
+    #     document = self.nlp(text)
+    #     current_indexes = dict()
+    #     sentence_target_tuples = list()
+    #
+    #     # # add index of equivalent strings
+    #     # for i in re.finditer(string.lower(), text.lower()):
+    #     #     index_locations = index_locations.union({(i.start(), i.end())})
+    #
+    #     # todo check all coref clusters? if string in token??
+    #     for token in document:
+    #         if string == str(token).lower() and token._.in_coref:
+    #             for cluster_token_span in token._.coref_clusters[0].mentions:
+    #                 if len(cluster_token_span) <= self.ENTITY_LENGTH_CAP:
+    #                     sentence = cluster_token_span.sent
+    #                     last_length = len(cluster_token_span[-1])
+    #                     index_location = (cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)
+    #                     if index_location not in current_indexes:
+    #                         current_indexes[index_location] = True
+    #                         sentence_target_tuples.append((str(sentence), (index_location[0] - sentence.start_char, index_location[1] - sentence.start_char)))
+    #                     # print(len(cluster_token))
+    #     return sentence_target_tuples
 
 
 class text_entity_getter(entity_getter):
@@ -165,11 +166,33 @@ class text_entity_getter(entity_getter):
         return sorted(list(entity_occurences.keys()), key=lambda x: entity_occurences[x], reverse=True)[:n]
 
     def get_sentence_target_tuples(self, string):
+        split_string = string.split()
+        string_length = len(split_string)
         current_indexes = dict()
         sentence_target_tuples = list()
-        for token in self.document:
-            if string == str(token).lower() and token._.in_coref:
-                for cluster_token_span in token._.coref_clusters[0].mentions:
+        for i, token in enumerate(self.document):
+            # if single word input
+            if string_length == 1 and string == str(token).lower() and token._.in_coref:
+                mentions = token._.coref_clusters[0].mentions
+            # if multiple word input
+            # todo refactor elif?
+            elif string_length > 1:
+                span = self.document[i:i + string_length]
+                cur_span_is_equal = (split_string == [str(token).lower() for token in span])
+                if cur_span_is_equal and span._.is_coref:
+                    mentions = span._.coref_cluster.mentions
+                else:
+                    # add span to target if no coreference
+                    index_location = (span[0].idx, span[-1].idx + len(span[-1]))
+                    if cur_span_is_equal and index_location not in current_indexes:
+                        sentence = span.sent
+                        current_indexes[index_location] = True
+                        sentence_target_tuples.append((str(sentence), (index_location[0] - sentence.start_char, index_location[1] - sentence.start_char)))
+                    mentions = []
+            else:
+                mentions = []
+            for cluster_token_span in mentions:
+                if len(cluster_token_span) <= self.ENTITY_LENGTH_CAP:
                     sentence = cluster_token_span.sent
                     last_length = len(cluster_token_span[-1])
                     index_location = (cluster_token_span[0].idx, cluster_token_span[-1].idx + last_length)
