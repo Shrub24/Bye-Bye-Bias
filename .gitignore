@@ -6,3 +6,6 @@ embeddings/glove.twitter.27B.100d.txt
 *.iml
 
 articles/jsons/
+embedding_model/glove.twitter.27B.zip
+*.pyc
+*.pyc

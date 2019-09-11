@@ -145,7 +145,6 @@ class text_entity_getter(entity_getter):
         # remove "the "
         return list({ent[4:] if ent.startswith("the ") else ent for ent in unique_relevant_entities})
 
-
     def get_n_important_entities(self, n):
         entity_occurences = dict()
         for cluster in self.document._.coref_clusters:
