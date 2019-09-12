@@ -49,8 +49,8 @@ if __name__ == "__main__":
     for article_data_path in os.listdir(dir_path):
         article_data = pkl.load(open(os.path.join("generate_article_data/article_datas", article_data_path), "rb"))
         data.extend(article_data)
+    data = [i for i in data if i[1] != 0 or random.randint(1, 3) == 1]
     data = [list(i) for i in zip(*data)]
-    print(collections.Counter(data[1]))
     # pickle.load(open(PICKLE_PATH, "rb"))
 
     # if os.path.isfile(PICKLE_PATH):

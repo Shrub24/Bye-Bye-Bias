@@ -26,7 +26,7 @@ def retrain(model_path, data, embed):
         model = load_model(model_path)
     else:
         model = Net()
-    train(model, *data, embed_model=embed, save_path=model_path)
+    train(model, *data, embed_model=embed, save_path=model_path, write=False)
     return model
 
 

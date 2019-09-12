@@ -90,7 +90,7 @@ def embed_to_tensor(b, embed_model, sentence_length, window_size):
         sentence = list()
         sentence = sentence[:sentence_length]
 
-        length = sentence_length - (len(sample[1]) - 1)  # * list(sample[0]).count(b'$T$')
+        length = sentence_length - (len(sample[1]) - 1) # * list(sample[0]).count(b'$T$')
         for i in range(length):
             if i < len(sample[0]):
                 if sample[0][i] == b'$T$' or sample[0][i] == "$T$":
