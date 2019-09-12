@@ -8,24 +8,24 @@ import newspaper
 import random
 import pickle as pkl
 from generate_article_data.load_articles import load_articles
+import collections
 
 if __name__ == "__main__":
     # generating sentences
-    NUM_MAIN_ENTITIES = 5
-    texts = set((i.replace('"', "")for i in load_articles("articles\\breitbart.pkl")))
-    sentences = list()
-    for i, text in enumerate(texts):
-        if i % (len(texts)/10) == 0:
-            print(i/len(texts))
-        text_entity_getter_instance = text_entity_getter(text)
-        for entity in text_entity_getter_instance.get_n_important_entities(NUM_MAIN_ENTITIES):
-            sentence = text_entity_getter_instance.get_sentence_target_tuples_from_tokens(entity[1])
-            sentences.extend(sentence)
-            print(sentence)
-
-    SOURCE_PATH = "test.pkl"
-    source = open(SOURCE_PATH, "wb")
-    pkl.dump(sentences, source)
+    # NUM_MAIN_ENTITIES = 5
+    # texts = set((i.replace('"', "")for i in load_articles("articles\\breitbart.pkl")))
+    # sentences = list()
+    # for i, text in enumerate(texts):
+    #     if i % (len(texts)/10) == 0:
+    #         print(i/len(texts))
+    #     text_entity_getter_instance = text_entity_getter(text)
+    #     for entity in text_entity_getter_instance.get_n_important_entities(NUM_MAIN_ENTITIES):
+    #         sentence = text_entity_getter_instance.get_sentence_target_tuples_from_tokens(entity[1])
+    #         sentences.extend(sentence)
+    #
+    # SOURCE_PATH = "test.pkl"
+    # source = open(SOURCE_PATH, "wb")
+    # pkl.dump(sentences, source)
 
     # any key to quit, n for bad sentence, 0 for neg, 1 for neut, 2 for pos
     # labelled_sentences = list()
@@ -43,8 +43,16 @@ if __name__ == "__main__":
     #         sentences = [(i, j) for i, j in sentence_generator]
     # source = open(SOURCE_PATH, "wb")
     # pkl.dump(sentences, SOURCE_PATH)
-    #
-    # PICKLE_PATH = "generate_article_data/article_data.pkl"
+
+    dir_path = "generate_article_data/article_datas"
+    data = list()
+    for article_data_path in os.listdir(dir_path):
+        article_data = pkl.load(open(os.path.join("generate_article_data/article_datas", article_data_path), "rb"))
+        data.extend(article_data)
+    data = [list(i) for i in zip(*data)]
+    print(collections.Counter(data[1]))
+    # pickle.load(open(PICKLE_PATH, "rb"))
+
     # if os.path.isfile(PICKLE_PATH):
     #     pickled_data = pickle.load(open(PICKLE_PATH, "rb"))
     #     pickle.dump(pickled_data + labelled_sentences, open(PICKLE_PATH, "wb"))
