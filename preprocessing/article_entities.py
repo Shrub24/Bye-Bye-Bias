@@ -2,6 +2,9 @@ from newspaper import Article
 import spacy
 import neuralcoref
 import re
+import copy
+from collections import defaultdict
+import itertools
 
 class entity_getter():
     def __init__(self):
@@ -104,31 +107,80 @@ class text_entity_getter(entity_getter):
         # remove "the "
         return list({ent[4:] if ent.startswith("the ") else ent for ent in unique_relevant_entities})
 
+    def a_in_b_span(self, a, b):
+        if a.start <= b.start and b.end >= a.end:
+            return True
+        return False
+
+    def find_sentence(self, sentences, span):
+        for sentence in sentences:
+            if a_in_b_span(span, sentence):
+                return sentence
+        return None
+
     def get_n_important_entities(self, n):
+        entity_tokens = defaultdict(list)
         entity_occurences = dict()
+        entity_sentences = {}
         for cluster in self.document._.coref_clusters:
             raw_entity_string = str(cluster.main)
-            occurences = len(cluster)
             # if discernible ners add ners to entities
-            ners = self.get_allowed_entities_for_main_stripped(raw_entity_string)
+            ners = cluster.main.ents
             if ners:
                 entities = ners
             else:
                 entities = []
-            for entity in entities:
-                # check entity is long enough and lowercase everything in final dict
+            for ner in entities:
+                entity = str(ner).lower()
+                if entity.startswith("the "):
+                    entity = entity[4:]
+                # check entity is short enough and lowercase everything in final dict
                 if len(entity.split()) <= self.ENTITY_LENGTH_CAP:
-                    if entity.lower() in entity_occurences:
-                        entity_occurences[entity.lower()] += occurences
+                    if entity in entity_occurences:
+                        entity_sentences[entity].union(set([i.sent for i in cluster]))
                     else:
-                        entity_occurences[entity.lower()] = occurences
+                        entity_sentences[entity] = set([i.sent for i in cluster])
+                    entity_tokens[entity].append(ner)
+        for key in entity_sentences.keys():
+            entity_occurences[(key, tuple(entity_tokens[key]))] = len(entity_sentences[key])
         return sorted(list(entity_occurences.keys()), key=lambda x: entity_occurences[x], reverse=True)[:n]
+
+    def get_sentence_target_tuples_from_tokens(self, ents):
+        mentions = set()
+        sentence_targets = defaultdict(list)
+
+        for ent in ents:
+            if ent._.is_coref:
+                mentions.union(set(ent._.coref_cluster.mentions))
+            sentence = ent.sent
+            sentence_targets[sentence].append(ent)
+
+        for mention in mentions:
+            sentence = mention.sent
+            if sentence not in sentence_targets:
+                if not any((stuff == mention.text.strip() for stuff in ["it", "", "its", "it's", "'s"])):
+                    sentence_targets[sentence] = [mention]
+
+        sentence_target_tuples = list()
+
+        for sentence, targets in sentence_targets.items():
+            out_sentence = sentence.text.strip()
+            for target in targets:
+                out_target = target
+                if target.text[-2:] == "'s":
+                    out_target = target[:-2]
+                sentence_target_tuples.append((out_sentence, (target.start_char - sentence.start_char, target.end_char - sentence.start_char)))
+
+        return sentence_target_tuples
+
+
 
     def get_sentence_target_tuples(self, string):
         split_string = string.split()
         string_length = len(split_string)
         current_indexes = dict()
         sentence_target_tuples = list()
+
         for i, token in enumerate(self.document):
             # if single word input
             if string_length == 1 and string == str(token).lower() and token._.in_coref:

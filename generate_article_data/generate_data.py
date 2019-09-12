@@ -12,19 +12,16 @@ from generate_article_data.load_articles import load_articles
 if __name__ == "__main__":
     # generating sentences
     NUM_MAIN_ENTITIES = 5
-    texts = set(load_articles("articles\\breitbart.pkl"))
+    texts = set((i.replace('"', "")for i in load_articles("articles\\breitbart.pkl")))
     sentences = list()
     for i, text in enumerate(texts):
         if i % (len(texts)/10) == 0:
             print(i/len(texts))
         text_entity_getter_instance = text_entity_getter(text)
         for entity in text_entity_getter_instance.get_n_important_entities(NUM_MAIN_ENTITIES):
-            if "it" not in entity:
-                if entity != "'s":
-                    sentence = text_entity_getter_instance.get_sentence_target_tuples(entity)
-                    if entity[-2:] == "'s":
-                        sentence[1] = (sentence[1][0], sentence[1][1]-2)
-                    sentences.append(sentence)
+            sentence = text_entity_getter_instance.get_sentence_target_tuples_from_tokens(entity[1])
+            sentences.extend(sentence)
+            print(sentence)
 
     SOURCE_PATH = "test.pkl"
     source = open(SOURCE_PATH, "wb")

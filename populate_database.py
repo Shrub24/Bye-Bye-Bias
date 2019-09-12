@@ -59,7 +59,7 @@ def generate_article_infos(scraped_info, main_entity_sentiments, all_entities):
             article_info["publisher"] = PUBLISHER_DICT[url_publisher]
         else:
             article_info["publisher"] = "Unknown"
-        text = article_info["text"]
+        article_info["text"] = article_info["text"].replace('"', "")
         # article_info["entities"] = json.dumps(enttity_getter_instance.get_unique_relevant_entities_stripped(text))
         article_info["entities"] = json.dumps(all_entities[i])
         # main_entities = dict()
