@@ -3,25 +3,32 @@ import os
 sys.path.append(os.getcwd())
 
 from preprocessing.article_entities import *
-from populate_database import *
+# from populate_database import *
 import newspaper
 import random
-import pickle
+import pickle as pkl
 from generate_article_data.load_articles import load_articles
 
 if __name__ == "__main__":
     # generating sentences
     NUM_MAIN_ENTITIES = 5
-    texts = load_articles("articles\\texts.pkl")
+    texts = set(load_articles("articles\\breitbart.pkl"))
     sentences = list()
-    for text in texts:
+    for i, text in enumerate(texts):
+        if i % (len(texts)/10) == 0:
+            print(i/len(texts))
         text_entity_getter_instance = text_entity_getter(text)
         for entity in text_entity_getter_instance.get_n_important_entities(NUM_MAIN_ENTITIES):
-            sentences += text_entity_getter_instance.get_sentence_target_tuples(entity)
+            if "it" not in entity:
+                if entity != "'s":
+                    sentence = text_entity_getter_instance.get_sentence_target_tuples(entity)
+                    if entity[-2:] == "'s":
+                        sentence[1] = (sentence[1][0], sentence[1][1]-2)
+                    sentences.append(sentence)
 
-    SOURCE_PATH = "sentences.pkl"
+    SOURCE_PATH = "test.pkl"
     source = open(SOURCE_PATH, "wb")
-    pkl.dump(sentences, SOURCE_PATH)
+    pkl.dump(sentences, source)
 
     # any key to quit, n for bad sentence, 0 for neg, 1 for neut, 2 for pos
     # labelled_sentences = list()

@@ -9,7 +9,7 @@ class entity_getter():
         neuralcoref.add_to_pipe(self.nlp, greedyness=0.54, max_dist=100)
         self.RELEVANT_ENTITY_TYPES = {"PERSON", "NORP", "FAC", "ORG", "GPE", "LOC", "PRODUCT", "EVENT", "WORK_OF_ART", "LAW", "LANGUAGE"}
         self.ALLOWED_ENTITY_TYPES_MAIN_ENTITIES = {"PERSON", "NORP", "FAC", "ORG", "PRODUCT", "EVENT", "WORk_OF_ART", "LAW"}
-        self.DISALLOWED_CHARACTERS = {".", "'", "’", "@", "/"}
+        self.DISALLOWED_CHARACTERS = {".", "'", "'", "@", "/"}
         self.ACCEPTABLE_POS_IN_ENTITIES = {"NOUN", "PROPN"}
         # self.TITLES = {"mr", "mr.", "ms", "ms.", "miss", "master", "madam", "mp", "representative", "senator", "speaker", "president", "councillor", "mayor", "governor", "premier", "secretary", "king", "prince", "justice", "doctor", "dr", "dr.", "professor", "prof."}
         self.ENTITY_LENGTH_CAP = 3
@@ -136,7 +136,9 @@ class entity_getter():
 class text_entity_getter(entity_getter):
     def __init__(self, text):
         super().__init__()
+        self.text = text
         self.document = self.nlp(text)
+
 
     def get_unique_relevant_entities_stripped(self):
         unique_relevant_entities = list({str(ent) for ent in self.document.ents if (ent.label_ in self.RELEVANT_ENTITY_TYPES)})

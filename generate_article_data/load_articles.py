@@ -10,7 +10,6 @@ def load_articles(save_path):
 
 def load_new_articles(articles_path):
     article_texts = list()
-    print(os.getcwd())
     for source in os.listdir(articles_path):
         source_path = os.path.join(articles_path, source)
         for article in os.listdir(source_path):
@@ -25,6 +24,4 @@ def load_new_articles(articles_path):
 def save_articles(texts, save_path):
     file = open(save_path, "wb")
     pkl.dump(texts, file)
-
-
 

@@ -71,6 +71,7 @@ def generate_article_infos(scraped_info, main_entity_sentiments, all_entities):
         article_infos.append(article_info)
     return article_infos
 
+
 def get_scraped_infos(url_list):
     return [scrape_article(url) for url in url_list]
 
