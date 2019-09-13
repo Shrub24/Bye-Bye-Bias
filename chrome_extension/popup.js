@@ -239,10 +239,16 @@ $(window).ready(function() {
             get scrollBarTrack() {
                 return $("#items > div.simplebar-track.simplebar-vertical");
             },
+            get divider() {
+                return $(".divider");
+            },
         },
         scrollBar: new SimpleBar($("#items")[0]),
         clearCards: function() {
             this.domElements.cardContainer.html("");
+        },
+        changeAccentColor: function(color) {
+            this.domElements.cards.css("border-left", "2.4px solid " + color);
         },
         scrollEvent: function() {
             var div = $(this);
@@ -394,6 +400,7 @@ $(window).ready(function() {
 
             //cardsControl.domElements.scrollBarTrack.toggleClass("forceVisible", true);
             //cardsControl.domElements.scrollBarTrack.css("background-color", scoreToColor(score));
+            cardsControl.changeAccentColor(scoreToColor(score));
 
             //helpControl.showScoreText(score);
             scaleControl.selectedIndex = clickedIndex;
