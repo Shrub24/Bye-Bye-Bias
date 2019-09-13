@@ -10,7 +10,11 @@ def scrape_article(article_url):
     article = Article(url=article_url.strip())
     article.download()
     article.parse()
-    return {"title": article.title, "publish_date": article.publish_date.strftime("%x"), "authors": ", ".join(article.authors), "text": article.text, "url": article_url}
+    if article.publish_date is None:
+        publish_date = "Unknown"
+    else:
+        publish_date = article.publish_date.strftime("%x")
+    return {"title": article.title, "publish_date": publish_date, "authors": ", ".join(article.authors), "text": article.text, "url": article_url}
 
 
 # adds entry to mysql database given by values of dict corresponding to column titles of dict keys
