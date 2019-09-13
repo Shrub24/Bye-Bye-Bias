@@ -234,7 +234,7 @@ a:active{
 }
 #help-tip:hover>.tool-tip, #fetch-text:hover>.tool-tip {
 	display: block;
-	opacity: 0.8;
+	opacity: 1.0;
 	pointer-events: auto;
 }
 #fetch-text {
@@ -317,7 +317,6 @@ a:active{
 	margin: 0px;
 	background-color: #5F5F5F;
 	transform: scaleX(0.90);
-	opacity: 1;
 }
 .forceVisible {
 	visibility: visible !important;
