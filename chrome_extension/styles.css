@@ -89,6 +89,7 @@ a:active{
 	font-family: 'Roboto', sans-serif;
 	color: rgb(240, 242, 250);
 	padding: 3.75px;
+	padding-left: 6.5px;
 	padding-right: 11px;
 	background-color: #424346;
 	/*
@@ -97,9 +98,12 @@ a:active{
 	*/
 	cursor: pointer;
 	position: relative;
+	border-left-color: #424346;
+	transition: border-left-color 0.8s cubic-bezier(0.075, 0.82, 0.165, 1);
+
 }
 .divider {
-	width: 75%;
+	width: 100%;
 	border-bottom-color: hsla(0,0%,100%,.04);
 	border-bottom: 1.4px solid transparent;
 	/*
@@ -117,7 +121,7 @@ a:active{
 }
 .slideIn {
 	animation-name: slideIn;
-	animation-duration: 0.20s;
+	animation-duration: 0.2876s;
 	animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 @keyframes slideIn {
@@ -193,7 +197,7 @@ a:active{
 	border-bottom-right-radius: 5px;
 }
 .dropdown>*:hover {
-	background-color: rgb(68, 65, 65);
+	background-color: rgb(44, 43, 43);
 }
 .publisher {
 	margin-right: 7px;
@@ -230,7 +234,7 @@ a:active{
 }
 #help-tip:hover>.tool-tip, #fetch-text:hover>.tool-tip {
 	display: block;
-	opacity: 1.0;
+	opacity: 0.8;
 	pointer-events: auto;
 }
 #fetch-text {
@@ -288,7 +292,7 @@ a:active{
 }
 #scaleRectangle {
 	height: 12.5px;
-	background: linear-gradient(0.25turn, #F9414B, rgb(59, 90, 224));
+	background: linear-gradient(0.25turn, #F9414B, #4C8BF5);
 	width: auto;
 }
 .left-align, .right-align {
@@ -313,6 +317,7 @@ a:active{
 	margin: 0px;
 	background-color: #5F5F5F;
 	transform: scaleX(0.90);
+	opacity: 1;
 }
 .forceVisible {
 	visibility: visible !important;
@@ -355,7 +360,7 @@ a:active{
 	grid-template-columns: 250px;
 }
 .histogram-line-spacer > .histogram-line, .selection-line, #bar-scale > div{
-	background-image: repeating-linear-gradient(180deg, #F9414B, rgb(59, 90, 224) 350px);
+	background-image: repeating-linear-gradient(180deg, #F9414B, #4C8BF5 350px);
 	background-position: 29px 29px;
 	background-attachment: fixed;
 }
@@ -504,7 +509,7 @@ a:active{
 }
 @keyframes wave {
 	from { transform : translateY(0); }
-	to   { transform : translateY(0.36px); }
+	to   { transform : translateY(0.767px); }
 }
 #loading span {
 	display: inline-block;
