@@ -11,7 +11,7 @@ def get_sentiments(x, model, embed):
 
 def get_doc_sentiment(x, model, embed):
     scale = 9.0
-    average_sentiment = np.average(get_sentiments(x, model, embed))
+    average_sentiment = np.average([i for i in get_sentiments(x, model, embed) if i != 0])
     return (average_sentiment + 1) * (scale/2) + 1
 
 
@@ -21,12 +21,16 @@ def load_model(PATH):
     return model
 
 
-def retrain(model_path, data, embed):
+def retrain(model_path, data, embed, freeze_conv=False, **kwargs):
     if os.path.exists(model_path):
         model = load_model(model_path)
     else:
         model = Net()
-    train(model, *data, embed_model=embed, save_path=model_path, write=False)
+    if freeze_conv:
+        model.freeze_conv_weights()
+    train(model, *data, embed_model=embed, save_path=model_path, write=False, **kwargs)
+    if freeze_conv:
+        model.unfreeze_conv_weights()
     return model
 
 

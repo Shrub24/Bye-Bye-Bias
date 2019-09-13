@@ -170,7 +170,7 @@ class text_entity_getter(entity_getter):
                 out_target = target
                 if target.text[-2:] == "'s":
                     out_target = target[:-2]
-                sentence_target_tuples.append((out_sentence, (out_target.start_char - sentence.start_char, out_target.end_char - sentence.start_char)))
+                sentence_target_tuples.append((out_sentence.strip("\n").strip(), (out_target.start_char - sentence.start_char, out_target.end_char - sentence.start_char)))
 
         return sentence_target_tuples
 

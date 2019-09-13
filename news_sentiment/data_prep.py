@@ -89,15 +89,17 @@ def embed_to_tensor(b, embed_model, sentence_length, window_size):
         t_loc = 0
         sentence = list()
         sentence = sentence[:sentence_length]
-
-        length = sentence_length - (len(sample[1]) - 1) # * list(sample[0]).count(b'$T$')
+        target = list()
+        sample[0] = [i.decode() if type(i) is bytes else str(i) for i in sample[0]]
+        length = sentence_length - (len(sample[1]) - 1) * sum([True if "$T$" in i else False for i in sample[0]])
         for i in range(length):
             if i < len(sample[0]):
-                if sample[0][i] == b'$T$' or sample[0][i] == "$T$":
+                if "$T$" in sample[0][i]:
                     t_loc = i
                     if type(sample[1]) != np.ndarray and type(sample[1]) != list:
                         sample[1] = [sample[1]]
-                    sentence.extend([get_embedding(j, embed_model) for j in sample[1]])
+                    target = [get_embedding(j, embed_model) for j in sample[1]]
+                    sentence.extend(target)
                 else:
                     sentence.append(get_embedding(sample[0][i], embed_model))
             else:
@@ -107,6 +109,8 @@ def embed_to_tensor(b, embed_model, sentence_length, window_size):
         window = [np.zeros(100) for i in range(sentence_length)]
         window[t_loc-window_size:t_loc+len(sample[1])+window_size] = sentence[t_loc-window_size:t_loc+len(sample[1])+window_size]
         x[1].append(window)
+        if len(sentence) != sentence_length:
+            print(sentence)
     x = torch.tensor(x, dtype=torch.float32).transpose(0, 1)
     return x
 
@@ -273,4 +277,16 @@ def get_sentiment_pos_neg(sentiment_string):
         return 0
 
 
+def prep_generated_data(article_data):
+    lines = list()
+    ys = article_data[1]
+    for i, sample in enumerate(article_data[0]):
+        sentence, target = sentence_prep(*sample)
+        lines.extend([sentence, target, str(ys[i])])
+    data = [lines[i:i + 3] for i in range(0, len(lines), 3)]
+    random.shuffle(data)
+    data = list(itertools.chain.from_iterable(data))
+    train = data[:-3*400]
+    test = data[-3*400:]
+    return prep_data(train, test)
 # generate_mpqa_data("/data/database.mpqa.2.0/", "/data/mpqa.raw")
