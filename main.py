@@ -5,6 +5,7 @@ from preprocessing.article_entities import *
 from news_sentiment.data_prep import *
 import numpy as np
 import random
+import collections
 
 
 if __name__ == "__main__":
