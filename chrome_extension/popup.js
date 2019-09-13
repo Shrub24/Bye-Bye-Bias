@@ -1,15 +1,15 @@
 function scoreToColor(score) {
     var conversion = {
-        10: "#1955F2",
-        9: "#3053E1",
-        8: "#4851CF",
-        7: "#604FBD",
-        6: "#784CAB",
-        5: "#8F4A99",
-        4: "#A74887",
-        3: "#BE4676",
-        2: "#D64464",
-        1: "#EE4152",
+        10: "#5886EA",
+        9: "#687ED9",
+        8: "#7A78C9",
+        7: "#8A70B8",
+        6: "#9C68A6",
+        5: "#AE6296",
+        4: "#BF5A84",
+        3: "#CF5374",
+        2: "#E04C64",
+        1: "#F24553",
     }
     return conversion[score];
 }
@@ -92,6 +92,7 @@ $(window).ready(function() {
         }
     }.init();
     */
+
     var placeholderControl = {
         domElements: {
             instruction: $("#instruction"), 
@@ -243,12 +244,15 @@ $(window).ready(function() {
                 return $(".divider");
             },
         },
+        get scrollVisibile() {
+            return this.domElements.scrollBarTrack.css("visibility") === "visible";
+        },
         scrollBar: new SimpleBar($("#items")[0]),
         clearCards: function() {
             this.domElements.cardContainer.html("");
         },
-        changeAccentColor: function(color) {
-            this.domElements.cards.css("border-left", "2.4px solid " + color);
+        changeAccent: function(color, width) {
+            this.domElements.cards.css("border-right", width + "px solid " + color);
         },
         scrollEvent: function() {
             var div = $(this);
@@ -274,6 +278,7 @@ $(window).ready(function() {
             if(!$.parseJSON(localStorage.getItem('reduceAnimations'))) {
                 this.domElements.cards.slice(0, 6).addClass("slideIn");
             }
+            this.scrollBar.recalculate();
         },
         init: function () {
             this.clearCards();
@@ -379,7 +384,7 @@ $(window).ready(function() {
             });
             for(var key in dataDictionary) {
                 dataDictionary[key] = (dataDictionary[key]/maxValue) * this.maxLengthofHistogram;
-                $(this.domElements.histogramLine.toArray()[key-1]).width(dataDictionary[key]);
+                $(this.domElements.histogramLine.toArray()[key-1]).width(Math.max(dataDictionary[key],5));
             }
             if (dataDictionary[thisSite] == null) {
                 $(this.domElements.histogramLine.toArray()[thisSite - 1]).width(5);
@@ -400,7 +405,11 @@ $(window).ready(function() {
 
             //cardsControl.domElements.scrollBarTrack.toggleClass("forceVisible", true);
             //cardsControl.domElements.scrollBarTrack.css("background-color", scoreToColor(score));
-            cardsControl.changeAccentColor(scoreToColor(score));
+            var defaultLength = 2.5;
+            var sizeOfTrack = 11;
+            
+            var width = cardsControl.scrollVisibile ? defaultLength + sizeOfTrack: defaultLength;
+            cardsControl.changeAccent(scoreToColor(score), width);
 
             //helpControl.showScoreText(score);
             scaleControl.selectedIndex = clickedIndex;
