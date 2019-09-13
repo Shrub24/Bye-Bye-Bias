@@ -89,6 +89,7 @@ a:active{
 	font-family: 'Roboto', sans-serif;
 	color: rgb(240, 242, 250);
 	padding: 3.75px;
+	padding-left: 7px;
 	padding-right: 11px;
 	background-color: #424346;
 	/*
@@ -97,9 +98,12 @@ a:active{
 	*/
 	cursor: pointer;
 	position: relative;
+	border-left-color: #424346;
+	transition: border-left-color 0.8s cubic-bezier(0.075, 0.82, 0.165, 1);
+
 }
 .divider {
-	width: 75%;
+	width: 100%;
 	border-bottom-color: hsla(0,0%,100%,.04);
 	border-bottom: 1.4px solid transparent;
 	/*
@@ -117,7 +121,7 @@ a:active{
 }
 .slideIn {
 	animation-name: slideIn;
-	animation-duration: 0.20s;
+	animation-duration: 0.2876s;
 	animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 @keyframes slideIn {
@@ -504,7 +508,7 @@ a:active{
 }
 @keyframes wave {
 	from { transform : translateY(0); }
-	to   { transform : translateY(0.36px); }
+	to   { transform : translateY(0.767px); }
 }
 #loading span {
 	display: inline-block;
