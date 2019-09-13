@@ -1,16 +1,17 @@
 from news_sentiment.doc_sentiment_analysis import *
 from news_sentiment.cnn import *
-# from populate_database import *
+from populate_database import *
 from preprocessing.article_entities import *
 from news_sentiment.data_prep import *
 import numpy as np
 import random
 import collections
+import mysql
 
 
 if __name__ == "__main__":
     DB = mysql.connector.connect(host="localhost", user="byebyebias", passwd="bias123", db="articles")
-    net = load_model("models\\cnn3.pkl")
+    net = load_model("models\\cnnyeet4.pkl")
     embedding = load_embedding("embedding_model\\glove.twitter.27B.100d")
     URL_PATH = "urls.txt"
     NUM_MAIN_ENTITIES = 3
