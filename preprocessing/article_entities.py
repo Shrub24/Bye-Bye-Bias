@@ -131,16 +131,15 @@ class text_entity_getter(entity_getter):
             else:
                 entities = []
             for ner in entities:
-                entity = str(ner).lower()
-                if entity.startswith("the "):
-                    entity = entity[4:]
-                # check entity is short enough and lowercase everything in final dict
-                if len(entity.split()) <= self.ENTITY_LENGTH_CAP:
-                    if entity in entity_occurences:
-                        entity_sentences[entity].union(set([i.sent for i in cluster]))
-                    else:
-                        entity_sentences[entity] = set([i.sent for i in cluster])
-                    entity_tokens[entity].append(ner)
+                if ner.label_ in self.RELEVANT_ENTITY_TYPES and not any(x in str(ner) for x in self.DISALLOWED_CHARACTERS):
+                    entity = self.format_main_ent_to_string(ner)
+                    # check entity is short enough and lowercase everything in final dict
+                    if len(entity.split()) <= self.ENTITY_LENGTH_CAP:
+                        if entity in entity_occurences:
+                            entity_sentences[entity].union(set([i.sent for i in cluster]))
+                        else:
+                            entity_sentences[entity] = set([i.sent for i in cluster])
+                        entity_tokens[entity].append(ner)
         for key in entity_sentences.keys():
             entity_occurences[(key, tuple(entity_tokens[key]))] = len(entity_sentences[key])
         return sorted(list(entity_occurences.keys()), key=lambda x: entity_occurences[x], reverse=True)[:n]
@@ -171,6 +170,12 @@ class text_entity_getter(entity_getter):
                 if target.text[-2:] == "'s":
                     out_target = target[:-2]
                 sentence_target_tuples.append((out_sentence, (out_target.start_char - sentence.start_char, out_target.end_char - sentence.start_char)))
+
+        #
+        # for sentence, index in sentence_target_tuples:
+        #     target = sentence[index[0]:index[1]]
+        #     print(sentence[:index[0]] + "-" * (index[1] - index[0]) + sentence[index[1]:])
+        #     print(target)
 
         return sentence_target_tuples
 
@@ -212,6 +217,15 @@ class text_entity_getter(entity_getter):
                         current_indexes[index_location] = True
                         sentence_target_tuples.append((str(sentence), (index_location[0] - sentence.start_char, index_location[1] - sentence.start_char)))
         return sentence_target_tuples
+
+    def format_main_ent_to_string(self, ent):
+        string = str(ent).lower()
+        if string.startswith("the "):
+            string = string[4:]
+        if ent.label_ == "PERSON":
+            string = string.split()[-1]
+        return string
+
 
 
 # def format_text(target_locations, text):
