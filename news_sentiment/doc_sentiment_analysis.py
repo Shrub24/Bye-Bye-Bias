@@ -11,7 +11,7 @@ def get_sentiments(x, model, embed):
 
 def get_doc_sentiment(x, model, embed):
     scale = 9.0
-    average_sentiment = np.average([i for i in get_sentiments(x, model, embed) if i != 0])
+    average_sentiment = np.average([i for i in get_sentiments(x, model, embed)])
     return (average_sentiment + 1) * (scale/2) + 1
 
 
