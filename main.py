@@ -1,7 +1,11 @@
 from news_sentiment.doc_sentiment_analysis import *
 from news_sentiment.cnn import *
-from populate_database import *
+# from populate_database import *
 from preprocessing.article_entities import *
+from news_sentiment.data_prep import *
+import numpy as np
+import random
+
 
 if __name__ == "__main__":
     DB = mysql.connector.connect(host="localhost", user="byebyebias", passwd="bias123", db="articles")
@@ -20,4 +24,3 @@ if __name__ == "__main__":
         entity_sentiments.append({entity_string: get_doc_sentiment(text_entity_getter_instance.get_sentence_target_tuples_from_tokens(sentence_target_tuple_input), net, embedding) for entity_string, sentence_target_tuple_input in text_entity_getter_instance.get_n_important_entities(NUM_MAIN_ENTITIES)})
         all_entities.append(text_entity_getter_instance.get_unique_relevant_entities_stripped())
     populate_database(generate_article_infos(raw_infos, entity_sentiments, all_entities), DB)
-

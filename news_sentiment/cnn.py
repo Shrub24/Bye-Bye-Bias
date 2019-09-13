@@ -59,7 +59,7 @@ class Net(nn.Module):
 LABEL_NAMES = ["negative, neutral, positive"]
 
 
-def train(net, train_x, train_y, test_x, test_y, embed_model, num_epochs=15, batch_size=8, learning_rate=0.0001, write=True, save_path="models\\cnn.pkl"):
+def train(net, train_x, train_y, test_x, test_y, embed_model, num_epochs=5, batch_size=8, learning_rate=0.0001, write=True, save_path="models\\cnn.pkl"):
 
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(net.parameters(), lr=learning_rate)
