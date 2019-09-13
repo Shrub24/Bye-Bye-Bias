@@ -136,7 +136,7 @@ class text_entity_getter(entity_getter):
                     # check entity is short enough and lowercase everything in final dict
                     if len(entity.split()) <= self.ENTITY_LENGTH_CAP:
                         if entity in entity_occurences:
-                            entity_sentences[entity].union(set([i.sent for i in cluster]))
+                            entity_sentences[entity] = entity_sentences[entity].union(set([i.sent for i in cluster]))
                         else:
                             entity_sentences[entity] = set([i.sent for i in cluster])
                         entity_tokens[entity].append(ner)
@@ -150,7 +150,7 @@ class text_entity_getter(entity_getter):
 
         for ent in ents:
             if ent._.is_coref:
-                mentions.union(set(ent._.coref_cluster.mentions))
+                mentions = mentions.union(set(ent._.coref_cluster.mentions))
             sentence = ent.sent
             sentence_targets[sentence].append(ent)
 
