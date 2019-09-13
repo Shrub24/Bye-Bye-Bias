@@ -89,7 +89,7 @@ a:active{
 	font-family: 'Roboto', sans-serif;
 	color: rgb(240, 242, 250);
 	padding: 3.75px;
-	padding-left: 7px;
+	padding-left: 6.5px;
 	padding-right: 11px;
 	background-color: #424346;
 	/*
@@ -197,7 +197,7 @@ a:active{
 	border-bottom-right-radius: 5px;
 }
 .dropdown>*:hover {
-	background-color: rgb(68, 65, 65);
+	background-color: rgb(44, 43, 43);
 }
 .publisher {
 	margin-right: 7px;
@@ -234,7 +234,7 @@ a:active{
 }
 #help-tip:hover>.tool-tip, #fetch-text:hover>.tool-tip {
 	display: block;
-	opacity: 1.0;
+	opacity: 0.8;
 	pointer-events: auto;
 }
 #fetch-text {
@@ -292,7 +292,7 @@ a:active{
 }
 #scaleRectangle {
 	height: 12.5px;
-	background: linear-gradient(0.25turn, #F9414B, rgb(59, 90, 224));
+	background: linear-gradient(0.25turn, #F9414B, #4C8BF5);
 	width: auto;
 }
 .left-align, .right-align {
@@ -317,6 +317,7 @@ a:active{
 	margin: 0px;
 	background-color: #5F5F5F;
 	transform: scaleX(0.90);
+	opacity: 1;
 }
 .forceVisible {
 	visibility: visible !important;
@@ -359,7 +360,7 @@ a:active{
 	grid-template-columns: 250px;
 }
 .histogram-line-spacer > .histogram-line, .selection-line, #bar-scale > div{
-	background-image: repeating-linear-gradient(180deg, #F9414B, rgb(59, 90, 224) 350px);
+	background-image: repeating-linear-gradient(180deg, #F9414B, #4C8BF5 350px);
 	background-position: 29px 29px;
 	background-attachment: fixed;
 }
