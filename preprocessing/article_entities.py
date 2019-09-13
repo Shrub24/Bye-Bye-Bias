@@ -144,6 +144,7 @@ class text_entity_getter(entity_getter):
             entity_occurences[(key, tuple(entity_tokens[key]))] = len(entity_sentences[key])
         return sorted(list(entity_occurences.keys()), key=lambda x: entity_occurences[x], reverse=True)[:n]
 
+
     def get_sentence_target_tuples_from_tokens(self, ents):
         mentions = set()
         sentence_targets = defaultdict(list)
