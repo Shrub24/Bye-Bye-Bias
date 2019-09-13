@@ -8,6 +8,8 @@ import random
 import collections
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
+import mysql
+
 
 def get_doc_sent(sentences):
     sentiment_analyzer = SentimentIntensityAnalyzer()
@@ -26,9 +28,9 @@ def get_doc_sent(sentences):
 
 
 if __name__ == "__main__":
-    # DB = mysql.connector.connect(host="localhost", user="byebyebias", passwd="bias123", db="articles")
-    # net = load_model("models\\cnn3.pkl")
-    # embedding = load_embedding("embedding_model\\glove.twitter.27B.100d")
+    DB = mysql.connector.connect(host="localhost", user="byebyebias", passwd="bias123", db="articles")
+    net = load_model("models\\cnnyeet4.pkl")
+    embedding = load_embedding("embedding_model\\glove.twitter.27B.100d")
     URL_PATH = "urls.txt"
     NUM_MAIN_ENTITIES = 3
     with open(URL_PATH, "r") as url_file:
