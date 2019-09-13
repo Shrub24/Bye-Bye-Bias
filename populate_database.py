@@ -10,7 +10,11 @@ def scrape_article(article_url):
     article = Article(url=article_url.strip())
     article.download()
     article.parse()
-    return {"title": article.title, "publish_date": article.publish_date.strftime("%x"), "authors": ", ".join(article.authors), "text": article.text, "url": article_url}
+    if article.publish_date is None:
+        publish_date = "Unknown"
+    else:
+        publish_date = article.publish_date.strftime("%x")
+    return {"title": article.title, "publish_date": publish_date, "authors": ", ".join(article.authors), "text": article.text, "url": article_url.strip()}
 
 
 # adds entry to mysql database given by values of dict corresponding to column titles of dict keys
@@ -59,7 +63,7 @@ def generate_article_infos(scraped_info, main_entity_sentiments, all_entities):
             article_info["publisher"] = PUBLISHER_DICT[url_publisher]
         else:
             article_info["publisher"] = "Unknown"
-        text = article_info["text"]
+        article_info["text"] = article_info["text"].replace('"', "")
         # article_info["entities"] = json.dumps(enttity_getter_instance.get_unique_relevant_entities_stripped(text))
         article_info["entities"] = json.dumps(all_entities[i])
         # main_entities = dict()
@@ -70,6 +74,7 @@ def generate_article_infos(scraped_info, main_entity_sentiments, all_entities):
         article_info["main_entities"] = json.dumps(main_entity_sentiments[i])
         article_infos.append(article_info)
     return article_infos
+
 
 def get_scraped_infos(url_list):
     return [scrape_article(url) for url in url_list]

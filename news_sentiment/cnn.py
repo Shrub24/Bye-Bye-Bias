@@ -55,11 +55,19 @@ class Net(nn.Module):
         x = F.softmax(self.fc2(x), dim=1)
         return x
 
+    def freeze_conv_weights(self):
+        for param in self.conv.parameters():
+            param.requires_grad = False
+
+    def unfreeze_conv_weights(self):
+        for param in self.conv.parameters():
+            param.requires_grad = True
+
 
 LABEL_NAMES = ["negative, neutral, positive"]
 
 
-def train(net, train_x, train_y, test_x, test_y, embed_model, num_epochs=15, batch_size=8, learning_rate=0.0001, write=True, save_path="models\\cnn.pkl"):
+def train(net, train_x, train_y, test_x, test_y, embed_model, num_epochs=5, batch_size=8, learning_rate=0.0001, write=True, save_path="models\\cnn.pkl"):
 
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(net.parameters(), lr=learning_rate)
@@ -113,9 +121,9 @@ def train(net, train_x, train_y, test_x, test_y, embed_model, num_epochs=15, bat
 
             epoch_loss += loss.item()
 
-            if i % 100 == 99:
+            if i % 50 == 49:
                 print('[%d, %5d] loss: %.4f, acc: %.4f' %
-                      (epoch + 1, i + 1, running_loss / 100, correct / samples))
+                      (epoch + 1, i + 1, running_loss / 50, correct / samples))
 
                 running_loss = 0.0
                 correct = 0.0
@@ -165,4 +173,5 @@ def forward_prop(x, net, embed):
     inputs = embed_to_tensor(x, embed, length, WINDOW_SIZE)
     outputs = net(inputs)
     return torch.argmax(outputs, dim=1).item() - 1
+
 
