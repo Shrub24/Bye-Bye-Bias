@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bye Bye Bias Analytics</title>
+<!--    <script src="jquery-3.4.1.js"></script>-->
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+    <meta name="google-signin-client_id" content="154529731201-1fmdqacbv8re70076ljta1oqlnm2uc6l.apps.googleusercontent.com">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="content.js"></script>
+    <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
+</head>
+<body>
+    <div class="row">
+        <div class="col-md-6 text-left">
+            <input id="signOut" type="button" value="Sign Out" onclick="signOut();" />
+        </div>
+        <div class="col-md-6 text-right">
+            <p id="email"></p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 text-right">
+            <select id="entities" onchange="selectionChanged()">
+            </select>
+        </div>
+        <div class="col-md-6 text-left">
+            <select id="timeScale" onchange="timeScaleChanged()">
+                <option>Week</option>
+                <option>Month</option>
+                <option>Year</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h3 id="topic">Topic:</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div id="time_interest" class="col-md-6">
+                <div id="sentimentTimeGraph"></div>
+        </div>
+        <div id="time_bias" class="col-md-6">
+                <div id="interestTimeGraph"></div>
+        </div>
+    </div>
+</body>
+</html>
