@@ -1,12 +1,33 @@
 var sentiments;
+var exampleNum = 0;
+
+//Hardcoded examples
+var examples = []
+
+var entities = [[0, 3], [4, 7]]
+var text = "the car is back"
+examples.push([text, entities])
+
+var text = "this hole is very fun"
+var entities = [[5, 9], [13, 17]]
+examples.push([text, entities])
+
+var text = "Trump isn't a great guy"
+var entities = [[0,5],[20, 23]]
+examples.push([text, entities])
+
+var text = "Obama is very cool"
+var entities = [[0, 5]]
+examples.push([text, entities])
+
+var text = "He's just Biden his time"
+var entities = [[0, 4], [10, 15]]
+examples.push([text, entities])
 
 window.onload = function() {
     var example_element = document.getElementById("example_text");
-    // var entities = [[0, 3], [4, 7]]
-    // var text = "the car is back"
-    var text = "this hole is very fun"
-    var entities = [[5, 9], [13, 17]]
-    example_element.innerHTML = generateExampleHTML(entities, text)
+    firstExample = getNextExample()
+    example_element.innerHTML = generateExampleHTML(firstExample[1], firstExample[0])
 }
 
 //entities is array of ORDERED character indexes (start-inclusive, end-exclusive)
@@ -46,9 +67,25 @@ function sentimentSelected(sentiment, elementID) {
             break
         default:
             console.log("invalid sentiment selected")
-    } 
+    }
 }
 
 function submitSentiments() {
+    var example_element = document.getElementById("example_text");
     console.log(sentiments)
+    for(var i=0; i < sentiments.length;i++) {
+        console.log(document.getElementById(i.toString()).innerHTML + ": " + sentiments[i])
+    }
+    var nextExample = getNextExample()
+    example_element.innerHTML = generateExampleHTML(nextExample[1], nextExample[0])
+}
+
+function getNextExample() {
+    if(exampleNum < examples.length) {
+        exampleNum += 1
+    }
+    else{
+        exampleNum = 1
+    }
+    return examples[exampleNum - 1]
 }
