@@ -11,7 +11,7 @@
   padding: 0px 0px;
   z-index: 1;
   top: -120%;
-  left: calc(-42px + 50%);
+  left: calc(-41px + 50%);
 }
 
 .dropdown:hover .dropdown-content {
