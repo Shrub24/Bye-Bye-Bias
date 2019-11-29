@@ -41,7 +41,7 @@ function generateExampleHTML(entities, text) {
         var endIndex = entity[1];
         var entityName = text.slice(startIndex, endIndex);
         var id_string = e_id.toString();
-        var replacementHTML = "<div class='dropdown'><span><mark id=" + id_string + ">" + entityName + "</mark></span><div class='dropdown-content'><button onclick='sentimentSelected(-1," + id_string + ")'>-1</button><button onclick='sentimentSelected(0," + id_string + ")'>0</button><button onclick='sentimentSelected(1," + id_string + ")'>1</button></div></div>";
+        var replacementHTML = "<div class='dropdown'><span id=" + id_string + " class='none-highlight'>" + entityName + "</span><div class='dropdown-content'><button class='sentiment-button negative' onclick='sentimentSelected(-1," + id_string + ")'>-1</button><button class='sentiment-button neutral' onclick='sentimentSelected(0," + id_string + ")'>0</button><button class='sentiment-button positive' onclick='sentimentSelected(1," + id_string + ")'>1</button></div></div>";
         html = html.slice(0, startIndex + offset) + replacementHTML + html.slice(endIndex + offset);
         offset += replacementHTML.length - entityName.length
         e_id += 1
@@ -57,14 +57,14 @@ function sentimentSelected(sentiment, elementID) {
     markElement.className = ""
     switch(sentiment) {
         case -1:
-            markElement.className = "red-highlight";
+            markElement.className = "negative-highlight";
             break;
         case 0:
-            markElement.className = "grey-highlight";
+            markElement.className = "neutral-highlight";
             break;
         case 1:
-            markElement.className = "green-highlight";
-            break
+            markElement.className = "positive-highlight";
+            break;
         default:
             console.log("invalid sentiment selected")
     }

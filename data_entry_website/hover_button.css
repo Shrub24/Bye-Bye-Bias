@@ -10,8 +10,8 @@
   min-width: 80px;
   padding: 0px 0px;
   z-index: 1;
-  top: -105%;
-  left: calc(-40px + 50%);
+  top: -120%;
+  left: calc(-42px + 50%);
 }
 
 .dropdown:hover .dropdown-content {
