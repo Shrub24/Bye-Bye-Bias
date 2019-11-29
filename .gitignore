@@ -9,3 +9,4 @@ articles/jsons/
 embedding_model/glove.twitter.27B.zip
 *.pyc
 *.pyc
+*.pyc

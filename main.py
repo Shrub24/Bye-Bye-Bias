@@ -28,7 +28,7 @@ def get_doc_sent(sentences):
 
 
 if __name__ == "__main__":
-    DB = mysql.connector.connect(host="localhost", user="byebyebias", passwd="bias123", db="articles")
+    DB = mysql.connector.connect(host="localhost", user="root", passwd="bias123", db="articles")
     net = load_model("models\\cnnyeet4.pkl")
     embedding = load_embedding("embedding_model\\glove.twitter.27B.100d")
     URL_PATH = "urls.txt"

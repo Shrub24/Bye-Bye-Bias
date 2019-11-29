@@ -61,7 +61,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    db = mysql.connector.connect(host="localhost", user="byebyebias", passwd="bias123", db="articles")
+    db = mysql.connector.connect(host="localhost", user="root", passwd="bias123", db="articles")
 
     server = HTTPServer(("", PORT_NUMBER), Handler)
     print("Startd httpserver on port " + str(PORT_NUMBER))
