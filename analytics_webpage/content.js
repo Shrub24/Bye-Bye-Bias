@@ -3,9 +3,9 @@ var analyticsServerUrl = "http://localhost:8040/"
 var storedSentimentData = []
 var storedInterestData = []
 
-var timescaleDict = {"Year": [365, 12], "Month": [30, 3], "Week": [7, 1]}
+var timescaleDict = { "Year": [365, 12], "Month": [30, 3], "Week": [7, 1] }
 
-window.onload = function() {
+window.onload = function () {
     var data = unpack_query();
     console.log(data.id);
     var email = data.email;
@@ -16,12 +16,12 @@ window.onload = function() {
 function page_init(email, id) {
     //get request to analytics server
     // fetch(analyticsServerUrl + "?id=" + id + "&entity=NULL", {method: "GET"}).then(function (response) {
-    fetch(analyticsServerUrl + "?id=" + id + "&entity=NULL", {method: "GET"}).then(function (response) {
-      if (!response.ok) {
-        return false
-      }
-      return response.text();
-    }).then(function(body) {
+    fetch(analyticsServerUrl + "?id=" + id + "&entity=NULL", { method: "GET" }).then(function (response) {
+        if (!response.ok) {
+            return false
+        }
+        return response.text();
+    }).then(function (body) {
         parsed = JSON.parse(body);
         var entitiesDropdown = document.getElementById("entities")
         var entities = parsed["entities"]
@@ -37,8 +37,8 @@ function unpack_query() {
         params = url.split('?')[1].split('&'),
         data = {}, tmp;
     for (var i = 0, l = params.length; i < l; i++) {
-         tmp = params[i].split('=');
-         data[tmp[0]] = tmp[1];
+        tmp = params[i].split('=');
+        data[tmp[0]] = tmp[1];
     }
     return data
 }
@@ -81,10 +81,10 @@ function signOut() {
 
 function addOptionsToDropdown(options, dropdown) {
     var option;
-    for(option of options) {
-            var op = new Option();
-            op.text = option;
-            dropdown.options.add(op)
+    for (option of options) {
+        var op = new Option();
+        op.text = option;
+        dropdown.options.add(op)
     }
 }
 
@@ -95,12 +95,12 @@ function selectionChanged() {
     var newSelection = dropdown.options[dropdown.selectedIndex].text;
     var timeScale = timescaleDict[timescaleDropdown.options[timescaleDropdown.selectedIndex].text]
     changeTopicTitle(newSelection)
-    fetch(analyticsServerUrl + "?id=" + id + "&entity=" + newSelection, {method: "GET"}).then(function (response) {
-      if (!response.ok) {
-        return false
-      }
-      return response.text();
-    }).then(function(body) {
+    fetch(analyticsServerUrl + "?id=" + id + "&entity=" + newSelection, { method: "GET" }).then(function (response) {
+        if (!response.ok) {
+            return false
+        }
+        return response.text();
+    }).then(function (body) {
         parsed = JSON.parse(body);
         var sentiment = parsed["sentiment"]
         var interest = parsed["interest"]
@@ -110,9 +110,14 @@ function selectionChanged() {
     });
 }
 
-function timeScaleChanged() {
-    var timescaleDropdown = document.getElementById("timeScale");
-    var timeScale = timescaleDict[timescaleDropdown.options[timescaleDropdown.selectedIndex].text]
+$(window).on('load', function() {
+    $("#toggle-Week").on("click", changeTimeScale("Week"));
+    $("#toggle-Month").on("click", changeTimeScale("Month"));
+    $("#toggle-Year").on("click", changeTimeScale("Year"));
+});
+
+function changeTimeScale(scale) {
+    var timeScale = timescaleDict[scale]
     generateGraphs(storedSentimentData, storedInterestData, timeScale[0], timeScale[1])
 }
 
@@ -123,7 +128,7 @@ function changeTopicTitle(text) {
 function generateGraphs(sentimentData, interestData, timespan, timegroups) {
     var formattedSentimentData = averageTimegroupsWithinTimespan(sentimentData, timespan, timegroups)
     var formattedInterestData = sumTimegroupsWithinTimespan(interestData, timespan, timegroups)
-    var len = Math.ceil(timespan/timegroups)
+    var len = Math.ceil(timespan / timegroups)
     var sentimentGraph = {
         x: Array.from(Array(len).keys()),
         y: formattedSentimentData,
@@ -138,12 +143,17 @@ function generateGraphs(sentimentData, interestData, timespan, timegroups) {
     var sentimentGraphData = [sentimentGraph]
     var interestTimeGraphElement = document.getElementById("interestTimeGraph");
     var interestGraphData = [interestGraph]
+    var getstyle = name => getComputedStyle(document.body).getPropertyValue(name);
     var sentimentLayout = {
-        xaxis: {range: [0, len]},
-        yaxis: {range: [0, 10]}
+        xaxis: { range: [0, len] },
+        yaxis: { range: [0, 10] },
+        plot_bgcolor: getstyle("--black-shade-light"),
+        paper_bgcolor: getstyle("--black-shade-light"),
     }
     var interestLayout = {
-        xaxis: {range: [0, len]}
+        xaxis: { range: [0, len] },
+        plot_bgcolor: getstyle("--black-shade-light"),
+        paper_bgcolor: getstyle("--black-shade-light"),
     }
     Plotly.newPlot(sentimentTimeGraphElement, sentimentGraphData, sentimentLayout);
     Plotly.newPlot(interestTimeGraphElement, interestGraphData, interestLayout);
@@ -154,26 +164,26 @@ function sumTimegroupsWithinTimespan(data, timespan, timegroups) {
     data = data.slice(timespan * -1)
     var newData = []
     var i = timespan % timegroups;
-    if(i != 0) {
-        newData = newData.concat(data.slice(0, i).reduce(function(acc, val) { return acc + val; }, 0));
+    if (i != 0) {
+        newData = newData.concat(data.slice(0, i).reduce(function (acc, val) { return acc + val; }, 0));
     }
-    for(;i <= data.length - timegroups;i += timegroups) {
-        newData = newData.concat(data.slice(i, i + timegroups).reduce(function(acc, val) { return acc + val; }, 0));
+    for (; i <= data.length - timegroups; i += timegroups) {
+        newData = newData.concat(data.slice(i, i + timegroups).reduce(function (acc, val) { return acc + val; }, 0));
     }
     return newData
 }
 
 function averageTimegroupsWithinTimespan(data, timespan, timegroups) {
     summedData = sumTimegroupsWithinTimespan(data, timespan, timegroups)
-    if(timespan % timegroups == 0) {
+    if (timespan % timegroups == 0) {
         var i = 0
     }
     else {
-        summedData[0] = summedData[0]/(timespan%timegroups)
+        summedData[0] = summedData[0] / (timespan % timegroups)
         var i = 1
     }
-    for(; i<summedData.length; i++){
-        summedData[i] = summedData[i]/timegroups
+    for (; i < summedData.length; i++) {
+        summedData[i] = summedData[i] / timegroups
     }
     return summedData
 }

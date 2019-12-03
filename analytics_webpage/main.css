@@ -1,0 +1,52 @@
+:root {
+    --black-shade-light: #f0f0f0;
+    --black-shade-bluey: rgb(51, 54, 59);
+    --black-shade-dark: #292b2e;
+    --black-shade-grey: #424346;
+    --black-shade-grey-alternate: rgb(56, 59, 65);
+    --font-color: rgb(215, 216, 219);
+    --font: Arial, Helvetica, sans-serif;
+    --blue-accent: #5886EA;
+}
+
+.btn-outline-primary {
+    color : var(--blue-accent);
+    border-color: var(--blue-accent);
+}
+
+.label {
+    color: var(--font-color);
+}
+
+.footer {
+    background-color: var(--black-shade-grey-alternate);
+}
+
+.footer-text {
+    font-size: 13px;
+}
+
+body {
+    background-color: var(--black-shade-grey);
+    font-family: var(--font);
+    color: var(--font-color);
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media (max-width: 992px) {
+    .text-justify-md {
+        text-align: center;
+    }
+}
+
+.toggle-timescale>*{
+    box-shadow: none !important;
+}
+
+.navbar.navbar-expand-md {
+    background-color: var(--black-shade-dark);
+}
+
+.upper-spacing {
+    margin-top: 10px;
+}

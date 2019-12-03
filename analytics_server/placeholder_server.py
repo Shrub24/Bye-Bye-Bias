@@ -1,4 +1,4 @@
-import mysql.connector
+
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
@@ -7,11 +7,13 @@ import json
 import random
 import math
 
-PORT_NUMBER = 8040
+PORT_NUMBER = 8080
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        response = {"entities": ["trump", "putin", "biden", "kim jong un"], "sentiment": [random.randint(0, 10) for i in range(0, 365)], "interest": [random.randint(0, 10) for i in range(0, 365)]}
+        response = {"entities": ["trump", "putin", "biden", "kim jong un"], 
+        "sentiment": [random.randint(0, 10) for i in range(0, 365)], 
+        "interest": [random.randint(0, 10) for i in range(0, 365)]}
 
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
