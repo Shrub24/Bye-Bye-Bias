@@ -132,31 +132,28 @@ function generateGraphs(sentimentData, interestData, timespan, timegroups) {
     var sentimentGraph = {
         x: Array.from(Array(len).keys()),
         y: formattedSentimentData,
+        name: "Sentiment",
         type: 'scatter',
     }
     var interestGraph = {
         x: Array.from(Array(len).keys()),
         y: formattedInterestData,
+        name: "Interest",
+        yaxis: "y2",
         type: 'scatter',
     }
-    var sentimentTimeGraphElement = document.getElementById("sentimentTimeGraph");
-    var sentimentGraphData = [sentimentGraph]
-    var interestTimeGraphElement = document.getElementById("interestTimeGraph");
-    var interestGraphData = [interestGraph]
+    var graphElement = document.getElementById("graph");
+    var data = [sentimentGraph, interestGraph]
     var getstyle = name => getComputedStyle(document.body).getPropertyValue(name);
-    var sentimentLayout = {
-        xaxis: { range: [0, len] },
-        yaxis: { range: [0, 10] },
+    var layout = {
+        xaxis: { range: [0, len], title: "Time" },
+        yaxis: { range: [0, 10], title: "Sentiment"},
+        yaxis2: {title: "Interest", side: "right", overlaying: "y", range: [0, Math.max(...formattedInterestData) + 1]},
         plot_bgcolor: getstyle("--black-shade-light"),
         paper_bgcolor: getstyle("--black-shade-light"),
+        legend: {x: 1.05, y: 1.02}
     }
-    var interestLayout = {
-        xaxis: { range: [0, len] },
-        plot_bgcolor: getstyle("--black-shade-light"),
-        paper_bgcolor: getstyle("--black-shade-light"),
-    }
-    Plotly.newPlot(sentimentTimeGraphElement, sentimentGraphData, sentimentLayout);
-    Plotly.newPlot(interestTimeGraphElement, interestGraphData, interestLayout);
+    Plotly.newPlot(graphElement, data, layout);
 
 }
 
