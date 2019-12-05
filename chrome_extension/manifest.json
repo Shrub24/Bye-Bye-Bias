@@ -2,13 +2,13 @@
 	"name": "Bye Bye Bias",
 	"version": "6.9",
 	"description": "Combatting confirmation bias one article at a time",
-	"permissions": ["tabs", "activeTab", "identity", "identity.email"],
+	"permissions": ["tabs", "activeTab"],
     "browser_action": {
-      "default_icon": {                    // optional
-        "32": "./icon32.png",           // optional
-        "64": "./icon64.png",           // optional
-        "128": "./icon128.png"            // optional
-      },
+      // "default_icon": {                    // optional
+      //   "16": "images/icon16.png",           // optional
+      //   "24": "images/icon24.png",           // optional
+      //   "32": "images/icon32.png"            // optional
+      // },
       "default_popup": "popup.html"
     },
 	"background": {
