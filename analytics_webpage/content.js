@@ -4,6 +4,7 @@ var storedSentimentData = []
 var storedInterestData = []
 
 var timescaleDict = { "Year": [365, 12], "Month": [30, 3], "Week": [7, 1] }
+var timeScale;
 
 window.onload = function () {
     var data = unpack_query();
@@ -25,9 +26,15 @@ function page_init(email, id) {
         parsed = JSON.parse(body);
         var entitiesDropdown = document.getElementById("entities")
         var entities = parsed["entities"]
+        timeScale = timescaleDict[$("input:radio[name='options']:checked").val()]
         addOptionsToDropdown(entities, entitiesDropdown)
-        changeTopicTitle(entitiesDropdown.options[entitiesDropdown.selectedIndex].text)
-        selectionChanged()
+        // changeTopicTitle(entitiesDropdown.options[entitiesDropdown.selectedIndex].text)
+        // init starting blank graphs from first response
+        var sentiment = parsed["sentiment"]
+        var interest = parsed["interest"]
+        storedSentimentData = sentiment
+        storedInterestData = interest
+        generateGraphs(sentiment, interest, timeScale[0], timeScale[1])
     });
     document.getElementById("email").innerHTML = email
 }
@@ -86,15 +93,14 @@ function addOptionsToDropdown(options, dropdown) {
         op.text = option;
         dropdown.options.add(op)
     }
+    $(".selectpicker").selectpicker("refresh")
 }
 
 function selectionChanged() {
     var id = unpack_query().id;
-    var dropdown = document.getElementById("entities");
-    var timescaleDropdown = document.getElementById("timeScale");
-    var newSelection = dropdown.options[dropdown.selectedIndex].text;
-    var timeScale = timescaleDict[timescaleDropdown.options[timescaleDropdown.selectedIndex].text]
-    changeTopicTitle(newSelection)
+    var dropdown = $(".selectpicker")
+    var newSelection = dropdown.find("option:selected").text();
+    // changeTopicTitle(newSelection)
     fetch(analyticsServerUrl + "?id=" + id + "&entity=" + newSelection, { method: "GET" }).then(function (response) {
         if (!response.ok) {
             return false
@@ -110,14 +116,8 @@ function selectionChanged() {
     });
 }
 
-$(window).on('load', function() {
-    $("#toggle-Week").on("click", changeTimeScale("Week"));
-    $("#toggle-Month").on("click", changeTimeScale("Month"));
-    $("#toggle-Year").on("click", changeTimeScale("Year"));
-});
-
 function changeTimeScale(scale) {
-    var timeScale = timescaleDict[scale]
+    timeScale = timescaleDict[scale]
     generateGraphs(storedSentimentData, storedInterestData, timeScale[0], timeScale[1])
 }
 
@@ -187,3 +187,7 @@ function averageTimegroupsWithinTimespan(data, timespan, timegroups) {
     }
     return summedData
 }
+
+$(document).on("change", 'input:radio[name=options]', function(event) {
+    changeTimeScale($("input:radio[name='options']:checked").val())
+})

@@ -7,7 +7,7 @@ import json
 import random
 import math
 
-PORT_NUMBER = 8080
+PORT_NUMBER = 8040
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
