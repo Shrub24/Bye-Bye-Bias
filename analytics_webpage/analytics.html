@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
 <head>
     <meta charset="UTF-8">
@@ -26,7 +27,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-md">
+    <nav class="navbar navbar-expand-md navbar-dark">
         <span class="navbar-brand mb-0 h1">Bye Bye Bias</span>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,47 +43,52 @@
                 snailmail@gmail.com
             </span>
             <form class="form-inline ml-0 ml-md-2">
-                <button type="button" class="btn btn-outline-primary" onclick="signOut();">Signout</button>
+                <button type="button" class="btn btn-outline-primary btn-block" onclick="signOut();">Signout</button>
             </form>
         </div>
     </nav>
-    <div class="container">
-        <div class="row mt-2">
-            <div class="col-md-6 text-left">
-                <!-- <div class="label">Topic</div> -->
-                <select id="entities" class="selectpicker" data-live-search="true" data-width="100%"
-                    onchange="selectionChanged()" title="Choose a topic">
-                </select>
-            </div>
-            <div class="col-md-6 mt-2 mt-md-0 text-justify-md">
-                <!-- <div class="label">Timescale</div> -->
-                <div class="btn-group btn-group-toggle toggle-timescale" data-toggle="buttons">
-                    <label class="btn btn-secondary active">
-                        <input type="radio" name="options" id="toggle-Week" autocomplete="off" checked> Week
-                    </label>
-                    <label class="btn btn-secondary">
-                        <input type="radio" name="options" id="toggle-Month" autocomplete="off"> Month
-                    </label>
-                    <label class="btn btn-secondary">
-                        <input type="radio" name="options" id="toggle-Year" autocomplete="off"> Year
-                    </label>
+    <div class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 offset-md-2 pt-2 actual-content">
+                    <div class="row no-gutters">
+                        <div class="col-md-8">
+                            <select id="entities" class="selectpicker" data-live-search="true" data-width="100%"
+                                onchange="selectionChanged()" title="Choose a topic">
+                            </select>
+                        </div>
+                        <div class="col-md-4 mt-md-0 mt-2 text-center-md text-right pl-md-1">
+                            <div class="btn-group btn-group-toggle toggle-timescale btn-block" data-toggle="buttons">
+                                <label class="btn btn-primary active">
+                                    <input type="radio" name="options" id="toggle-Week" autocomplete="off" checked> Week
+                                </label>
+                                <label class="btn btn-primary">
+                                    <input type="radio" name="options" id="toggle-Month" autocomplete="off"> Month
+                                </label>
+                                <label class="btn btn-primary">
+                                    <input type="radio" name="options" id="toggle-Year" autocomplete="off"> Year
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div id="time_interest" class="col-md-12">
+                            <div id="sentimentTimeGraph"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="row upper-spacing">
-            <div id="time_interest" class="col-md-6">
-                <div id="sentimentTimeGraph"></div>
-            </div>
-            <div id="time_bias" class="col-md-6">
-                <div id="interestTimeGraph"></div>
+    </div>
+    <footer class="upper-spacing">
+        <div class="container">
+            <div class="row">
+                <div class="text-center col-md-8 offset-md-2 text-center" id="footer-text">
+                    Made with 💖 by the bloods🩸.
+                </div>
             </div>
         </div>
-    </div>
-    <div class="upper-spacing footer">
-        <div class="text-center footer-text">
-            Made with 💖 by the bloods🩸.
-        </div>
-    </div>
+    </footer>
 </body>
 
 </html>
