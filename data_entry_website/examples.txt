@@ -1,0 +1,5 @@
+the car is back;[[0, 3], [4, 7]]
+this hole is very fun;[[5, 9], [13, 17]]
+Trump isn't a great guy;[[0,5],[20, 23]]
+Obama is very cool;[[0, 5]]
+He's just Biden his time;[[0, 4], [11, 16]]
