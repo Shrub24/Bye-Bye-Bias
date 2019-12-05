@@ -23,6 +23,7 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="content.js"></script>
     <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/coliff/bootstrap-rfs/bootstrap-rfs.css">
     <link rel="stylesheet" href="./main.css">
 </head>
 
@@ -50,14 +51,14 @@
     <div class="content">
         <div class="container">
             <div class="row">
-                <div class="col-md-8 offset-md-2 pt-2 actual-content">
+                <div class="col-md-12 col-lg-8 offset-lg-2 pt-3 actual-content">
                     <div class="row no-gutters">
                         <div class="col-md-8">
                             <select id="entities" class="selectpicker" data-live-search="true" data-width="100%"
                                 onchange="selectionChanged()" title="Choose a topic">
                             </select>
                         </div>
-                        <div class="col-md-4 mt-md-0 mt-2 text-center-md text-right pl-md-1">
+                        <div class="col-md-4 mt-md-0 mt-2 text-center-md pl-md-1">
                             <div class="btn-group btn-group-toggle toggle-timescale btn-block" data-toggle="buttons">
                                 <label class="btn btn-primary active">
                                     <input type="radio" name="options" id="toggle-Week" autocomplete="off" checked> Week
@@ -72,23 +73,20 @@
                         </div>
                     </div>
                     <div class="row mt-2">
-                        <div id="time_interest" class="col-md-12">
+                        <div id="time_interest" class="col-12">
                             <div id="sentimentTimeGraph"></div>
+                        </div>
+                    </div>
+                    <div class="row mt-1 text-center">
+                        <div class="col-12">
+                            <footer id="footer-text">
+                                Made with 💖 by the bloods🩸.
+                            </footer>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <footer class="upper-spacing">
-        <div class="container">
-            <div class="row">
-                <div class="text-center col-md-8 offset-md-2 text-center" id="footer-text">
-                    Made with 💖 by the bloods🩸.
-                </div>
-            </div>
-        </div>
-    </footer>
 </body>
 
 </html>
