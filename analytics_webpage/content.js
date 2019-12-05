@@ -4,7 +4,9 @@ var storedSentimentData = []
 var storedInterestData = []
 
 var timescaleDict = { "Year": [365, 12], "Month": [30, 3], "Week": [7, 1] }
+var timescaleOrder = { "Year": 3, "Month": 2, "Week": 1 }
 var timeScale;
+var oldScale;
 
 window.onload = function () {
     var data = unpack_query();
@@ -24,19 +26,21 @@ function page_init(email, id) {
         return response.text();
     }).then(function (body) {
         parsed = JSON.parse(body);
-        var entitiesDropdown = document.getElementById("entities")
-        var entities = parsed["entities"]
-        timeScale = timescaleDict[$("input:radio[name='options']:checked").val()]
-        addOptionsToDropdown(entities, entitiesDropdown)
+        var entitiesDropdown = document.getElementById("entities");
+        var entities = parsed["entities"];
+        timeScale = timescaleDict[$("input:radio[name='options']:checked").val()];
+        addOptionsToDropdown(entities, entitiesDropdown);
         // changeTopicTitle(entitiesDropdown.options[entitiesDropdown.selectedIndex].text)
         // init starting blank graphs from first response
-        var sentiment = parsed["sentiment"]
-        var interest = parsed["interest"]
-        storedSentimentData = sentiment
-        storedInterestData = interest
-        generateGraphs(sentiment, interest, timeScale[0], timeScale[1])
+        // var sentiment = parsed["sentiment"];
+        // var interest = parsed["interest"];
+        // storedSentimentData = sentiment;
+        // storedInterestData = interest;
+        $('.selectpicker').selectpicker('val', entities[0]);
+        selectionChanged();
+        //generateGraphs(sentiment, interest, timeScale[0], timeScale[1]);
     });
-    document.getElementById("email").innerHTML = email
+    document.getElementById("email").innerHTML = email;
 }
 
 function unpack_query() {
@@ -96,10 +100,14 @@ function addOptionsToDropdown(options, dropdown) {
     $(".selectpicker").selectpicker("refresh")
 }
 
+function getCurrentSelection() {
+    var dropdown = $(".selectpicker");
+    return dropdown.find("option:selected").text();
+}
+
 function selectionChanged() {
     var id = unpack_query().id;
-    var dropdown = $(".selectpicker")
-    var newSelection = dropdown.find("option:selected").text();
+    var newSelection = getCurrentSelection();
     // changeTopicTitle(newSelection)
     fetch(analyticsServerUrl + "?id=" + id + "&entity=" + newSelection, { method: "GET" }).then(function (response) {
         if (!response.ok) {
@@ -122,7 +130,23 @@ function changeTimeScale(scale) {
 }
 
 function changeTopicTitle(text) {
-    document.getElementById("topic").innerHTML = "Topic: " + text
+    document.getElementById("topic").innerHTML = "Topic: " + text;
+}
+
+function changeData() {
+    Plotly.animate('myDiv', {
+        data: [{ y: [Math.random(), Math.random(), Math.random()] }],
+        traces: [0],
+        layout: {}
+    }, {
+        transition: {
+            duration: 500,
+            easing: 'cubic-in-out'
+        },
+        frame: {
+            duration: 500
+        }
+    })
 }
 
 function generateGraphs(sentimentData, interestData, timespan, timegroups) {
@@ -134,6 +158,9 @@ function generateGraphs(sentimentData, interestData, timespan, timegroups) {
         y: formattedSentimentData,
         name: "Sentiment",
         type: 'scatter',
+        marker: {
+            color: "#F9414B",
+        },
     }
     var interestGraph = {
         x: Array.from(Array(len).keys()),
@@ -141,20 +168,74 @@ function generateGraphs(sentimentData, interestData, timespan, timegroups) {
         name: "Interest",
         yaxis: "y2",
         type: 'scatter',
+        marker: {
+            color: "#4C8BF5",
+        },
     }
     var graphElement = document.getElementById("graph");
     var data = [sentimentGraph, interestGraph]
-    var getstyle = name => getComputedStyle(document.body).getPropertyValue(name);
-    var layout = {
-        xaxis: { range: [0, len], title: "Time" },
-        yaxis: { range: [0, 10], title: "Sentiment"},
-        yaxis2: {title: "Interest", side: "right", overlaying: "y", range: [0, Math.max(...formattedInterestData) + 1]},
-        plot_bgcolor: getstyle("--black-shade-light"),
-        paper_bgcolor: getstyle("--black-shade-light"),
-        legend: {x: 1.05, y: 1.02}
-    }
-    Plotly.newPlot(graphElement, data, layout);
+    var getStyle = name => getComputedStyle(document.body).getPropertyValue(name);
+    var currentScale = getCurrentScale();
 
+    var ranges = {
+        xaxis: { range: [0, len], title: "Time by " + currentScale },
+        yaxis: { range: [0, 10], title: "Sentiment" },
+        yaxis2: { title: "Interest", side: "right", overlaying: "y", range: [0, Math.max(...formattedInterestData) + 1] },
+    };
+
+    if ($("#graph").hasClass("js-plotly-plot")) {
+        //If zooming in or changing topics
+        var firstSetting = { layout: ranges };
+        var secondSetting = { data: data };
+
+        //If zooming out
+        if (timescaleOrder[currentScale] > timescaleOrder[oldScale]) {
+            //Then swap settings
+            firstSetting = [secondSetting, secondSetting = firstSetting][0];
+        }
+
+        Plotly.update(graphElement,
+            {},
+            layout_update = {
+                title: getCurrentSelection(),
+            }
+        );
+
+        Plotly.animate(graphElement, {
+            ...firstSetting,
+            transition: {
+                duration: 250,
+                easing: 'cubic-in-out'
+            },
+        }).then(function () {
+            Plotly.animate(graphElement, {
+                ...secondSetting,
+                transition: {
+                    duration: 150,
+                    easing: 'linear'
+                },
+            })
+        });
+    } else {
+        var layout = {
+            title: {
+                text: getCurrentSelection(),
+                font: {
+                    family: getStyle("--font"),
+                    size: 35,
+                },
+                xref: 'paper',
+                x: 0.00,
+                y: -1,
+            },
+            ...ranges,
+            plot_bgcolor: getStyle("--blue-light"),
+            paper_bgcolor: getStyle("--black-shade-light"),
+            legend: { x: 1.05, y: 1.02 }
+        }
+        Plotly.newPlot(graphElement, data, layout, { responsive: true });
+    }
+    oldScale = currentScale;
 }
 
 function sumTimegroupsWithinTimespan(data, timespan, timegroups) {
@@ -185,6 +266,10 @@ function averageTimegroupsWithinTimespan(data, timespan, timegroups) {
     return summedData
 }
 
-$(document).on("change", 'input:radio[name=options]', function(event) {
-    changeTimeScale($("input:radio[name='options']:checked").val())
+function getCurrentScale() {
+    return $("input:radio[name='options']:checked").val();
+}
+
+$(document).on("change", 'input:radio[name=options]', function (event) {
+    changeTimeScale(getCurrentScale());
 })
