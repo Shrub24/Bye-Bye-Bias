@@ -1,0 +1,68 @@
+:root {
+    --black-shade-light: #f0f0f0;
+    --black-shade-bluey: rgb(51, 54, 59);
+    --black-shade-dark: #292b2e;
+    --black-shade-grey: #424346;
+    --black-shade-grey-alternate: rgb(56, 59, 65);
+    --font-color: rgb(215, 216, 219);
+    --font: Arial, Helvetica, sans-serif;
+    --blue-accent: #5886EA;
+    --blue-light: #E5ECF5;
+}
+
+.btn-light:not(:disabled):not(.disabled).active,
+.btn-light:not(:disabled):not(.disabled):active,
+.show>.btn-light.dropdown-toggle {
+    background-color: var(--blue-light);
+}
+
+#graph>div>div>svg:nth-child(1) {
+    border-radius: 0.25rem;
+}
+
+.btn-outline-primary {
+    color: var(--blue-accent);
+    border-color: var(--blue-accent);
+}
+
+.label {
+    color: var(--font-color);
+}
+
+#footer-text {
+    background-color: var(--black-shade-bluey);
+    font-size: 13px;
+}
+
+body {
+    background-color: var(--black-shade-grey);
+    font-family: var(--font);
+    color: var(--font-color);
+}
+
+@media (max-width: 992px) {
+    .text-center-md {
+        text-align: center !important;
+    }
+}
+
+.toggle-timescale>* {
+    box-shadow: none !important;
+}
+
+.actual-content {
+    background-color: var(--black-shade-bluey);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+
+@include media-breakpoint-between(xs, sm) {
+    .btn {
+        @include button-size($input-btn-padding-y-sm, $input-btn-padding-x-sm, $font-size-sm, $line-height-sm, $btn-border-radius-sm);
+    }
+}
+
+nav {
+    background-color: var(--black-shade-dark);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .2), 0 1.5px 0 rgba(0, 0, 0, .05), 0 2px 0 rgba(0, 0, 0, .05), 0 3px 0 rgba(0, 0, 0, .05);
+    z-index: 1000;
+}
