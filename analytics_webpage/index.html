@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bye Bye Bias Analytics</title>
+    <meta name="google-signin-client_id" content="154529731201-1fmdqacbv8re70076ljta1oqlnm2uc6l.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+</head>
+<body>
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    <script>
+          function onSignIn(googleUser) {
+              var id = googleUser.getBasicProfile().getId();
+              var email = googleUser.getBasicProfile().getEmail();
+              window.location.href = "analytics.html?id=" + id + "&email=" + email
+          }
+        </script>
+</body>
+</html>

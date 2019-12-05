@@ -492,6 +492,9 @@ $(window).ready(function() {
         var data = localStorage.getItem(currentTab.url);
         var backgroundPage = chrome.extension.getBackgroundPage();
 
+        //temp removal of fetching for testing
+        data = backgroundPage.fetchUrlAndStore(currentTab.url);
+
         //Data does not exist
         if(data == undefined || data == "fetching") {
             if(data != "fetching") {
@@ -504,7 +507,7 @@ $(window).ready(function() {
                 if(event.originalEvent.key == currentTab.url && newValue != "fetching") {
                     if(count < 3) {
                         if(newValue != undefined) {
-                            activatePage(localStorage.getItem(event.key));  
+                            activatePage(localStorage.getItem(event.key));
                         } else {
                             count += 1;
                             backgroundPage.fetchUrlAndStore(currentTab.url);
@@ -512,7 +515,7 @@ $(window).ready(function() {
                     } else {
                         activatePage("error");
                     }
-                } 
+                }
             });
         } else {
             //Cached results exists then immediately parse it
