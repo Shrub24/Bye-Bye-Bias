@@ -1,0 +1,60 @@
+.top-buffer {margin-top:40px}
+
+.positive-highlight {border: 1px solid #F5434F; border-radius: 2px; color: #F5434F; background-color: white; padding: 0 1px}
+
+.negative-highlight {border: 1px solid #5388EE; border-radius: 2px; color: #5388EE; background-color: white; padding: 0 1px}
+
+.neutral-highlight {border: 1px solid #AC6196; border-radius: 2px; color: #AC6196; background-color: white; padding: 0 1px}
+
+.none-highlight {border: 1px solid #666666; border-radius: 2px; color: #666666; background-color: white; padding: 0 1px}
+
+.sentiment-button {
+    text-align: center;
+    border-radius: 2px;
+    margin-left: 1px;
+    margin-right: 1px;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.neutral:hover {
+    background-color: rgba(172, 97, 150, 0.1);
+}
+
+.negative:hover {
+    background-color: rgba(83, 136, 238, 0.1);
+}
+
+.positive:hover {
+    background-color: rgba(245, 67, 79, 0.1);
+}
+
+.submit-button:hover {
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.neutral {
+    border-color: rgba(172, 97, 150, 1);
+    color: rgba(172, 97, 150, 1);
+    background-color: white;
+}
+
+.negative {
+    border-color: rgba(83, 136, 238, 1);
+    color: rgba(83, 136, 238, 1);
+    background-color: white;
+}
+
+.positive {
+    border-color: rgba(245, 67, 79, 1);
+    color: rgba(245, 67, 79, 1);
+    background-color: white;
+}
+
+.submit-button {
+    text-align: center;
+    border-radius: 2px;
+    background-color: white;
+    border: 1px solid #4CAF50;
+    color: #4CAF50
+}
