@@ -7,7 +7,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def get_sentiments(x, model):
-    x = bert_input_prep(x)
     return [forward_prop([i], model) for i in x]
 
 
@@ -20,7 +19,7 @@ def get_sentiments_backup(x):
 
 def get_doc_sentiment(x, model):
     scale = 9.0
-    average_sentiment = np.average([i for i in get_sentiments(x, model, embed)])
+    average_sentiment = np.average([i for i in get_sentiments(x, model)])
     return (average_sentiment + 1) * (scale/2) + 1
 
 

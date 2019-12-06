@@ -37,7 +37,7 @@ class Net(nn.Module):
         x = torch.mul(x, t)
         x = self.dropout(x)
         x = self.pool(x)
-        x = torch.squeeze(x)
+        x = torch.squeeze(x, dim=1)
         x = F.softmax(self.fc1(x), dim=1)
         return x
 
@@ -51,6 +51,22 @@ class Net(nn.Module):
 
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
+
+
+def article_bert_input_prep(x):
+    sample = x[0][0]
+    i = x[0][1]
+    prepped_sample = ['[CLS]'] + tokenizer.tokenize(sample)
+    prepped_sample.extend(['[PAD]'] * (100 - len(prepped_sample)))
+    prepped_sample = prepped_sample[:100]
+    target = tokenizer.tokenize(sample[i[0]:i[1]])
+    indices = [(i, i + len(target)) for i in range(len(prepped_sample)) if prepped_sample[i:i + len(target)] == target][0]
+    prepped_sample = tokenizer.convert_tokens_to_ids(prepped_sample)
+    t = torch.zeros(len(prepped_sample))
+    t[indices[0]: indices[1]] = torch.ones(indices[1] - indices[0])
+    x = torch.unsqueeze(torch.tensor(prepped_sample), 0)
+    t = torch.unsqueeze(t, 0)
+    return x, t
 
 
 def bert_input_prep(x):
@@ -177,6 +193,6 @@ def train(net, train_x, train_y, test_x, test_y, num_epochs=5, batch_size=8, lea
 
 
 def forward_prop(x, net):
-    x, t = bert_input_prep(x)
+    x, t = article_bert_input_prep(x)
     outputs = net(x, t)
     return torch.argmax(outputs, dim=1).item() - 1

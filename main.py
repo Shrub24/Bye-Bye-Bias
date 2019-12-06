@@ -40,6 +40,6 @@ if __name__ == "__main__":
     all_entities = list()
     for text in raw_texts:
         text_entity_getter_instance = text_entity_getter(text)
-        entity_sentiments.append({entity: get_doc_sentiment(text_entity_getter_instance.get_sentence_target_tuples(entity), net) for entity in text_entity_getter_instance.get_n_important_entities(NUM_MAIN_ENTITIES)})
+        entity_sentiments.append({entity_string: int(get_doc_sentiment(text_entity_getter_instance.get_sentence_target_tuples_from_tokens(sentence_target_tuple_input), net)) for entity_string, sentence_target_tuple_input in text_entity_getter_instance.get_n_important_entities(NUM_MAIN_ENTITIES)})
         all_entities.append(text_entity_getter_instance.get_unique_relevant_entities_stripped())
     populate_database(generate_article_infos(raw_infos, entity_sentiments, all_entities), DB)
