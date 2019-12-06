@@ -42,11 +42,11 @@ def prep_data(train, test):
                     if i != 0:
                         samples.append(sample)
                         sample = list()
-                    sample.append(line.split())
+                    sample.append(line)
                 elif i % 3 == 2:
                     y.append(int(line))
                 elif i % 3 == 1:
-                    sample.append(line.split())
+                    sample.append(line)
                 else:
                     sample.append(line)
                 i += 1
@@ -65,13 +65,13 @@ def prep_data(train, test):
 
 
 def prep_twitter_data(train, test):
-        train = open(train, 'rb').readlines()
-        test = open(test, 'rb').readlines()
+        train = open(train, 'r', encoding='UTF-8').readlines()
+        test = open(test, 'r', encoding='UTF-8').readlines()
         return prep_data(train, test)
 
 
 def prep_mpqa_data(dataset):
-    temp = open(dataset, 'rb').readlines()
+    temp = open(dataset, 'r').readlines()
     data = [temp[i:i + 3] for i in range(0, len(temp), 3)]
     random.shuffle(data)
     data = list(itertools.chain.from_iterable(data))

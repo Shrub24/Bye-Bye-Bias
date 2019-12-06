@@ -10,3 +10,7 @@ embedding_model/glove.twitter.27B.zip
 *.pyc
 *.pyc
 *.pyc
+models/bert3.pkl
+models/bert2.pkl
+models/bert1.pkl
+models/bert.pkl
